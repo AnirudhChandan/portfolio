@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, FileText, ChevronDown } from "lucide-react";
 
-// Import all your custom components
+// Import all custom components
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
@@ -11,7 +11,8 @@ import ServerMonitor from "@/components/ServerMonitor";
 import Architecture from "@/components/Architecture";
 import Impact from "@/components/Impact";
 import ApiPlayground from "@/components/ApiPlayground";
-import AiChatbot from "@/components/AiChatbot"; // Import the Chatbot
+import CodeComparison from "@/components/CodeComparison"; // <--- 1. Import CodeComparison
+import AiChatbot from "@/components/AiChatbot";
 
 export default function Home() {
   return (
@@ -79,7 +80,6 @@ export default function Home() {
             </a>
           </div>
 
-          {/* 1. Server Monitor Component */}
           <ServerMonitor />
         </motion.div>
 
@@ -93,22 +93,25 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* 2. Experience Component */}
+      {/* 02. Experience */}
       <Experience />
 
-      {/* 3. Projects Component */}
+      {/* 03. Projects */}
       <Projects />
 
-      {/* 4. Architecture Component */}
+      {/* 04. Architecture */}
       <Architecture />
 
-      {/* 5. Impact Component */}
+      {/* 05. Impact */}
       <Impact />
 
-      {/* 6. API Playground Component */}
+      {/* 06. API Playground */}
       <ApiPlayground />
 
-      {/* 7. Contact Component */}
+      {/* 07. Code Optimization (New!) */}
+      <CodeComparison />
+
+      {/* 08. Contact */}
       <Contact />
 
       <footer className="py-6 text-center text-slate-500 text-sm font-mono bg-transparent">
@@ -121,7 +124,6 @@ export default function Home() {
         </a>
       </footer>
 
-      {/* 8. AI Chatbot (Floating Overlay) */}
       <AiChatbot />
     </main>
   );
