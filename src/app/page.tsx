@@ -5,7 +5,8 @@ import { Github, Linkedin, Mail, FileText, ChevronDown } from "lucide-react";
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
-import ServerMonitor from "@/components/ServerMonitor"; // <--- IMPORT
+import ServerMonitor from "@/components/ServerMonitor";
+import Architecture from "@/components/Architecture";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
+          {/* --- RESTORED TEXT CONTENT --- */}
           <span className="text-teal-400 font-mono text-lg mb-4 block">
             Hi, my name is
           </span>
@@ -34,6 +36,7 @@ export default function Home() {
             pipelines at <span className="text-teal-400">Genpact</span>.
           </p>
 
+          {/* --- BUTTONS --- */}
           <div className="flex gap-4 mb-12">
             <a
               href="#projects"
@@ -50,11 +53,35 @@ export default function Home() {
             </a>
           </div>
 
-          {/* --- THE NEW SERVER MONITOR WIDGET --- */}
+          {/* --- SOCIAL LINKS --- */}
+          <div className="flex items-center gap-6 text-slate-400 mb-12">
+            <a
+              href="https://github.com/anichandan124"
+              target="_blank"
+              className="hover:text-teal-400 transition-colors hover:-translate-y-1 transform duration-300"
+            >
+              <Github size={24} />
+            </a>
+            <a
+              href="https://linkedin.com/in/your-profile"
+              target="_blank"
+              className="hover:text-teal-400 transition-colors hover:-translate-y-1 transform duration-300"
+            >
+              <Linkedin size={24} />
+            </a>
+            <a
+              href="mailto:anichandan124@gmail.com"
+              className="hover:text-teal-400 transition-colors hover:-translate-y-1 transform duration-300"
+            >
+              <Mail size={24} />
+            </a>
+          </div>
+
+          {/* --- SERVER MONITOR WIDGET --- */}
           <ServerMonitor />
         </motion.div>
 
-        {/* Scroll Indicator (Kept at bottom) */}
+        {/* Scroll Indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -65,11 +92,19 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* REST OF SECTIONS */}
+      {/* 02. EXPERIENCE */}
       <Experience />
+
+      {/* 03. PROJECTS */}
       <Projects />
+
+      {/* 04. ARCHITECTURE (New!) */}
+      <Architecture />
+
+      {/* 05. CONTACT */}
       <Contact />
 
+      {/* FOOTER */}
       <footer className="py-6 text-center text-slate-500 text-sm font-mono bg-transparent">
         <a
           href="https://github.com/anichandan124"
