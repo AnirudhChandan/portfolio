@@ -1,65 +1,84 @@
-import Image from "next/image";
+"use client";
+
+import { motion } from "framer-motion";
+import { Github, Linkedin, Mail, FileText, ChevronDown } from "lucide-react";
+import Experience from "@/components/Experience";
+import Projects from "@/components/Projects";
+import Contact from "@/components/Contact";
+import ServerMonitor from "@/components/ServerMonitor"; // <--- IMPORT
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen selection:bg-teal-500 selection:text-white">
+      {/* HERO SECTION */}
+      <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto relative pt-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <span className="text-teal-400 font-mono text-lg mb-4 block">
+            Hi, my name is
+          </span>
+          <h1 className="text-5xl md:text-7xl font-bold text-slate-100 mb-4 tracking-tight">
+            Anirudh Chandan.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <h2 className="text-4xl md:text-6xl font-bold text-slate-400 mb-6">
+            I build scalable backend systems.
+          </h2>
+          <p className="max-w-xl text-slate-400 text-lg leading-relaxed mb-8">
+            I am a Software Engineer based in India, specializing in
+            high-performance APIs and distributed architectures. From
+            architecting 30+ endpoints at{" "}
+            <span className="text-teal-400">Docplix</span> to optimizing
+            pipelines at <span className="text-teal-400">Genpact</span>.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+          <div className="flex gap-4 mb-12">
+            <a
+              href="#projects"
+              className="px-6 py-3 border border-teal-400 text-teal-400 rounded hover:bg-teal-400/10 transition-colors font-mono"
+            >
+              Check out my work
+            </a>
+            <a
+              href="/ANIRUDH_CHANDAN_RESUME_2026.pdf"
+              target="_blank"
+              className="px-6 py-3 bg-slate-800 text-slate-200 rounded hover:bg-slate-700 transition-colors font-mono flex items-center gap-2"
+            >
+              <FileText size={18} /> Resume
+            </a>
+          </div>
+
+          {/* --- THE NEW SERVER MONITOR WIDGET --- */}
+          <ServerMonitor />
+        </motion.div>
+
+        {/* Scroll Indicator (Kept at bottom) */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-slate-500"
+        >
+          <ChevronDown size={30} />
+        </motion.div>
+      </section>
+
+      {/* REST OF SECTIONS */}
+      <Experience />
+      <Projects />
+      <Contact />
+
+      <footer className="py-6 text-center text-slate-500 text-sm font-mono bg-transparent">
+        <a
+          href="https://github.com/anichandan124"
+          target="_blank"
+          className="hover:text-teal-400 transition-colors"
+        >
+          Designed & Built by Anirudh Chandan
+        </a>
+      </footer>
+    </main>
   );
 }
