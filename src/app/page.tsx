@@ -7,6 +7,8 @@ import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
 import ServerMonitor from "@/components/ServerMonitor";
 import Architecture from "@/components/Architecture";
+import Impact from "@/components/Impact";
+import ApiPlayground from "@/components/ApiPlayground"; // <--- 1. IMPORT PLAYGROUND
 
 export default function Home() {
   return (
@@ -18,7 +20,6 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {/* --- RESTORED TEXT CONTENT --- */}
           <span className="text-teal-400 font-mono text-lg mb-4 block">
             Hi, my name is
           </span>
@@ -36,7 +37,6 @@ export default function Home() {
             pipelines at <span className="text-teal-400">Genpact</span>.
           </p>
 
-          {/* --- BUTTONS --- */}
           <div className="flex gap-4 mb-12">
             <a
               href="#projects"
@@ -53,7 +53,6 @@ export default function Home() {
             </a>
           </div>
 
-          {/* --- SOCIAL LINKS --- */}
           <div className="flex items-center gap-6 text-slate-400 mb-12">
             <a
               href="https://github.com/anichandan124"
@@ -77,11 +76,9 @@ export default function Home() {
             </a>
           </div>
 
-          {/* --- SERVER MONITOR WIDGET --- */}
           <ServerMonitor />
         </motion.div>
 
-        {/* Scroll Indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -98,13 +95,18 @@ export default function Home() {
       {/* 03. PROJECTS */}
       <Projects />
 
-      {/* 04. ARCHITECTURE (New!) */}
+      {/* 04. ARCHITECTURE */}
       <Architecture />
 
-      {/* 05. CONTACT */}
+      {/* 05. IMPACT */}
+      <Impact />
+
+      {/* 06. API PLAYGROUND (New!) */}
+      <ApiPlayground />
+
+      {/* 07. CONTACT */}
       <Contact />
 
-      {/* FOOTER */}
       <footer className="py-6 text-center text-slate-500 text-sm font-mono bg-transparent">
         <a
           href="https://github.com/anichandan124"
