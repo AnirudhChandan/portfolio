@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import BackgroundGrid from "@/components/BackgroundGrid";
-import Navbar from "@/components/Navbar"; // <--- 1. IMPORT NAVBAR
+import Navbar from "@/components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,10 +19,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} relative bg-slate-950`}>
-        {/* 2. Add Navbar Here */}
-        <Navbar />
+      {/* ADDED 'bg-noise' class here in a separate div to overlay everything */}
+      <body
+        className={`${inter.className} relative bg-slate-950 text-slate-200 antialiased`}
+      >
+        {/* The Noise Overlay */}
+        <div className="bg-noise" />
 
+        <Navbar />
         <BackgroundGrid />
 
         {children}

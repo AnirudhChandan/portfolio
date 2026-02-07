@@ -1,0 +1,2568 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+public/
+  file.svg
+  globe.svg
+  next.svg
+  vercel.svg
+  window.svg
+src/
+  app/
+    favicon.ico
+    globals.css
+    layout.tsx
+    page.tsx
+  components/
+    AiChatbot.tsx
+    ApiPlayground.tsx
+    Architecture.tsx
+    BackgroundGrid.tsx
+    CodeComparison.tsx
+    Contact.tsx
+    Experience.tsx
+    Impact.tsx
+    Navbar.tsx
+    Projects.tsx
+    ServerMonitor.tsx
+    ShardingDemo.tsx
+    SpotlightCard.tsx
+.gitignore
+eslint.config.mjs
+next.config.ts
+package.json
+postcss.config.mjs
+README.md
+tailwind.config.ts
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/components/ShardingDemo.tsx">
+"use client";
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Database,
+  Server,
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle2,
+} from "lucide-react";
+
+// --- TYPES ---
+type ShardStrategy = "range" | "hash";
+type DataPacket = { id: number; value: number; shardIndex: number };
+
+export default function ShardingDemo() {
+  const [strategy, setStrategy] = useState<ShardStrategy>("range");
+  const [data, setData] = useState<DataPacket[]>([]);
+  const [isSimulating, setIsSimulating] = useState(false);
+
+  // --- LOGIC: Sharding Algorithms ---
+
+  // 1. Range Sharding: Simple logic based on value ranges
+  // Node 0: 0-33, Node 1: 34-66, Node 2: 67-100
+  const getRangeShard = (val: number) => {
+    if (val < 34) return 0;
+    if (val < 67) return 1;
+    return 2;
+  };
+
+  // 2. Hash Sharding: Modulo arithmetic
+  // (Value % 3) determines the node
+  const getHashShard = (val: number) => val % 3;
+
+  // --- SIMULATION ---
+  const simulateTraffic = () => {
+    setIsSimulating(true);
+    setData([]); // Clear previous
+
+    let count = 0;
+    const interval = setInterval(() => {
+      if (count >= 20) {
+        // Limit to 20 items for visual clarity
+        clearInterval(interval);
+        setIsSimulating(false);
+        return;
+      }
+
+      // Generate a random user ID (0-100)
+      // We purposefully skew the random number generation to create "Hot Spots" in Range mode
+      // This simulates real-world "trending" data (e.g. everyone accessing recent IDs)
+      const randomVal = Math.floor(Math.random() * 40); // Skewed towards lower numbers!
+
+      const shardIndex =
+        strategy === "range"
+          ? getRangeShard(randomVal)
+          : getHashShard(randomVal); // Hash handles skewed data better!
+
+      setData((prev) => [
+        ...prev,
+        { id: Date.now(), value: randomVal, shardIndex },
+      ]);
+      count++;
+    }, 150);
+  };
+
+  // Calculate Load Distribution
+  const nodes = [0, 1, 2];
+  const distribution = nodes.map(
+    (nodeIdx) => data.filter((d) => d.shardIndex === nodeIdx).length,
+  );
+  const maxLoad = Math.max(...distribution);
+  const isUnbalanced = maxLoad > 12; // Threshold for "Hot Shard" warning
+
+  return (
+    <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      <div className="mb-12">
+        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
+          <span className="text-teal-400">08.</span> Distributed Systems
+        </h2>
+        <p className="text-slate-400 max-w-2xl text-lg">
+          Scaling is not just about adding servers; it is about{" "}
+          <span className="text-teal-400">Data Distribution</span>. Use this
+          simulator to see why I prefer <strong>Hash Sharding</strong> over
+          Range Sharding for high-write workloads.
+        </p>
+      </div>
+
+      <div className="bg-[#0d1117] border border-slate-800 rounded-xl p-6 md:p-8 shadow-2xl">
+        {/* CONTROLS */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 bg-slate-900/50 p-4 rounded-lg border border-slate-800">
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col">
+              <span className="text-xs text-slate-500 font-mono uppercase tracking-wider mb-2">
+                Sharding Strategy
+              </span>
+              <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
+                <button
+                  onClick={() => {
+                    setStrategy("range");
+                    setData([]);
+                  }}
+                  className={`px-4 py-2 rounded-md text-sm font-mono transition-all ${
+                    strategy === "range"
+                      ? "bg-teal-500 text-slate-900 font-bold"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Range Based
+                </button>
+                <button
+                  onClick={() => {
+                    setStrategy("hash");
+                    setData([]);
+                  }}
+                  className={`px-4 py-2 rounded-md text-sm font-mono transition-all ${
+                    strategy === "hash"
+                      ? "bg-purple-500 text-white font-bold"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Hash Based
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {isUnbalanced && strategy === "range" && (
+              <div className="flex items-center gap-2 text-amber-400 bg-amber-400/10 px-3 py-2 rounded border border-amber-400/20">
+                <AlertTriangle size={16} />
+                <span className="text-xs font-bold uppercase">
+                  Hot Shard Detected
+                </span>
+              </div>
+            )}
+            {strategy === "hash" && data.length > 0 && !isUnbalanced && (
+              <div className="flex items-center gap-2 text-emerald-400 bg-emerald-400/10 px-3 py-2 rounded border border-emerald-400/20">
+                <CheckCircle2 size={16} />
+                <span className="text-xs font-bold uppercase">
+                  Load Balanced
+                </span>
+              </div>
+            )}
+
+            <button
+              onClick={simulateTraffic}
+              disabled={isSimulating}
+              className="flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-white text-slate-900 font-bold rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <RefreshCw
+                size={18}
+                className={isSimulating ? "animate-spin" : ""}
+              />
+              {isSimulating ? "Injecting Data..." : "Simulate Traffic"}
+            </button>
+          </div>
+        </div>
+
+        {/* VISUALIZATION NODES */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {nodes.map((nodeIdx) => {
+            const load = distribution[nodeIdx];
+            const isHot = load > 12; // Visual threshold
+
+            return (
+              <div
+                key={nodeIdx}
+                className={`relative min-h-[300px] bg-slate-900 border-2 rounded-xl p-4 transition-colors duration-500 flex flex-col ${
+                  isHot
+                    ? "border-amber-500/50 bg-amber-500/5"
+                    : "border-slate-700"
+                }`}
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-800">
+                  <div className="flex items-center gap-2 text-slate-300">
+                    <Database size={20} />
+                    <span className="font-mono font-bold">
+                      Shard_0{nodeIdx + 1}
+                    </span>
+                  </div>
+                  <span
+                    className={`text-xs font-mono px-2 py-1 rounded ${
+                      isHot
+                        ? "bg-amber-500 text-slate-900 font-bold"
+                        : "bg-slate-800 text-slate-400"
+                    }`}
+                  >
+                    {load} Records
+                  </span>
+                </div>
+
+                {/* Data Container */}
+                <div className="flex-1 flex flex-wrap content-start gap-2 overflow-hidden">
+                  <AnimatePresence>
+                    {data
+                      .filter((d) => d.shardIndex === nodeIdx)
+                      .map((packet) => (
+                        <motion.div
+                          key={packet.id}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0, opacity: 0 }}
+                          className={`w-2 h-2 rounded-full ${
+                            strategy === "range"
+                              ? "bg-teal-400"
+                              : "bg-purple-400"
+                          }`}
+                        />
+                      ))}
+                  </AnimatePresence>
+                </div>
+
+                {/* Server Icon Bottom */}
+                <div className="mt-4 pt-4 border-t border-slate-800 flex justify-center opacity-20">
+                  <Server size={48} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-slate-500 text-sm font-mono">
+            {strategy === "range"
+              ? "⚠️ Range Sharding creates hotspots when data is sequential or skewed."
+              : "✅ Hash Sharding distributes skewed data evenly using (ID % Nodes)."}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/SpotlightCard.tsx">
+"use client";
+
+import { useRef, useState, ReactNode } from "react";
+import { motion } from "framer-motion";
+
+interface SpotlightCardProps {
+  children: ReactNode;
+  className?: string;
+  spotlightColor?: string;
+}
+
+export default function SpotlightCard({
+  children,
+  className = "",
+  spotlightColor = "rgba(45, 212, 191, 0.15)", // Default Teal glow
+}: SpotlightCardProps) {
+  const divRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [opacity, setOpacity] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current) return;
+
+    const div = divRef.current;
+    const rect = div.getBoundingClientRect();
+
+    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  const handleMouseEnter = () => {
+    setOpacity(1);
+  };
+
+  const handleMouseLeave = () => {
+    setOpacity(0);
+  };
+
+  return (
+    <div
+      ref={divRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={`relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/50 ${className}`}
+    >
+      {/* The Spotlight Effect: 
+        A radial gradient that follows the mouse cursor.
+        It sits *behind* the content but *above* the background.
+      */}
+      <div
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+        style={{
+          opacity,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 40%)`,
+        }}
+      />
+
+      {/* Content Container */}
+      <div className="relative h-full">{children}</div>
+    </div>
+  );
+}
+</file>
+
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
+<file path="src/components/AiChatbot.tsx">
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Send, Bot, User, Sparkles } from "lucide-react";
+
+// 1. Define the Interface
+interface KnowledgeEntry {
+  keywords: string[];
+  text: string;
+}
+
+// 2. Type the Data
+const knowledgeBase: KnowledgeEntry[] = [
+  {
+    keywords: [
+      "skills",
+      "stack",
+      "tech",
+      "technologies",
+      "languages",
+      "coding",
+    ],
+    text: "I am proficient in **Node.js, Python, and React**. On the backend, I specialize in **Express, Sequelize, MongoDB, and PostgreSQL**. I also have deep experience with system design tools like **Docker, Kafka, Redis, and AWS**.",
+  },
+  {
+    keywords: ["experience", "work", "history", "job", "career", "companies"],
+    text: "I have worked at **Docplix** as a Software Engineer (Lead Backend) and at **Genpact** where I built serverless data pipelines. My focus has always been on scalable architecture.",
+  },
+  {
+    keywords: ["docplix", "inventory", "migration", "api", "consistency"],
+    text: "At **Docplix**, I returned to lead the backend architecture for a V2.0 migration. I architected **30+ RESTful endpoints** and ensured **99.9% data consistency** during a critical inventory system migration using a custom sync service.",
+  },
+  {
+    keywords: ["genpact", "python", "serverless", "pipeline", "optimization"],
+    text: "At **Genpact**, I designed serverless data pipelines using **Python and GCP**, which boosted efficiency by **35%**. I also reduced API response times by **40%** using Kafka and Redis caching.",
+  },
+  {
+    keywords: ["projects", "built", "app", "chat", "movie", "recommendation"],
+    text: "I've built some cool systems! Notable ones include a **Real-Time Chat App** (Node.js/Socket.io) handling high concurrency, and a **Movie Recommendation API** that uses Machine Learning (Cosine Similarity) to personalize content.",
+  },
+  {
+    keywords: ["contact", "email", "hire", "reach", "touch"],
+    text: "You can reach me directly at **anichandan124@gmail.com**. I am currently open to new opportunities as a Backend or Full Stack Engineer!",
+  },
+  {
+    keywords: ["hello", "hi", "hey", "greeting", "who"],
+    text: "Hello! I am **AniBot**, Anirudh's virtual assistant. I can answer questions about his **skills**, **experience at Docplix/Genpact**, or his **backend projects**. Ask me anything!",
+  },
+];
+
+// --- LOGIC ---
+const findBestMatch = (query: string): string => {
+  const lowerQuery = query.toLowerCase();
+
+  let bestMatch: KnowledgeEntry | null = null;
+  let maxScore = 0;
+
+  for (const entry of knowledgeBase) {
+    let score = 0;
+    entry.keywords.forEach((keyword) => {
+      if (lowerQuery.includes(keyword)) score++;
+    });
+    if (score > maxScore) {
+      maxScore = score;
+      bestMatch = entry;
+    }
+  }
+
+  if (maxScore > 0 && bestMatch) {
+    return bestMatch.text;
+  }
+
+  return "I'm not sure about that specific detail, but I can tell you about Anirudh's **skills**, **work experience**, or **projects**. Try asking 'What are his skills?'";
+};
+
+interface Message {
+  id: number;
+  role: "user" | "bot";
+  text: string;
+}
+
+export default function AiChatbot() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      role: "bot",
+      text: "Hi! I'm AniBot. Ask me anything about Anirudh's work!",
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 300); // Small delay to allow animation to finish before focusing
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isTyping]);
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    const userMessage: Message = { id: Date.now(), role: "user", text: input };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsTyping(true);
+
+    setTimeout(() => {
+      const answer = findBestMatch(userMessage.text);
+      const botMessage: Message = {
+        id: Date.now() + 1,
+        role: "bot",
+        text: answer,
+      };
+      setMessages((prev) => [...prev, botMessage]);
+      setIsTyping(false);
+    }, 1000);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSend();
+  };
+
+  return (
+    <>
+      {/* FLOATING TOGGLE BUTTON - Increased Z-Index */}
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setIsOpen(true)}
+        className={`fixed bottom-8 right-8 z-[9999] p-4 rounded-full shadow-2xl transition-all duration-300 ${
+          isOpen
+            ? "scale-0 opacity-0"
+            : "bg-teal-500 hover:bg-teal-400 text-slate-900"
+        }`}
+      >
+        <Sparkles size={28} fill="currentColor" />
+      </motion.button>
+
+      {/* CHAT WINDOW - Increased Z-Index */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            className="fixed bottom-8 right-4 md:right-8 z-[9999] w-[90vw] md:w-[400px] h-[500px] bg-slate-900/95 backdrop-blur-xl border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+          >
+            {/* HEADER */}
+            <div className="p-4 bg-slate-800/50 border-b border-slate-700 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-teal-500/20 rounded-lg">
+                  <Bot size={20} className="text-teal-400" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-100 text-sm">
+                    AniBot AI
+                  </h3>
+                  <span className="text-xs text-green-400 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                    Online
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-slate-400 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* MESSAGES */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex items-start gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
+                >
+                  <div
+                    className={`p-2 rounded-full flex-shrink-0 ${
+                      msg.role === "user"
+                        ? "bg-slate-700 text-slate-300"
+                        : "bg-teal-500/20 text-teal-400"
+                    }`}
+                  >
+                    {msg.role === "user" ? (
+                      <User size={16} />
+                    ) : (
+                      <Bot size={16} />
+                    )}
+                  </div>
+                  <div
+                    className={`p-3 rounded-2xl text-sm leading-relaxed max-w-[80%] ${
+                      msg.role === "user"
+                        ? "bg-slate-700 text-slate-200 rounded-tr-none"
+                        : "bg-slate-800 text-slate-300 border border-slate-700 rounded-tl-none"
+                    }`}
+                  >
+                    {msg.text.split("**").map((part, i) =>
+                      i % 2 === 1 ? (
+                        <strong key={i} className="text-teal-400 font-normal">
+                          {part}
+                        </strong>
+                      ) : (
+                        part
+                      ),
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {isTyping && (
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-full bg-teal-500/20 text-teal-400">
+                    <Bot size={16} />
+                  </div>
+                  <div className="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none flex gap-1 items-center">
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* INPUT */}
+            <div className="p-4 bg-slate-800/50 border-t border-slate-700">
+              <div className="relative">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  placeholder="Ask about skills..."
+                  // Added pointer-events-auto to ensure it catches clicks
+                  className="w-full bg-slate-950 border border-slate-700 rounded-full py-3 px-5 text-sm text-slate-200 focus:outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/50 transition-all placeholder:text-slate-600 pointer-events-auto"
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={!input.trim()}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-teal-500 text-slate-950 rounded-full hover:bg-teal-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+</file>
+
+<file path="src/components/ApiPlayground.tsx">
+"use client";
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Play,
+  Loader2,
+  Terminal,
+  CheckCircle,
+  AlertCircle,
+  Copy,
+} from "lucide-react";
+
+// --- MOCK ENDPOINTS BASED ON YOUR RESUME ---
+const endpoints = [
+  {
+    id: "auth",
+    method: "POST",
+    path: "/api/v1/auth/login",
+    desc: "Authenticates user and issues JWT.",
+    body: {
+      email: "user@example.com",
+      password: "••••••••",
+    },
+    response: {
+      status: "success",
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      user: {
+        id: "u_123",
+        role: "admin",
+      },
+      expiresIn: 3600,
+    },
+  },
+  {
+    id: "movie",
+    method: "GET",
+    path: "/api/v1/movies/recommend?id=tt1375666",
+    desc: "ML-based Cosine Similarity recommendation.",
+    body: null,
+    response: {
+      movieId: "tt1375666",
+      algorithm: "cosine_similarity",
+      recommendations: [
+        { title: "Inception", score: 0.98 },
+        { title: "Interstellar", score: 0.94 },
+        { title: "The Prestige", score: 0.89 },
+      ],
+      latency: "45ms",
+    },
+  },
+  {
+    id: "sync",
+    method: "GET",
+    path: "/api/v2/inventory/sync-status",
+    desc: "Checks consistency between Legacy & V2 systems.",
+    body: null,
+    response: {
+      syncId: "sync_9982",
+      status: "HEALTHY",
+      discrepancies: 0,
+      lastSync: "2026-02-05T10:00:00Z",
+      consistency: "99.99%",
+    },
+  },
+];
+
+export default function ApiPlayground() {
+  const [selectedId, setSelectedId] = useState(endpoints[0].id);
+  const [isLoading, setIsLoading] = useState(false);
+  const [response, setResponse] = useState<null | object>(null);
+  const [status, setStatus] = useState<null | number>(null);
+
+  const activeEndpoint =
+    endpoints.find((e) => e.id === selectedId) || endpoints[0];
+
+  const handleSend = () => {
+    setIsLoading(true);
+    setResponse(null);
+    setStatus(null);
+
+    // Simulate Network Latency (600ms - 1200ms)
+    setTimeout(
+      () => {
+        setIsLoading(false);
+        setStatus(200);
+        setResponse(activeEndpoint.response);
+      },
+      Math.random() * 600 + 600,
+    );
+  };
+
+  return (
+    <section id="playground" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
+            <span className="text-teal-400">06.</span> API Playground
+          </h2>
+          <p className="text-slate-400 max-w-2xl text-lg">
+            Do not just take my word for it.{" "}
+            <span className="text-teal-400">Test the architecture</span>{" "}
+            yourself. Interact with simulated endpoints from my actual projects.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto lg:h-[600px]">
+          {/* --- LEFT SIDEBAR: ENDPOINT LIST --- */}
+          <div className="lg:col-span-4 bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-slate-800 bg-slate-900">
+              <h3 className="text-slate-400 font-mono text-xs uppercase tracking-wider">
+                Available Endpoints
+              </h3>
+            </div>
+            <div className="flex-1 overflow-y-auto p-2 space-y-2">
+              {endpoints.map((ep) => (
+                <button
+                  key={ep.id}
+                  onClick={() => {
+                    setSelectedId(ep.id);
+                    setResponse(null);
+                    setStatus(null);
+                  }}
+                  className={`w-full text-left p-3 rounded-lg transition-all border ${
+                    selectedId === ep.id
+                      ? "bg-slate-800 border-teal-500/50"
+                      : "hover:bg-slate-800/50 border-transparent hover:border-slate-700"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span
+                      className={`text-xs font-bold px-2 py-0.5 rounded ${
+                        ep.method === "POST"
+                          ? "bg-purple-500/20 text-purple-400"
+                          : "bg-blue-500/20 text-blue-400"
+                      }`}
+                    >
+                      {ep.method}
+                    </span>
+                    <span className="text-slate-500 text-xs font-mono">
+                      JSON
+                    </span>
+                  </div>
+                  <div className="text-slate-300 font-mono text-xs truncate">
+                    {ep.path}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* --- RIGHT PANEL: REQUEST/RESPONSE --- */}
+          <div className="lg:col-span-8 bg-[#0d1117] border border-slate-800 rounded-xl overflow-hidden flex flex-col shadow-2xl">
+            {/* URL BAR */}
+            <div className="p-4 border-b border-slate-800 flex flex-col sm:flex-row gap-4 items-center bg-slate-900/50">
+              <div className="flex-1 w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 font-mono text-sm text-slate-300 flex items-center gap-3">
+                <span
+                  className={`font-bold ${
+                    activeEndpoint.method === "POST"
+                      ? "text-purple-400"
+                      : "text-blue-400"
+                  }`}
+                >
+                  {activeEndpoint.method}
+                </span>
+                <span className="truncate">{activeEndpoint.path}</span>
+              </div>
+              <button
+                onClick={handleSend}
+                disabled={isLoading}
+                className="w-full sm:w-auto px-6 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <Play size={18} />
+                )}
+                Send
+              </button>
+            </div>
+
+            {/* MAIN CONTENT AREA */}
+            <div className="flex-1 p-6 font-mono text-sm overflow-y-auto">
+              {/* DESCRIPTION */}
+              <div className="mb-6">
+                <h4 className="text-slate-500 text-xs uppercase mb-2">
+                  Endpoint Description
+                </h4>
+                <p className="text-slate-300">{activeEndpoint.desc}</p>
+              </div>
+
+              {/* REQUEST BODY (Only if POST) */}
+              {activeEndpoint.body && (
+                <div className="mb-6">
+                  <h4 className="text-slate-500 text-xs uppercase mb-2">
+                    Request Body
+                  </h4>
+                  <pre className="text-orange-300 bg-slate-900/50 p-4 rounded-lg border border-slate-800 overflow-x-auto">
+                    {JSON.stringify(activeEndpoint.body, null, 2)}
+                  </pre>
+                </div>
+              )}
+
+              {/* RESPONSE AREA */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-slate-500 text-xs uppercase">Response</h4>
+                  {status && (
+                    <span className="text-xs flex items-center gap-1 text-green-400">
+                      <CheckCircle size={12} /> Status: {status} OK
+                    </span>
+                  )}
+                </div>
+
+                <div className="relative min-h-[200px] bg-[#010409] rounded-lg border border-slate-800 p-4">
+                  <AnimatePresence mode="wait">
+                    {isLoading ? (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 flex items-center justify-center flex-col gap-3 text-slate-500"
+                      >
+                        <Loader2 className="animate-spin" size={32} />
+                        <span>Sending Request...</span>
+                      </motion.div>
+                    ) : response ? (
+                      <motion.pre
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-green-400 overflow-x-auto"
+                      >
+                        {JSON.stringify(response, null, 2)}
+                      </motion.pre>
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center text-slate-600 flex-col gap-2">
+                        <Terminal size={32} />
+                        <span>Hit Send to test endpoint</span>
+                      </div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/Architecture.tsx">
+"use client";
+
+import React, { useState, useCallback } from "react";
+import ReactFlow, {
+  Background,
+  Controls,
+  addEdge,
+  useNodesState,
+  useEdgesState,
+  Connection,
+  Edge,
+  Node, // <--- 1. Import the Node Type
+} from "reactflow";
+import "reactflow/dist/style.css";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  X,
+  Database,
+  Server,
+  Globe,
+  Cpu,
+  Layers,
+  LucideIcon,
+} from "lucide-react";
+
+// Define the structure for our node details
+interface NodeDetail {
+  title: string;
+  desc: string;
+  metrics: string;
+  icon: LucideIcon;
+}
+
+// --- DATA: The "Resume Wins" mapped to Architecture Nodes ---
+const nodeDetails: Record<string, NodeDetail> = {
+  "1": {
+    title: "Frontend Client (React)",
+    desc: "The entry point for the Clinical Dashboard. Engineered a dual-view (List/Calendar) architecture and real-time analytics charts.",
+    metrics: "Improved clinician workflow by 25%",
+    icon: Globe,
+  },
+  "2": {
+    title: "API Gateway (Node.js)",
+    desc: "Centralized RESTful API layer handling inventory and patient data. Architected 30+ endpoints to decouple the legacy monolith.",
+    metrics: "Handled 99.9% Data Consistency",
+    icon: Server,
+  },
+  "3": {
+    title: "Synchronization Service",
+    desc: "A custom background service designed to mitigate data drift between the new Inventory System (V2) and the Legacy System (V1).",
+    metrics: "Zero Critical Mismatches",
+    icon: Cpu,
+  },
+  "4": {
+    title: "Redis Cache Layer",
+    desc: "Implemented caching patterns for high-read endpoints (like patient search) to offload the primary database.",
+    metrics: "Reduced Latency by 40%",
+    icon: Layers,
+  },
+  "5": {
+    title: "Primary DB (Sequelize/SQL)",
+    desc: "The source of truth. Optimized with advanced indexing strategies to handle complex health-record retrieval queries.",
+    metrics: "Optimized Query Performance",
+    icon: Database,
+  },
+};
+
+// --- INITIAL GRAPH SETUP ---
+const initialNodes: Node[] = [
+  {
+    id: "1",
+    position: { x: 250, y: 0 },
+    data: { label: "React Client" },
+    style: {
+      background: "#0f172a",
+      color: "#fff",
+      border: "1px solid #2dd4bf",
+      width: 150,
+    },
+  },
+  {
+    id: "2",
+    position: { x: 250, y: 150 },
+    data: { label: "Node.js API Gateway" },
+    style: {
+      background: "#0f172a",
+      color: "#fff",
+      border: "1px solid #94a3b8",
+      width: 180,
+    },
+  },
+  {
+    id: "3",
+    position: { x: 50, y: 300 },
+    data: { label: "Sync Service" },
+    style: {
+      background: "#1e1b4b",
+      color: "#c7d2fe",
+      border: "1px dashed #6366f1",
+      width: 160,
+    },
+  },
+  {
+    id: "4",
+    position: { x: 450, y: 300 },
+    data: { label: "Redis Cache" },
+    style: {
+      background: "#3f1c1c",
+      color: "#fca5a5",
+      border: "1px solid #ef4444",
+      width: 140,
+    },
+  },
+  {
+    id: "5",
+    position: { x: 250, y: 450 },
+    data: { label: "PostgreSQL DB" },
+    style: {
+      background: "#0f172a",
+      color: "#fff",
+      border: "2px solid #2dd4bf",
+      width: 160,
+    },
+  },
+];
+
+const initialEdges: Edge[] = [
+  {
+    id: "e1-2",
+    source: "1",
+    target: "2",
+    animated: true,
+    style: { stroke: "#2dd4bf" },
+  },
+  {
+    id: "e2-3",
+    source: "2",
+    target: "3",
+    animated: true,
+    label: "Sync Events",
+  },
+  {
+    id: "e2-4",
+    source: "2",
+    target: "4",
+    animated: true,
+    label: "Cache Hit/Miss",
+  },
+  { id: "e2-5", source: "2", target: "5", style: { stroke: "#fff" } },
+  {
+    id: "e3-5",
+    source: "3",
+    target: "5",
+    animated: true,
+    style: { stroke: "#6366f1" },
+    label: "Write Back",
+  },
+];
+
+export default function Architecture() {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
+
+  const onConnect = useCallback(
+    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges],
+  );
+
+  // 2. Use the proper type here instead of 'any'
+  const onNodeClick = (_: React.MouseEvent, node: Node) => {
+    setSelectedNode(node.id);
+  };
+
+  const details = selectedNode ? nodeDetails[selectedNode] : null;
+
+  return (
+    <section
+      id="architecture"
+      className="py-24 px-4 md:px-12 max-w-7xl mx-auto h-[800px] relative"
+    >
+      <div className="mb-8">
+        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
+          <span className="text-teal-400">04.</span> System Architecture
+        </h2>
+        <p className="text-slate-400 max-w-2xl">
+          Interactive map of the <strong>Inventory Migration System</strong> I
+          engineered at Docplix.
+          <span className="text-teal-400"> Click a node</span> to see the
+          engineering challenge.
+        </p>
+      </div>
+
+      <div className="h-[600px] w-full border border-slate-800 rounded-xl bg-slate-950/50 overflow-hidden relative">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onNodeClick={onNodeClick}
+          fitView
+          attributionPosition="bottom-left"
+        >
+          <Background color="#1e293b" gap={16} />
+          <Controls className="bg-slate-800 text-white border-slate-700" />
+        </ReactFlow>
+
+        {/* --- DETAILS SIDEBAR --- */}
+        <AnimatePresence>
+          {selectedNode && details && (
+            <motion.div
+              initial={{ x: "100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="absolute top-0 right-0 h-full w-full md:w-96 bg-slate-900/95 backdrop-blur-xl border-l border-slate-700 p-8 shadow-2xl z-20"
+            >
+              <button
+                onClick={() => setSelectedNode(null)}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="mt-8">
+                <div className="w-12 h-12 bg-teal-400/20 rounded-lg flex items-center justify-center mb-6 text-teal-400">
+                  <details.icon size={24} />
+                </div>
+
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  {details.title}
+                </h3>
+                <div className="h-1 w-20 bg-teal-500 rounded mb-6"></div>
+
+                <p className="text-slate-300 leading-relaxed mb-8">
+                  {details.desc}
+                </p>
+
+                <div className="bg-slate-800/50 rounded-lg p-4 border border-teal-400/30">
+                  <p className="text-xs text-teal-400 uppercase font-bold tracking-wider mb-1">
+                    Key Impact
+                  </p>
+                  <p className="text-lg font-mono text-white">
+                    {details.metrics}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Instruction Overlay (Disappears on interaction) */}
+        {!selectedNode && (
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-slate-800/80 px-4 py-2 rounded-full text-slate-300 text-sm pointer-events-none border border-slate-700">
+            Interact with the nodes to explore logic
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/BackgroundGrid.tsx">
+"use client";
+
+import { motion } from "framer-motion";
+
+export default function BackgroundGrid() {
+  return (
+    <div className="fixed inset-0 z-[-1] pointer-events-none">
+      {/* 1. The Grid Pattern */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+
+      {/* 2. The Radial Mask (Vignette) */}
+      {/* This creates the "fade to black" effect at the edges so the grid isn't overwhelming */}
+      <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-teal-400 opacity-20 blur-[100px]"></div>
+
+      {/* 3. The "Beam" Animation */}
+      {/* A subtle light that travels down the screen to simulate data flow */}
+      <motion.div
+        initial={{ top: "-10%" }}
+        animate={{ top: "110%" }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "linear",
+          repeatDelay: 2,
+        }}
+        className="absolute left-1/2 w-[1px] h-[200px] bg-gradient-to-b from-transparent via-teal-400 to-transparent opacity-30 shadow-[0_0_20px_2px_rgba(45,212,191,0.3)]"
+      />
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/CodeComparison.tsx">
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  Code2,
+  MoveHorizontal,
+  AlertTriangle,
+  CheckCircle2,
+} from "lucide-react";
+
+const legacyCode = `// ❌ THE PROBLEM: N+1 Query Issue
+// Fetching all users first...
+const users = await User.findAll();
+const results = [];
+
+// ...then looping triggers a DB query 
+// for EACH user (Bad Performance)
+for (const user of users) {
+  const posts = await Post.findAll({
+    where: { userId: user.id }
+  });
+  
+  results.push({ 
+    name: user.name, 
+    posts: posts 
+  });
+}`;
+
+const optimizedCode = `// ✅ THE FIX: Eager Loading & Projection
+// Fetch everything in ONE optimized query
+const users = await User.findAll({
+  // Use JOIN to fetch related data
+  include: [{
+    model: Post,
+    // Projection: Select only what we need
+    attributes: ['title', 'content'] 
+  }],
+  // Index-optimized selection
+  attributes: ['id', 'name', 'email'],
+  limit: 100
+});`;
+
+// Simple syntax highlighter for the demo
+const HighlightedCode = ({
+  code,
+  type,
+}: {
+  code: string;
+  type: "bad" | "good";
+}) => {
+  return (
+    <pre className="font-mono text-xs md:text-sm leading-6">
+      {code.split("\n").map((line, i) => (
+        <div key={i} className="table-row">
+          <span className="table-cell select-none text-slate-700 text-right pr-4 w-8">
+            {i + 1}
+          </span>
+          <span className="table-cell">
+            {line.split(" ").map((token, j) => {
+              // Simple coloring logic
+              let color = "text-slate-300";
+              if (token.startsWith("//"))
+                return (
+                  <span
+                    key={j}
+                    className={
+                      type === "bad" ? "text-red-400/70" : "text-emerald-400/70"
+                    }
+                  >
+                    {line}
+                  </span>
+                );
+              if (["const", "await", "for", "if", "return"].includes(token))
+                color = "text-purple-400";
+              if (
+                ["User", "Post", "console"].includes(token.replace(/\./g, ""))
+              )
+                color = "text-yellow-400";
+              if (token.includes("findAll") || token.includes("push"))
+                color = "text-blue-400";
+              if (token.includes("{") || token.includes("}"))
+                color = "text-slate-500";
+
+              return (
+                <span key={j} className={`${color} mr-1.5`}>
+                  {token}
+                </span>
+              );
+            })}
+          </span>
+        </div>
+      ))}
+    </pre>
+  );
+};
+
+export default function CodeComparison() {
+  const [sliderPosition, setSliderPosition] = useState(50);
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging || !containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    const percentage = (x / rect.width) * 100;
+
+    setSliderPosition(percentage);
+  };
+
+  const handleMouseDown = () => setIsDragging(true);
+  const handleMouseUp = () => setIsDragging(false);
+
+  // Global event listeners for smooth dragging outside the container
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener("mouseup", handleMouseUp);
+      window.addEventListener("touchend", handleMouseUp);
+    } else {
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchend", handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchend", handleMouseUp);
+    };
+  }, [isDragging]);
+
+  return (
+    <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      <div className="mb-16">
+        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
+          <span className="text-teal-400">07.</span> Code Optimization
+        </h2>
+        <p className="text-slate-400 max-w-2xl text-lg">
+          I do not just write code; I{" "}
+          <span className="text-teal-400">optimize</span> it. Drag the slider to
+          see how I refactored a legacy N+1 query problem into a scalable
+          solution.
+        </p>
+      </div>
+
+      <div
+        className="relative w-full max-w-4xl mx-auto h-[450px] md:h-[400px] select-none rounded-xl overflow-hidden border border-slate-700 shadow-2xl bg-[#0d1117]"
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        onTouchMove={handleMouseMove}
+      >
+        {/* RIGHT SIDE (OPTIMIZED CODE - Background Layer) */}
+        <div className="absolute inset-0 bg-[#0d1117] p-6 md:p-8">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2 text-emerald-400">
+              <CheckCircle2 size={18} />
+              <span className="font-bold text-sm tracking-wider uppercase">
+                Optimized V2.0
+              </span>
+            </div>
+            <span className="text-xs text-slate-500 font-mono">1 DB Query</span>
+          </div>
+          <HighlightedCode code={optimizedCode} type="good" />
+        </div>
+
+        {/* LEFT SIDE (LEGACY CODE - Foreground Layer) */}
+        <div
+          className="absolute inset-0 bg-[#161b22] overflow-hidden border-r border-teal-400/50"
+          style={{ width: `${sliderPosition}%` }}
+        >
+          <div className="w-full max-w-4xl p-6 md:p-8 whitespace-nowrap">
+            <div className="flex items-center justify-between mb-4 w-[800px]">
+              {" "}
+              {/* Fixed width to prevent wrapping during clip */}
+              <div className="flex items-center gap-2 text-red-400">
+                <AlertTriangle size={18} />
+                <span className="font-bold text-sm tracking-wider uppercase">
+                  Legacy Code
+                </span>
+              </div>
+              <span className="text-xs text-slate-500 font-mono">
+                N+1 Query Problem
+              </span>
+            </div>
+            <HighlightedCode code={legacyCode} type="bad" />
+          </div>
+        </div>
+
+        {/* SLIDER HANDLE */}
+        <div
+          className="absolute top-0 bottom-0 w-1 bg-teal-400 cursor-ew-resize z-10 flex items-center justify-center hover:shadow-[0_0_15px_rgba(45,212,191,0.6)] transition-shadow"
+          style={{ left: `${sliderPosition}%` }}
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleMouseDown}
+        >
+          <div className="w-8 h-8 bg-teal-400 rounded-full flex items-center justify-center shadow-lg transform -translate-x-0.5">
+            <MoveHorizontal size={16} className="text-slate-900" />
+          </div>
+        </div>
+
+        {/* Instruction Overlay (Fades out on interaction) */}
+        <motion.div
+          initial={{ opacity: 1 }}
+          animate={{ opacity: isDragging || sliderPosition !== 50 ? 0 : 1 }}
+          transition={{ duration: 0.5 }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none bg-slate-900/80 backdrop-blur px-4 py-2 rounded-full border border-white/10 text-xs text-white"
+        >
+          Drag slider to compare
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/Contact.tsx">
+"use client";
+
+import { motion } from "framer-motion";
+
+export default function Contact() {
+  return (
+    <section
+      id="contact"
+      className="py-24 px-6 md:px-24 max-w-4xl mx-auto text-center"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <p className="text-teal-400 font-mono mb-4">04. What Next?</p>
+        <h2 className="text-4xl md:text-5xl font-bold text-slate-100 mb-6">
+          Get In Touch
+        </h2>
+        <p className="text-slate-400 text-lg leading-relaxed mb-10">
+          I am currently actively looking for new opportunities as a Backend or
+          Full Stack Engineer. Whether you have a question or just want to say
+          hi, my inbox is always open.
+        </p>
+
+        <a
+          href="mailto:anichandan124@gmail.com"
+          className="inline-block px-8 py-4 border border-teal-400 text-teal-400 font-mono rounded hover:bg-teal-400/10 transition-colors"
+        >
+          Say Hello
+        </a>
+      </motion.div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/Experience.tsx">
+"use client";
+
+import { motion } from "framer-motion";
+import { Briefcase, Calendar } from "lucide-react";
+import SpotlightCard from "./SpotlightCard"; // <--- Import
+
+const experiences = [
+  {
+    company: "Docplix",
+    role: "Software Engineer",
+    period: "Nov 2025 - Present",
+    description:
+      "Returned to lead backend architecture for the V2.0 migration.",
+    achievements: [
+      "Architected and deployed 30+ RESTful API endpoints using Node.js & Sequelize.",
+      "Ensured 99.9% data consistency during critical inventory migration.",
+      "Resolved critical inventory mismatches using a centralized sync service.",
+    ],
+    tech: ["Node.js", "Sequelize", "React"],
+  },
+  {
+    company: "Genpact",
+    role: "Software Engineer",
+    period: "Apr 2024 - Oct 2025",
+    description:
+      "Promoted from Intern. Built serverless pipelines and high-throughput data systems.",
+    achievements: [
+      "Designed serverless data pipelines (Python/GCP), boosting efficiency by 35%.",
+      "Reduced API response times by 40% using Kafka and Redis caching.",
+      "Integrated GPT-3.5 for automated report summarization.",
+    ],
+    tech: ["Python", "GCP", "Kafka", "Redis"],
+  },
+  {
+    company: "Docplix",
+    role: "Software Engineer",
+    period: "Jan 2020 - July 2024",
+    description:
+      "Early core team member focused on optimizing patient record retrieval.",
+    achievements: [
+      "Reduced patient record retrieval latency by 40% via advanced Sequelize indexing.",
+      "Engineered Real-time Analytics Dashboard using React and Sparkline charts.",
+    ],
+    tech: ["React", "PostgreSQL", "Optimization"],
+  },
+];
+
+export default function Experience() {
+  return (
+    <section id="experience" className="py-24 px-6 md:px-12 max-w-6xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-100 mb-16 flex items-center gap-4">
+          <span className="text-teal-400">02.</span> Experience
+        </h2>
+
+        <div className="flex flex-col gap-8">
+          {experiences.map((exp, index) => (
+            // Wrapping each experience in a SpotlightCard
+            <SpotlightCard
+              key={index}
+              className="p-8 md:p-10"
+              spotlightColor="rgba(255, 255, 255, 0.05)"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                <div>
+                  <h3 className="text-xl md:text-2xl font-bold text-slate-100">
+                    {exp.role}{" "}
+                    <span className="text-teal-400">@ {exp.company}</span>
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2 text-slate-400 font-mono text-sm bg-slate-800/50 px-3 py-1 rounded-full w-fit">
+                  <Calendar size={14} />
+                  {exp.period}
+                </div>
+              </div>
+
+              <p className="text-slate-300 mb-6 text-lg">{exp.description}</p>
+
+              <ul className="space-y-3 mb-8">
+                {exp.achievements.map((item, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-3 text-slate-400 text-sm md:text-base"
+                  >
+                    <span className="text-teal-400 mt-1.5 text-xs">▹</span>
+                    <span className="leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex flex-wrap gap-3">
+                {exp.tech.map((tech, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1 bg-slate-800 text-slate-300 text-xs rounded-full font-mono border border-slate-700 hover:text-teal-400 hover:border-teal-400/50 transition-colors cursor-default"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </SpotlightCard>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/Impact.tsx">
+"use client";
+
+import { motion } from "framer-motion";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+} from "recharts";
+import { Zap, TrendingUp, CheckCircle } from "lucide-react";
+
+// DATA: Latency Reduction (Before vs After)
+const latencyData = [
+  { name: "Legacy API", ms: 480 },
+  { name: "Optimized V2", ms: 288 },
+];
+
+// DATA: Efficiency Boost over time
+const efficiencyData = [
+  { month: "Jan", efficiency: 60 },
+  { month: "Feb", efficiency: 65 },
+  { month: "Mar", efficiency: 75 },
+  { month: "Apr", efficiency: 82 },
+  { month: "May", efficiency: 90 },
+  { month: "Jun", efficiency: 95 },
+];
+
+// 1. Define the specific shape of the payload item
+// This satisfies the "no-explicit-any" rule by being specific.
+interface PayloadItem {
+  value: number | string;
+  [key: string]: unknown; // Allows other properties safely
+}
+
+// 2. Use that shape in the props interface
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: PayloadItem[];
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-slate-900 border border-slate-700 p-3 rounded shadow-xl">
+        <p className="text-slate-200 font-mono text-sm">{`${label} : ${payload[0].value}`}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+export default function Impact() {
+  return (
+    <section id="impact" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
+            <span className="text-teal-400">05.</span> Measuring Impact
+          </h2>
+          <p className="text-slate-400 max-w-2xl text-lg">
+            Engineering iis not just about code; it is about{" "}
+            <span className="text-teal-400">results</span>. Here is the
+            quantifiable impact of my backend optimizations at Docplix and
+            Genpact.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* CARD 1: LATENCY REDUCTION */}
+          <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8 hover:border-teal-400/30 transition-colors">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-teal-400/10 rounded-lg text-teal-400">
+                <Zap size={24} />
+              </div>
+              <h3 className="text-xl font-bold text-slate-100">
+                Latency Reduction
+              </h3>
+            </div>
+
+            <div className="h-[200px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={latencyData}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#334155"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="name"
+                    stroke="#94a3b8"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="#94a3b8"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    unit="ms"
+                  />
+                  <Tooltip
+                    content={<CustomTooltip />}
+                    cursor={{ fill: "#334155", opacity: 0.2 }}
+                  />
+                  <Bar
+                    dataKey="ms"
+                    fill="#2dd4bf"
+                    radius={[4, 4, 0, 0]}
+                    barSize={40}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <p className="mt-6 text-slate-400 text-sm">
+              Reduced patient record retrieval latency by{" "}
+              <span className="text-teal-400 font-bold">40%</span> via advanced
+              Sequelize indexing.
+            </p>
+          </div>
+
+          {/* CARD 2: EFFICIENCY BOOST */}
+          <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8 hover:border-teal-400/30 transition-colors">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-purple-500/10 rounded-lg text-purple-400">
+                <TrendingUp size={24} />
+              </div>
+              <h3 className="text-xl font-bold text-slate-100">
+                Pipeline Efficiency
+              </h3>
+            </div>
+
+            <div className="h-[200px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={efficiencyData}>
+                  <defs>
+                    <linearGradient id="colorEff" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#c084fc" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#c084fc" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#334155"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="month"
+                    stroke="#94a3b8"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="#94a3b8"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    hide
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area
+                    type="monotone"
+                    dataKey="efficiency"
+                    stroke="#c084fc"
+                    fillOpacity={1}
+                    fill="url(#colorEff)"
+                    strokeWidth={3}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            <p className="mt-6 text-slate-400 text-sm">
+              Boosted tax software processing efficiency by{" "}
+              <span className="text-purple-400 font-bold">35%</span> using
+              Serverless Python pipelines.
+            </p>
+          </div>
+
+          {/* CARD 3: RELIABILITY METRIC */}
+          <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8 hover:border-teal-400/30 transition-colors flex flex-col justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-blue-500/10 rounded-lg text-blue-400">
+                <CheckCircle size={24} />
+              </div>
+              <h3 className="text-xl font-bold text-slate-100">
+                Data Consistency
+              </h3>
+            </div>
+
+            <div className="flex flex-col items-center justify-center h-[200px]">
+              <div className="relative">
+                {/* Decorative Ring */}
+                <svg className="w-40 h-40 transform -rotate-90">
+                  <circle
+                    className="text-slate-800"
+                    strokeWidth="12"
+                    stroke="currentColor"
+                    fill="transparent"
+                    r="70"
+                    cx="80"
+                    cy="80"
+                  />
+                  <circle
+                    className="text-blue-500"
+                    strokeWidth="12"
+                    strokeDasharray={440}
+                    strokeDashoffset={440 - (440 * 99.9) / 100}
+                    strokeLinecap="round"
+                    stroke="currentColor"
+                    fill="transparent"
+                    r="70"
+                    cx="80"
+                    cy="80"
+                  />
+                </svg>
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
+                  <span className="text-4xl font-bold text-white">99.9%</span>
+                  <span className="text-xs text-slate-400 uppercase tracking-wider mt-1">
+                    Uptime
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <p className="mt-6 text-slate-400 text-sm">
+              Maintained{" "}
+              <span className="text-blue-400 font-bold">
+                99.9% data consistency
+              </span>{" "}
+              during critical inventory system migration.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/Navbar.tsx">
+"use client";
+
+import { motion } from "framer-motion";
+import { Home, User, Briefcase, Mail } from "lucide-react";
+import Link from "next/link";
+
+const navItems = [
+  { name: "Home", href: "#", icon: Home },
+  { name: "Experience", href: "#experience", icon: User },
+  { name: "Work", href: "#projects", icon: Briefcase },
+  { name: "Contact", href: "#contact", icon: Mail },
+];
+
+export default function Navbar() {
+  return (
+    <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+      <motion.div
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="flex items-center gap-1 p-2 rounded-full border border-white/10 bg-slate-950/50 backdrop-blur-md shadow-2xl"
+      >
+        {navItems.map((item) => (
+          <Link
+            key={item.name}
+            href={item.href}
+            className="relative px-4 py-2 text-sm font-mono text-slate-400 hover:text-teal-400 transition-colors rounded-full hover:bg-white/5 flex items-center gap-2 group"
+          >
+            {/* Icon (Visible on all screens) */}
+            <item.icon size={16} />
+
+            {/* Text (Hidden on small mobile screens to save space) */}
+            <span className="hidden sm:block">{item.name}</span>
+
+            {/* Subtle glow effect on hover */}
+            <span className="absolute inset-0 rounded-full bg-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/Projects.tsx">
+"use client";
+
+import { Github, ExternalLink, Folder } from "lucide-react";
+import SpotlightCard from "./SpotlightCard"; // <--- Import the new component
+
+interface Project {
+  title: string;
+  description: string;
+  tech: string[];
+  github: string;
+  link: string;
+}
+
+const projects: Project[] = [
+  {
+    title: "Real-Time Chat Application",
+    description:
+      "A scalable full-stack chat platform engineered for high concurrency. Features real-time bi-directional communication, secure JWT authentication, and persistent message storage.",
+    tech: ["Node.js", "Socket.io", "React", "MongoDB", "JWT"],
+    github: "https://github.com/anichandan124",
+    link: "#",
+  },
+  {
+    title: "Movie Recommendation API",
+    description:
+      "A machine-learning powered RESTful API. Implements Content-Based Filtering using Cosine Similarity to provide personalized movie suggestions based on metadata.",
+    tech: ["Python", "Flask", "Scikit-learn", "MongoDB", "API Gateway"],
+    github: "https://github.com/anichandan124",
+    link: "#",
+  },
+  {
+    title: "Inventory Sync Engine",
+    description:
+      "Built for Docplix. A background worker service that synchronizes legacy SQL data with modern NoSQL cloud storage, handling 10k+ records per minute with conflict resolution.",
+    tech: ["Typescript", "PostgreSQL", "BullMQ", "Redis"],
+    github: "https://github.com/anichandan124",
+    link: "#",
+  },
+];
+
+export default function Projects() {
+  return (
+    <section id="projects" className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
+      <div className="mb-16">
+        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
+          <span className="text-teal-400">03.</span> Featured Projects
+        </h2>
+        <p className="text-slate-400 max-w-2xl text-lg">
+          A selection of systems I have architected, focusing on{" "}
+          <span className="text-teal-400">scalability</span> and{" "}
+          <span className="text-teal-400">performance</span>.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {projects.map((project, index) => (
+          // Using SpotlightCard instead of standard div
+          <SpotlightCard key={index} className="p-8 h-full flex flex-col group">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-6">
+              <div className="p-3 bg-slate-800/50 rounded-lg text-teal-400 group-hover:text-white transition-colors">
+                <Folder size={24} />
+              </div>
+              <div className="flex gap-4 text-slate-400 z-20">
+                <a
+                  href={project.github}
+                  target="_blank"
+                  className="hover:text-teal-400 transition-colors transform hover:-translate-y-1 duration-300"
+                >
+                  <Github size={20} />
+                </a>
+                <a
+                  href={project.link}
+                  className="hover:text-teal-400 transition-colors transform hover:-translate-y-1 duration-300"
+                >
+                  <ExternalLink size={20} />
+                </a>
+              </div>
+            </div>
+
+            {/* Title */}
+            <h3 className="text-xl font-bold text-slate-100 mb-3 group-hover:text-teal-400 transition-colors">
+              {project.title}
+            </h3>
+
+            {/* Description */}
+            <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-grow">
+              {project.description}
+            </p>
+
+            {/* Tech Stack */}
+            <div className="flex flex-wrap gap-2 mt-auto">
+              {project.tech.map((t, i) => (
+                <span
+                  key={i}
+                  className="text-xs font-mono text-teal-400/80 bg-teal-400/5 px-2 py-1 rounded border border-teal-400/10"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </SpotlightCard>
+        ))}
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/ServerMonitor.tsx">
+"use client";
+
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Activity, Server, Zap, Database } from "lucide-react";
+
+export default function ServerMonitor() {
+  // Simulated State for "Live" Metrics
+  const [latency, setLatency] = useState(24);
+  const [requests, setRequests] = useState(1240);
+  const [dbLoad, setDbLoad] = useState(42);
+
+  // Update metrics every 2 seconds to simulate activity
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLatency((prev) =>
+        Math.max(10, Math.min(60, prev + (Math.random() * 10 - 5))),
+      );
+      setRequests((prev) =>
+        Math.max(1000, Math.min(5000, prev + (Math.random() * 200 - 100))),
+      );
+      setDbLoad((prev) =>
+        Math.max(20, Math.min(80, prev + (Math.random() * 10 - 5))),
+      );
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5 }}
+      className="mt-12 p-1 rounded-xl bg-gradient-to-r from-teal-400/20 to-purple-500/20"
+    >
+      <div className="bg-slate-950/90 backdrop-blur-sm rounded-lg p-6 border border-slate-800 grid grid-cols-2 md:grid-cols-4 gap-8">
+        {/* Metric 1: System Status */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-slate-400 text-xs font-mono uppercase">
+            <Activity size={14} className="text-teal-400" />
+            System Status
+          </div>
+          <div className="text-teal-400 font-bold font-mono text-xl flex items-center gap-2">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
+            </span>
+            Operational
+          </div>
+        </div>
+
+        {/* Metric 2: API Latency */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-slate-400 text-xs font-mono uppercase">
+            <Zap size={14} className="text-yellow-400" />
+            Avg. Latency
+          </div>
+          <div className="text-slate-200 font-bold font-mono text-xl">
+            {latency.toFixed(0)}ms
+          </div>
+        </div>
+
+        {/* Metric 3: Throughput */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-slate-400 text-xs font-mono uppercase">
+            <Server size={14} className="text-purple-400" />
+            Req/Sec
+          </div>
+          <div className="text-slate-200 font-bold font-mono text-xl">
+            {requests.toFixed(0)}
+          </div>
+        </div>
+
+        {/* Metric 4: DB Load */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-slate-400 text-xs font-mono uppercase">
+            <Database size={14} className="text-blue-400" />
+            DB Load
+          </div>
+          <div className="w-full bg-slate-800 rounded-full h-2.5 mt-2">
+            <motion.div
+              className="bg-blue-400 h-2.5 rounded-full"
+              style={{ width: `${dbLoad}%` }}
+              animate={{ width: `${dbLoad}%` }}
+            />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+</file>
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="eslint.config.mjs">
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+</file>
+
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+  reactCompiler: true,
+};
+
+export default nextConfig;
+</file>
+
+<file path="README.md">
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</file>
+
+<file path="tailwind.config.ts">
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+  theme: {
+    extend: {
+      colors: {
+        slate: {
+          950: "#020617",
+        },
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+</file>
+
+<file path="src/app/globals.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 226, 232, 240;
+  --background-start-rgb: 2, 6, 23; /* Slate 950 */
+  --background-end-rgb: 2, 6, 23;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+  font-family: sans-serif;
+  overflow-x: hidden;
+}
+
+/* --- 1. FILM GRAIN TEXTURE --- */
+/* This adds a subtle static noise that makes the dark mode feel "expensive" */
+.bg-noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* --- 2. CUSTOM TEXT SELECTION --- */
+/* When users highlight text, it should match your brand (Teal) */
+::selection {
+  background: rgba(45, 212, 191, 0.3); /* Teal-400 with opacity */
+  color: #2dd4bf;
+}
+
+/* --- 3. SLEEK SCROLLBAR --- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+  border: 2px solid #020617; /* Creates padding effect */
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* --- 4. UTILITIES --- */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Hide scrollbar for Chrome/Safari/Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+</file>
+
+<file path="src/app/layout.tsx">
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import BackgroundGrid from "@/components/BackgroundGrid";
+import Navbar from "@/components/Navbar";
+
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "Anirudh Chandan | Software Engineer",
+  description:
+    "Portfolio of Anirudh Chandan, a Software Engineer specializing in scalable backend systems.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" className="scroll-smooth">
+      {/* ADDED 'bg-noise' class here in a separate div to overlay everything */}
+      <body
+        className={`${inter.className} relative bg-slate-950 text-slate-200 antialiased`}
+      >
+        {/* The Noise Overlay */}
+        <div className="bg-noise" />
+
+        <Navbar />
+        <BackgroundGrid />
+
+        {children}
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="postcss.config.mjs">
+/** @type {import('postcss-load-config').Config} */
+const config = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+
+export default config;
+</file>
+
+<file path="package.json">
+{
+  "name": "portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "framer-motion": "^12.33.0",
+    "lucide-react": "^0.563.0",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "reactflow": "^11.11.4",
+    "recharts": "^3.7.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.24",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
+</file>
+
+<file path="src/app/page.tsx">
+"use client";
+
+import { motion } from "framer-motion";
+import { Github, Linkedin, Mail, FileText, ChevronDown } from "lucide-react";
+
+// Import all custom components
+import Experience from "@/components/Experience";
+import Projects from "@/components/Projects";
+import Contact from "@/components/Contact";
+import ServerMonitor from "@/components/ServerMonitor";
+import Architecture from "@/components/Architecture";
+import Impact from "@/components/Impact";
+import ApiPlayground from "@/components/ApiPlayground";
+import CodeComparison from "@/components/CodeComparison"; // <--- 1. Import CodeComparison
+import AiChatbot from "@/components/AiChatbot";
+import ShardingDemo from "@/components/ShardingDemo"; // <--- 2. Import ShardingDemo
+
+export default function Home() {
+  return (
+    <main className="min-h-screen selection:bg-teal-500 selection:text-white">
+      {/* HERO SECTION */}
+      <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto relative pt-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <span className="text-teal-400 font-mono text-lg mb-4 block">
+            Hi, my name is
+          </span>
+          <h1 className="text-5xl md:text-7xl font-bold text-slate-100 mb-4 tracking-tight">
+            Anirudh Chandan.
+          </h1>
+          <h2 className="text-4xl md:text-6xl font-bold text-slate-400 mb-6">
+            I build scalable backend systems.
+          </h2>
+          <p className="max-w-xl text-slate-400 text-lg leading-relaxed mb-8">
+            I am a Software Engineer based in India, specializing in
+            high-performance APIs and distributed architectures. From
+            architecting 30+ endpoints at{" "}
+            <span className="text-teal-400">Docplix</span> to optimizing
+            pipelines at <span className="text-teal-400">Genpact</span>.
+          </p>
+
+          <div className="flex gap-4 mb-12">
+            <a
+              href="#projects"
+              className="px-6 py-3 border border-teal-400 text-teal-400 rounded hover:bg-teal-400/10 transition-colors font-mono"
+            >
+              Check out my work
+            </a>
+            <a
+              href="/ANIRUDH_CHANDAN_RESUME_2026.pdf"
+              target="_blank"
+              className="px-6 py-3 bg-slate-800 text-slate-200 rounded hover:bg-slate-700 transition-colors font-mono flex items-center gap-2"
+            >
+              <FileText size={18} /> Resume
+            </a>
+          </div>
+
+          <div className="flex items-center gap-6 text-slate-400 mb-12">
+            <a
+              href="https://github.com/anichandan124"
+              target="_blank"
+              className="hover:text-teal-400 transition-colors hover:-translate-y-1 transform duration-300"
+            >
+              <Github size={24} />
+            </a>
+            <a
+              href="https://linkedin.com/in/your-profile"
+              target="_blank"
+              className="hover:text-teal-400 transition-colors hover:-translate-y-1 transform duration-300"
+            >
+              <Linkedin size={24} />
+            </a>
+            <a
+              href="mailto:anichandan124@gmail.com"
+              className="hover:text-teal-400 transition-colors hover:-translate-y-1 transform duration-300"
+            >
+              <Mail size={24} />
+            </a>
+          </div>
+
+          <ServerMonitor />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-slate-500"
+        >
+          <ChevronDown size={30} />
+        </motion.div>
+      </section>
+
+      {/* 02. Experience */}
+      <Experience />
+
+      {/* 03. Projects */}
+      <Projects />
+
+      {/* 04. Architecture */}
+      <Architecture />
+
+      {/* 05. Impact */}
+      <Impact />
+
+      {/* 06. API Playground */}
+      <ApiPlayground />
+
+      {/* 07. Code Optimization (New!) */}
+      <CodeComparison />
+
+      <ShardingDemo />
+
+      {/* 08. Contact */}
+      <Contact />
+
+      <footer className="py-6 text-center text-slate-500 text-sm font-mono bg-transparent">
+        <a
+          href="https://github.com/anichandan124"
+          target="_blank"
+          className="hover:text-teal-400 transition-colors"
+        >
+          Designed & Built by Anirudh Chandan
+        </a>
+      </footer>
+
+      <AiChatbot />
+    </main>
+  );
+}
+</file>
+
+</files>

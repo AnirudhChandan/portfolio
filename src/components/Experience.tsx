@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Briefcase, Calendar } from "lucide-react";
+import SpotlightCard from "./SpotlightCard"; // <--- Import
 
 const experiences = [
   {
@@ -57,48 +58,52 @@ export default function Experience() {
           <span className="text-teal-400">02.</span> Experience
         </h2>
 
-        <div className="relative border-l border-slate-800 ml-3 md:ml-6 space-y-16">
+        <div className="flex flex-col gap-8">
           {experiences.map((exp, index) => (
-            <div key={index} className="relative pl-8 md:pl-12">
-              {/* Timeline Dot - Using explicit positioning to fix alignment */}
-              <div className="absolute -left-[5px] top-2 w-3 h-3 bg-teal-400 rounded-full shadow-[0_0_10px_rgba(45,212,191,0.6)] z-10" />
-
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-                <h3 className="text-xl md:text-2xl font-bold text-slate-100">
-                  {exp.role}{" "}
-                  <span className="text-teal-400">@ {exp.company}</span>
-                </h3>
-                <div className="flex items-center gap-2 text-slate-400 font-mono text-sm mt-1 sm:mt-0">
+            // Wrapping each experience in a SpotlightCard
+            <SpotlightCard
+              key={index}
+              className="p-8 md:p-10"
+              spotlightColor="rgba(255, 255, 255, 0.05)"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                <div>
+                  <h3 className="text-xl md:text-2xl font-bold text-slate-100">
+                    {exp.role}{" "}
+                    <span className="text-teal-400">@ {exp.company}</span>
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2 text-slate-400 font-mono text-sm bg-slate-800/50 px-3 py-1 rounded-full w-fit">
                   <Calendar size={14} />
                   {exp.period}
                 </div>
               </div>
 
-              <p className="text-slate-400 mb-6 max-w-2xl text-lg">
-                {exp.description}
-              </p>
+              <p className="text-slate-300 mb-6 text-lg">{exp.description}</p>
 
-              <ul className="space-y-3 mb-6">
+              <ul className="space-y-3 mb-8">
                 {exp.achievements.map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-slate-300">
+                  <li
+                    key={i}
+                    className="flex items-start gap-3 text-slate-400 text-sm md:text-base"
+                  >
                     <span className="text-teal-400 mt-1.5 text-xs">▹</span>
                     <span className="leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
 
-              {/* Added flex-wrap and gap to prevent smashing */}
               <div className="flex flex-wrap gap-3">
                 {exp.tech.map((tech, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1 bg-teal-400/10 text-teal-300 text-xs rounded-full font-mono border border-teal-400/20"
+                    className="px-3 py-1 bg-slate-800 text-slate-300 text-xs rounded-full font-mono border border-slate-700 hover:text-teal-400 hover:border-teal-400/50 transition-colors cursor-default"
                   >
                     {tech}
                   </span>
                 ))}
               </div>
-            </div>
+            </SpotlightCard>
           ))}
         </div>
       </motion.div>
