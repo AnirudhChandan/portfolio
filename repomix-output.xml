@@ -44,6 +44,7 @@ public/
   file.svg
   globe.svg
   next.svg
+  profile.jpeg
   vercel.svg
   window.svg
 src/
@@ -78,309 +79,6 @@ tsconfig.json
 
 <files>
 This section contains the contents of the repository's files.
-
-<file path="src/components/ShardingDemo.tsx">
-"use client";
-
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Database,
-  Server,
-  RefreshCw,
-  AlertTriangle,
-  CheckCircle2,
-} from "lucide-react";
-
-// --- TYPES ---
-type ShardStrategy = "range" | "hash";
-type DataPacket = { id: number; value: number; shardIndex: number };
-
-export default function ShardingDemo() {
-  const [strategy, setStrategy] = useState<ShardStrategy>("range");
-  const [data, setData] = useState<DataPacket[]>([]);
-  const [isSimulating, setIsSimulating] = useState(false);
-
-  // --- LOGIC: Sharding Algorithms ---
-
-  // 1. Range Sharding: Simple logic based on value ranges
-  // Node 0: 0-33, Node 1: 34-66, Node 2: 67-100
-  const getRangeShard = (val: number) => {
-    if (val < 34) return 0;
-    if (val < 67) return 1;
-    return 2;
-  };
-
-  // 2. Hash Sharding: Modulo arithmetic
-  // (Value % 3) determines the node
-  const getHashShard = (val: number) => val % 3;
-
-  // --- SIMULATION ---
-  const simulateTraffic = () => {
-    setIsSimulating(true);
-    setData([]); // Clear previous
-
-    let count = 0;
-    const interval = setInterval(() => {
-      if (count >= 20) {
-        // Limit to 20 items for visual clarity
-        clearInterval(interval);
-        setIsSimulating(false);
-        return;
-      }
-
-      // Generate a random user ID (0-100)
-      // We purposefully skew the random number generation to create "Hot Spots" in Range mode
-      // This simulates real-world "trending" data (e.g. everyone accessing recent IDs)
-      const randomVal = Math.floor(Math.random() * 40); // Skewed towards lower numbers!
-
-      const shardIndex =
-        strategy === "range"
-          ? getRangeShard(randomVal)
-          : getHashShard(randomVal); // Hash handles skewed data better!
-
-      setData((prev) => [
-        ...prev,
-        { id: Date.now(), value: randomVal, shardIndex },
-      ]);
-      count++;
-    }, 150);
-  };
-
-  // Calculate Load Distribution
-  const nodes = [0, 1, 2];
-  const distribution = nodes.map(
-    (nodeIdx) => data.filter((d) => d.shardIndex === nodeIdx).length,
-  );
-  const maxLoad = Math.max(...distribution);
-  const isUnbalanced = maxLoad > 12; // Threshold for "Hot Shard" warning
-
-  return (
-    <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
-      <div className="mb-12">
-        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
-          <span className="text-teal-400">08.</span> Distributed Systems
-        </h2>
-        <p className="text-slate-400 max-w-2xl text-lg">
-          Scaling is not just about adding servers; it is about{" "}
-          <span className="text-teal-400">Data Distribution</span>. Use this
-          simulator to see why I prefer <strong>Hash Sharding</strong> over
-          Range Sharding for high-write workloads.
-        </p>
-      </div>
-
-      <div className="bg-[#0d1117] border border-slate-800 rounded-xl p-6 md:p-8 shadow-2xl">
-        {/* CONTROLS */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 bg-slate-900/50 p-4 rounded-lg border border-slate-800">
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col">
-              <span className="text-xs text-slate-500 font-mono uppercase tracking-wider mb-2">
-                Sharding Strategy
-              </span>
-              <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
-                <button
-                  onClick={() => {
-                    setStrategy("range");
-                    setData([]);
-                  }}
-                  className={`px-4 py-2 rounded-md text-sm font-mono transition-all ${
-                    strategy === "range"
-                      ? "bg-teal-500 text-slate-900 font-bold"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Range Based
-                </button>
-                <button
-                  onClick={() => {
-                    setStrategy("hash");
-                    setData([]);
-                  }}
-                  className={`px-4 py-2 rounded-md text-sm font-mono transition-all ${
-                    strategy === "hash"
-                      ? "bg-purple-500 text-white font-bold"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Hash Based
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {isUnbalanced && strategy === "range" && (
-              <div className="flex items-center gap-2 text-amber-400 bg-amber-400/10 px-3 py-2 rounded border border-amber-400/20">
-                <AlertTriangle size={16} />
-                <span className="text-xs font-bold uppercase">
-                  Hot Shard Detected
-                </span>
-              </div>
-            )}
-            {strategy === "hash" && data.length > 0 && !isUnbalanced && (
-              <div className="flex items-center gap-2 text-emerald-400 bg-emerald-400/10 px-3 py-2 rounded border border-emerald-400/20">
-                <CheckCircle2 size={16} />
-                <span className="text-xs font-bold uppercase">
-                  Load Balanced
-                </span>
-              </div>
-            )}
-
-            <button
-              onClick={simulateTraffic}
-              disabled={isSimulating}
-              className="flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-white text-slate-900 font-bold rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <RefreshCw
-                size={18}
-                className={isSimulating ? "animate-spin" : ""}
-              />
-              {isSimulating ? "Injecting Data..." : "Simulate Traffic"}
-            </button>
-          </div>
-        </div>
-
-        {/* VISUALIZATION NODES */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {nodes.map((nodeIdx) => {
-            const load = distribution[nodeIdx];
-            const isHot = load > 12; // Visual threshold
-
-            return (
-              <div
-                key={nodeIdx}
-                className={`relative min-h-[300px] bg-slate-900 border-2 rounded-xl p-4 transition-colors duration-500 flex flex-col ${
-                  isHot
-                    ? "border-amber-500/50 bg-amber-500/5"
-                    : "border-slate-700"
-                }`}
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-800">
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <Database size={20} />
-                    <span className="font-mono font-bold">
-                      Shard_0{nodeIdx + 1}
-                    </span>
-                  </div>
-                  <span
-                    className={`text-xs font-mono px-2 py-1 rounded ${
-                      isHot
-                        ? "bg-amber-500 text-slate-900 font-bold"
-                        : "bg-slate-800 text-slate-400"
-                    }`}
-                  >
-                    {load} Records
-                  </span>
-                </div>
-
-                {/* Data Container */}
-                <div className="flex-1 flex flex-wrap content-start gap-2 overflow-hidden">
-                  <AnimatePresence>
-                    {data
-                      .filter((d) => d.shardIndex === nodeIdx)
-                      .map((packet) => (
-                        <motion.div
-                          key={packet.id}
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          exit={{ scale: 0, opacity: 0 }}
-                          className={`w-2 h-2 rounded-full ${
-                            strategy === "range"
-                              ? "bg-teal-400"
-                              : "bg-purple-400"
-                          }`}
-                        />
-                      ))}
-                  </AnimatePresence>
-                </div>
-
-                {/* Server Icon Bottom */}
-                <div className="mt-4 pt-4 border-t border-slate-800 flex justify-center opacity-20">
-                  <Server size={48} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="mt-8 text-center">
-          <p className="text-slate-500 text-sm font-mono">
-            {strategy === "range"
-              ? "⚠️ Range Sharding creates hotspots when data is sequential or skewed."
-              : "✅ Hash Sharding distributes skewed data evenly using (ID % Nodes)."}
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-</file>
-
-<file path="src/components/SpotlightCard.tsx">
-"use client";
-
-import { useRef, useState, ReactNode } from "react";
-import { motion } from "framer-motion";
-
-interface SpotlightCardProps {
-  children: ReactNode;
-  className?: string;
-  spotlightColor?: string;
-}
-
-export default function SpotlightCard({
-  children,
-  className = "",
-  spotlightColor = "rgba(45, 212, 191, 0.15)", // Default Teal glow
-}: SpotlightCardProps) {
-  const divRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [opacity, setOpacity] = useState(0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!divRef.current) return;
-
-    const div = divRef.current;
-    const rect = div.getBoundingClientRect();
-
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
-
-  const handleMouseEnter = () => {
-    setOpacity(1);
-  };
-
-  const handleMouseLeave = () => {
-    setOpacity(0);
-  };
-
-  return (
-    <div
-      ref={divRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className={`relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/50 ${className}`}
-    >
-      {/* The Spotlight Effect: 
-        A radial gradient that follows the mouse cursor.
-        It sits *behind* the content but *above* the background.
-      */}
-      <div
-        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
-        style={{
-          opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 40%)`,
-        }}
-      />
-
-      {/* Content Container */}
-      <div className="relative h-full">{children}</div>
-    </div>
-  );
-}
-</file>
 
 <file path="public/file.svg">
 <svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
@@ -1482,121 +1180,6 @@ export default function Contact() {
 }
 </file>
 
-<file path="src/components/Experience.tsx">
-"use client";
-
-import { motion } from "framer-motion";
-import { Briefcase, Calendar } from "lucide-react";
-import SpotlightCard from "./SpotlightCard"; // <--- Import
-
-const experiences = [
-  {
-    company: "Docplix",
-    role: "Software Engineer",
-    period: "Nov 2025 - Present",
-    description:
-      "Returned to lead backend architecture for the V2.0 migration.",
-    achievements: [
-      "Architected and deployed 30+ RESTful API endpoints using Node.js & Sequelize.",
-      "Ensured 99.9% data consistency during critical inventory migration.",
-      "Resolved critical inventory mismatches using a centralized sync service.",
-    ],
-    tech: ["Node.js", "Sequelize", "React"],
-  },
-  {
-    company: "Genpact",
-    role: "Software Engineer",
-    period: "Apr 2024 - Oct 2025",
-    description:
-      "Promoted from Intern. Built serverless pipelines and high-throughput data systems.",
-    achievements: [
-      "Designed serverless data pipelines (Python/GCP), boosting efficiency by 35%.",
-      "Reduced API response times by 40% using Kafka and Redis caching.",
-      "Integrated GPT-3.5 for automated report summarization.",
-    ],
-    tech: ["Python", "GCP", "Kafka", "Redis"],
-  },
-  {
-    company: "Docplix",
-    role: "Software Engineer",
-    period: "Jan 2020 - July 2024",
-    description:
-      "Early core team member focused on optimizing patient record retrieval.",
-    achievements: [
-      "Reduced patient record retrieval latency by 40% via advanced Sequelize indexing.",
-      "Engineered Real-time Analytics Dashboard using React and Sparkline charts.",
-    ],
-    tech: ["React", "PostgreSQL", "Optimization"],
-  },
-];
-
-export default function Experience() {
-  return (
-    <section id="experience" className="py-24 px-6 md:px-12 max-w-6xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <h2 className="text-3xl md:text-4xl font-bold text-slate-100 mb-16 flex items-center gap-4">
-          <span className="text-teal-400">02.</span> Experience
-        </h2>
-
-        <div className="flex flex-col gap-8">
-          {experiences.map((exp, index) => (
-            // Wrapping each experience in a SpotlightCard
-            <SpotlightCard
-              key={index}
-              className="p-8 md:p-10"
-              spotlightColor="rgba(255, 255, 255, 0.05)"
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-                <div>
-                  <h3 className="text-xl md:text-2xl font-bold text-slate-100">
-                    {exp.role}{" "}
-                    <span className="text-teal-400">@ {exp.company}</span>
-                  </h3>
-                </div>
-                <div className="flex items-center gap-2 text-slate-400 font-mono text-sm bg-slate-800/50 px-3 py-1 rounded-full w-fit">
-                  <Calendar size={14} />
-                  {exp.period}
-                </div>
-              </div>
-
-              <p className="text-slate-300 mb-6 text-lg">{exp.description}</p>
-
-              <ul className="space-y-3 mb-8">
-                {exp.achievements.map((item, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-3 text-slate-400 text-sm md:text-base"
-                  >
-                    <span className="text-teal-400 mt-1.5 text-xs">▹</span>
-                    <span className="leading-relaxed">{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="flex flex-wrap gap-3">
-                {exp.tech.map((tech, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1 bg-slate-800 text-slate-300 text-xs rounded-full font-mono border border-slate-700 hover:text-teal-400 hover:border-teal-400/50 transition-colors cursor-default"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </SpotlightCard>
-          ))}
-        </div>
-      </motion.div>
-    </section>
-  );
-}
-</file>
-
 <file path="src/components/Impact.tsx">
 "use client";
 
@@ -1896,116 +1479,6 @@ export default function Navbar() {
 }
 </file>
 
-<file path="src/components/Projects.tsx">
-"use client";
-
-import { Github, ExternalLink, Folder } from "lucide-react";
-import SpotlightCard from "./SpotlightCard"; // <--- Import the new component
-
-interface Project {
-  title: string;
-  description: string;
-  tech: string[];
-  github: string;
-  link: string;
-}
-
-const projects: Project[] = [
-  {
-    title: "Real-Time Chat Application",
-    description:
-      "A scalable full-stack chat platform engineered for high concurrency. Features real-time bi-directional communication, secure JWT authentication, and persistent message storage.",
-    tech: ["Node.js", "Socket.io", "React", "MongoDB", "JWT"],
-    github: "https://github.com/anichandan124",
-    link: "#",
-  },
-  {
-    title: "Movie Recommendation API",
-    description:
-      "A machine-learning powered RESTful API. Implements Content-Based Filtering using Cosine Similarity to provide personalized movie suggestions based on metadata.",
-    tech: ["Python", "Flask", "Scikit-learn", "MongoDB", "API Gateway"],
-    github: "https://github.com/anichandan124",
-    link: "#",
-  },
-  {
-    title: "Inventory Sync Engine",
-    description:
-      "Built for Docplix. A background worker service that synchronizes legacy SQL data with modern NoSQL cloud storage, handling 10k+ records per minute with conflict resolution.",
-    tech: ["Typescript", "PostgreSQL", "BullMQ", "Redis"],
-    github: "https://github.com/anichandan124",
-    link: "#",
-  },
-];
-
-export default function Projects() {
-  return (
-    <section id="projects" className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
-      <div className="mb-16">
-        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
-          <span className="text-teal-400">03.</span> Featured Projects
-        </h2>
-        <p className="text-slate-400 max-w-2xl text-lg">
-          A selection of systems I have architected, focusing on{" "}
-          <span className="text-teal-400">scalability</span> and{" "}
-          <span className="text-teal-400">performance</span>.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project, index) => (
-          // Using SpotlightCard instead of standard div
-          <SpotlightCard key={index} className="p-8 h-full flex flex-col group">
-            {/* Header */}
-            <div className="flex justify-between items-start mb-6">
-              <div className="p-3 bg-slate-800/50 rounded-lg text-teal-400 group-hover:text-white transition-colors">
-                <Folder size={24} />
-              </div>
-              <div className="flex gap-4 text-slate-400 z-20">
-                <a
-                  href={project.github}
-                  target="_blank"
-                  className="hover:text-teal-400 transition-colors transform hover:-translate-y-1 duration-300"
-                >
-                  <Github size={20} />
-                </a>
-                <a
-                  href={project.link}
-                  className="hover:text-teal-400 transition-colors transform hover:-translate-y-1 duration-300"
-                >
-                  <ExternalLink size={20} />
-                </a>
-              </div>
-            </div>
-
-            {/* Title */}
-            <h3 className="text-xl font-bold text-slate-100 mb-3 group-hover:text-teal-400 transition-colors">
-              {project.title}
-            </h3>
-
-            {/* Description */}
-            <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-grow">
-              {project.description}
-            </p>
-
-            {/* Tech Stack */}
-            <div className="flex flex-wrap gap-2 mt-auto">
-              {project.tech.map((t, i) => (
-                <span
-                  key={i}
-                  className="text-xs font-mono text-teal-400/80 bg-teal-400/5 px-2 py-1 rounded border border-teal-400/10"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          </SpotlightCard>
-        ))}
-      </div>
-    </section>
-  );
-}
-</file>
-
 <file path="src/components/ServerMonitor.tsx">
 "use client";
 
@@ -2096,6 +1569,309 @@ export default function ServerMonitor() {
         </div>
       </div>
     </motion.div>
+  );
+}
+</file>
+
+<file path="src/components/ShardingDemo.tsx">
+"use client";
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Database,
+  Server,
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle2,
+} from "lucide-react";
+
+// --- TYPES ---
+type ShardStrategy = "range" | "hash";
+type DataPacket = { id: number; value: number; shardIndex: number };
+
+export default function ShardingDemo() {
+  const [strategy, setStrategy] = useState<ShardStrategy>("range");
+  const [data, setData] = useState<DataPacket[]>([]);
+  const [isSimulating, setIsSimulating] = useState(false);
+
+  // --- LOGIC: Sharding Algorithms ---
+
+  // 1. Range Sharding: Simple logic based on value ranges
+  // Node 0: 0-33, Node 1: 34-66, Node 2: 67-100
+  const getRangeShard = (val: number) => {
+    if (val < 34) return 0;
+    if (val < 67) return 1;
+    return 2;
+  };
+
+  // 2. Hash Sharding: Modulo arithmetic
+  // (Value % 3) determines the node
+  const getHashShard = (val: number) => val % 3;
+
+  // --- SIMULATION ---
+  const simulateTraffic = () => {
+    setIsSimulating(true);
+    setData([]); // Clear previous
+
+    let count = 0;
+    const interval = setInterval(() => {
+      if (count >= 20) {
+        // Limit to 20 items for visual clarity
+        clearInterval(interval);
+        setIsSimulating(false);
+        return;
+      }
+
+      // Generate a random user ID (0-100)
+      // We purposefully skew the random number generation to create "Hot Spots" in Range mode
+      // This simulates real-world "trending" data (e.g. everyone accessing recent IDs)
+      const randomVal = Math.floor(Math.random() * 40); // Skewed towards lower numbers!
+
+      const shardIndex =
+        strategy === "range"
+          ? getRangeShard(randomVal)
+          : getHashShard(randomVal); // Hash handles skewed data better!
+
+      setData((prev) => [
+        ...prev,
+        { id: Date.now(), value: randomVal, shardIndex },
+      ]);
+      count++;
+    }, 150);
+  };
+
+  // Calculate Load Distribution
+  const nodes = [0, 1, 2];
+  const distribution = nodes.map(
+    (nodeIdx) => data.filter((d) => d.shardIndex === nodeIdx).length,
+  );
+  const maxLoad = Math.max(...distribution);
+  const isUnbalanced = maxLoad > 12; // Threshold for "Hot Shard" warning
+
+  return (
+    <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      <div className="mb-12">
+        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
+          <span className="text-teal-400">08.</span> Distributed Systems
+        </h2>
+        <p className="text-slate-400 max-w-2xl text-lg">
+          Scaling is not just about adding servers; it is about{" "}
+          <span className="text-teal-400">Data Distribution</span>. Use this
+          simulator to see why I prefer <strong>Hash Sharding</strong> over
+          Range Sharding for high-write workloads.
+        </p>
+      </div>
+
+      <div className="bg-[#0d1117] border border-slate-800 rounded-xl p-6 md:p-8 shadow-2xl">
+        {/* CONTROLS */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 bg-slate-900/50 p-4 rounded-lg border border-slate-800">
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col">
+              <span className="text-xs text-slate-500 font-mono uppercase tracking-wider mb-2">
+                Sharding Strategy
+              </span>
+              <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
+                <button
+                  onClick={() => {
+                    setStrategy("range");
+                    setData([]);
+                  }}
+                  className={`px-4 py-2 rounded-md text-sm font-mono transition-all ${
+                    strategy === "range"
+                      ? "bg-teal-500 text-slate-900 font-bold"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Range Based
+                </button>
+                <button
+                  onClick={() => {
+                    setStrategy("hash");
+                    setData([]);
+                  }}
+                  className={`px-4 py-2 rounded-md text-sm font-mono transition-all ${
+                    strategy === "hash"
+                      ? "bg-purple-500 text-white font-bold"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Hash Based
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {isUnbalanced && strategy === "range" && (
+              <div className="flex items-center gap-2 text-amber-400 bg-amber-400/10 px-3 py-2 rounded border border-amber-400/20">
+                <AlertTriangle size={16} />
+                <span className="text-xs font-bold uppercase">
+                  Hot Shard Detected
+                </span>
+              </div>
+            )}
+            {strategy === "hash" && data.length > 0 && !isUnbalanced && (
+              <div className="flex items-center gap-2 text-emerald-400 bg-emerald-400/10 px-3 py-2 rounded border border-emerald-400/20">
+                <CheckCircle2 size={16} />
+                <span className="text-xs font-bold uppercase">
+                  Load Balanced
+                </span>
+              </div>
+            )}
+
+            <button
+              onClick={simulateTraffic}
+              disabled={isSimulating}
+              className="flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-white text-slate-900 font-bold rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <RefreshCw
+                size={18}
+                className={isSimulating ? "animate-spin" : ""}
+              />
+              {isSimulating ? "Injecting Data..." : "Simulate Traffic"}
+            </button>
+          </div>
+        </div>
+
+        {/* VISUALIZATION NODES */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {nodes.map((nodeIdx) => {
+            const load = distribution[nodeIdx];
+            const isHot = load > 12; // Visual threshold
+
+            return (
+              <div
+                key={nodeIdx}
+                className={`relative min-h-[300px] bg-slate-900 border-2 rounded-xl p-4 transition-colors duration-500 flex flex-col ${
+                  isHot
+                    ? "border-amber-500/50 bg-amber-500/5"
+                    : "border-slate-700"
+                }`}
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-800">
+                  <div className="flex items-center gap-2 text-slate-300">
+                    <Database size={20} />
+                    <span className="font-mono font-bold">
+                      Shard_0{nodeIdx + 1}
+                    </span>
+                  </div>
+                  <span
+                    className={`text-xs font-mono px-2 py-1 rounded ${
+                      isHot
+                        ? "bg-amber-500 text-slate-900 font-bold"
+                        : "bg-slate-800 text-slate-400"
+                    }`}
+                  >
+                    {load} Records
+                  </span>
+                </div>
+
+                {/* Data Container */}
+                <div className="flex-1 flex flex-wrap content-start gap-2 overflow-hidden">
+                  <AnimatePresence>
+                    {data
+                      .filter((d) => d.shardIndex === nodeIdx)
+                      .map((packet) => (
+                        <motion.div
+                          key={packet.id}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0, opacity: 0 }}
+                          className={`w-2 h-2 rounded-full ${
+                            strategy === "range"
+                              ? "bg-teal-400"
+                              : "bg-purple-400"
+                          }`}
+                        />
+                      ))}
+                  </AnimatePresence>
+                </div>
+
+                {/* Server Icon Bottom */}
+                <div className="mt-4 pt-4 border-t border-slate-800 flex justify-center opacity-20">
+                  <Server size={48} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-slate-500 text-sm font-mono">
+            {strategy === "range"
+              ? "⚠️ Range Sharding creates hotspots when data is sequential or skewed."
+              : "✅ Hash Sharding distributes skewed data evenly using (ID % Nodes)."}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/SpotlightCard.tsx">
+"use client";
+
+import { useRef, useState, ReactNode } from "react";
+import { motion } from "framer-motion";
+
+interface SpotlightCardProps {
+  children: ReactNode;
+  className?: string;
+  spotlightColor?: string;
+}
+
+export default function SpotlightCard({
+  children,
+  className = "",
+  spotlightColor = "rgba(45, 212, 191, 0.15)", // Default Teal glow
+}: SpotlightCardProps) {
+  const divRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [opacity, setOpacity] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current) return;
+
+    const div = divRef.current;
+    const rect = div.getBoundingClientRect();
+
+    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  const handleMouseEnter = () => {
+    setOpacity(1);
+  };
+
+  const handleMouseLeave = () => {
+    setOpacity(0);
+  };
+
+  return (
+    <div
+      ref={divRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={`relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/50 ${className}`}
+    >
+      {/* The Spotlight Effect: 
+        A radial gradient that follows the mouse cursor.
+        It sits *behind* the content but *above* the background.
+      */}
+      <div
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+        style={{
+          opacity,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 40%)`,
+        }}
+      />
+
+      {/* Content Container */}
+      <div className="relative h-full">{children}</div>
+    </div>
   );
 }
 </file>
@@ -2271,6 +2047,243 @@ export default config;
 }
 </file>
 
+<file path="src/components/Experience.tsx">
+"use client";
+
+import { motion } from "framer-motion";
+import { Briefcase, Calendar } from "lucide-react";
+import SpotlightCard from "./SpotlightCard"; // <--- Import
+
+const experiences = [
+  {
+    company: "Docplix",
+    role: "Software Engineer",
+    period: "Nov 2025 - Present",
+    description:
+      "Returned to lead backend architecture for the V2.0 migration.",
+    achievements: [
+      "Architected and deployed 30+ RESTful API endpoints using Node.js & Sequelize.",
+      "Ensured 99.9% data consistency during critical inventory migration.",
+      "Resolved critical inventory mismatches using a centralized sync service.",
+    ],
+    tech: ["Node.js", "Sequelize", "React"],
+  },
+  {
+    company: "Genpact",
+    role: "Software Engineer",
+    period: "Apr 2024 - Oct 2025",
+    description:
+      "Promoted from Intern. Built serverless pipelines and high-throughput data systems.",
+    achievements: [
+      "Designed serverless data pipelines (Python/GCP), boosting efficiency by 35%.",
+      "Reduced API response times by 40% using Kafka and Redis caching.",
+      "Integrated GPT-3.5 for automated report summarization.",
+    ],
+    tech: ["Python", "GCP", "Kafka", "Redis"],
+  },
+  {
+    company: "Docplix",
+    role: "Software Engineer",
+    period: "Jan 2020 - July 2024",
+    description:
+      "Early core team member focused on optimizing patient record retrieval.",
+    achievements: [
+      "Reduced patient record retrieval latency by 40% via advanced Sequelize indexing.",
+      "Engineered Real-time Analytics Dashboard using React and Sparkline charts.",
+    ],
+    tech: ["React", "PostgreSQL", "Optimization"],
+  },
+];
+
+export default function Experience() {
+  return (
+    <section id="experience" className="py-24 px-6 md:px-12 max-w-6xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-100 mb-16 flex items-center gap-4">
+          <span className="text-teal-400">02.</span> Experience
+        </h2>
+
+        <div className="flex flex-col gap-8">
+          {experiences.map((exp, index) => (
+            // Wrapping each experience in a SpotlightCard
+            <SpotlightCard
+              key={index}
+              className="p-8 md:p-10"
+              spotlightColor="rgba(255, 255, 255, 0.05)"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                <div>
+                  <h3 className="text-xl md:text-2xl font-bold text-slate-100">
+                    {exp.role}{" "}
+                    <span className="text-teal-400">@ {exp.company}</span>
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2 text-slate-400 font-mono text-sm bg-slate-800/50 px-3 py-1 rounded-full w-fit">
+                  <Calendar size={14} />
+                  {exp.period}
+                </div>
+              </div>
+
+              <p className="text-slate-300 mb-6 text-lg">{exp.description}</p>
+
+              <ul className="space-y-3 mb-8">
+                {exp.achievements.map((item, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-3 text-slate-400 text-sm md:text-base"
+                  >
+                    <span className="text-teal-400 mt-1.5 text-xs">▹</span>
+                    <span className="leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex flex-wrap gap-3">
+                {exp.tech.map((tech, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1 bg-slate-800 text-slate-300 text-xs rounded-full font-mono border border-slate-700 hover:text-teal-400 hover:border-teal-400/50 transition-colors cursor-default"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </SpotlightCard>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/Projects.tsx">
+"use client";
+
+import { Github, ExternalLink, Folder } from "lucide-react";
+import SpotlightCard from "./SpotlightCard"; // <--- Import the new component
+
+interface Project {
+  title: string;
+  description: string;
+  tech: string[];
+  github: string;
+  link: string;
+}
+
+const projects: Project[] = [
+  {
+    title: "Real-Time Chat Application",
+    description:
+      "A scalable full-stack chat platform engineered for high concurrency. Features real-time bi-directional communication, secure JWT authentication, and persistent message storage.",
+    tech: ["Node.js", "Socket.io", "React", "MongoDB", "JWT"],
+    github: "https://github.com/anichandan124",
+    link: "#",
+  },
+  {
+    title: "Movie Recommendation API",
+    description:
+      "A machine-learning powered RESTful API. Implements Content-Based Filtering using Cosine Similarity to provide personalized movie suggestions based on metadata.",
+    tech: ["Python", "Flask", "Scikit-learn", "MongoDB", "API Gateway"],
+    github: "https://github.com/anichandan124",
+    link: "#",
+  },
+  {
+    title: "Inventory Sync Engine",
+    description:
+      "Built for Docplix. A background worker service that synchronizes legacy SQL data with modern NoSQL cloud storage, handling 10k+ records per minute with conflict resolution.",
+    tech: ["Typescript", "PostgreSQL", "BullMQ", "Redis"],
+    github: "https://github.com/anichandan124",
+    link: "#",
+  },
+];
+
+export default function Projects() {
+  return (
+    <section id="projects" className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
+      <div className="mb-16">
+        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
+          <span className="text-teal-400">03.</span> Featured Projects
+        </h2>
+        <p className="text-slate-400 max-w-2xl text-lg">
+          A selection of systems I have architected, focusing on{" "}
+          <span className="text-teal-400">scalability</span> and{" "}
+          <span className="text-teal-400">performance</span>.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {projects.map((project, index) => (
+          // Using SpotlightCard instead of standard div
+          <SpotlightCard key={index} className="p-8 h-full flex flex-col group">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-6">
+              <div className="p-3 bg-slate-800/50 rounded-lg text-teal-400 group-hover:text-white transition-colors">
+                <Folder size={24} />
+              </div>
+              <div className="flex gap-4 text-slate-400 z-20">
+                <a
+                  href={project.github}
+                  target="_blank"
+                  className="hover:text-teal-400 transition-colors transform hover:-translate-y-1 duration-300"
+                >
+                  <Github size={20} />
+                </a>
+                <a
+                  href={project.link}
+                  className="hover:text-teal-400 transition-colors transform hover:-translate-y-1 duration-300"
+                >
+                  <ExternalLink size={20} />
+                </a>
+              </div>
+            </div>
+
+            {/* Title */}
+            <h3 className="text-xl font-bold text-slate-100 mb-3 group-hover:text-teal-400 transition-colors">
+              {project.title}
+            </h3>
+
+            {/* Description */}
+            <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-grow">
+              {project.description}
+            </p>
+
+            {/* Tech Stack */}
+            <div className="flex flex-wrap gap-2 mt-auto">
+              {project.tech.map((t, i) => (
+                <span
+                  key={i}
+                  className="text-xs font-mono text-teal-400/80 bg-teal-400/5 px-2 py-1 rounded border border-teal-400/10"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </SpotlightCard>
+        ))}
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="postcss.config.mjs">
+/** @type {import('postcss-load-config').Config} */
+const config = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+
+export default config;
+</file>
+
 <file path="src/app/globals.css">
 @tailwind base;
 @tailwind components;
@@ -2381,18 +2394,6 @@ export default function RootLayout({
 }
 </file>
 
-<file path="postcss.config.mjs">
-/** @type {import('postcss-load-config').Config} */
-const config = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-};
-
-export default config;
-</file>
-
 <file path="package.json">
 {
   "name": "portfolio",
@@ -2434,8 +2435,10 @@ export default config;
 
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, FileText, ChevronDown } from "lucide-react";
+import Image from "next/image"; // <--- Import Image component
 
-// Import all custom components
+// Components
+import Navbar from "@/components/Navbar";
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
@@ -2443,121 +2446,165 @@ import ServerMonitor from "@/components/ServerMonitor";
 import Architecture from "@/components/Architecture";
 import Impact from "@/components/Impact";
 import ApiPlayground from "@/components/ApiPlayground";
-import CodeComparison from "@/components/CodeComparison"; // <--- 1. Import CodeComparison
+import CodeComparison from "@/components/CodeComparison";
 import AiChatbot from "@/components/AiChatbot";
-import ShardingDemo from "@/components/ShardingDemo"; // <--- 2. Import ShardingDemo
+import ShardingDemo from "@/components/ShardingDemo";
+import SpotlightCard from "@/components/SpotlightCard"; // <--- We use this for the profile pic wrapper
 
 export default function Home() {
   return (
-    <main className="min-h-screen selection:bg-teal-500 selection:text-white">
-      {/* HERO SECTION */}
-      <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto relative pt-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <span className="text-teal-400 font-mono text-lg mb-4 block">
-            Hi, my name is
-          </span>
-          <h1 className="text-5xl md:text-7xl font-bold text-slate-100 mb-4 tracking-tight">
-            Anirudh Chandan.
-          </h1>
-          <h2 className="text-4xl md:text-6xl font-bold text-slate-400 mb-6">
-            I build scalable backend systems.
-          </h2>
-          <p className="max-w-xl text-slate-400 text-lg leading-relaxed mb-8">
-            I am a Software Engineer based in India, specializing in
-            high-performance APIs and distributed architectures. From
-            architecting 30+ endpoints at{" "}
-            <span className="text-teal-400">Docplix</span> to optimizing
-            pipelines at <span className="text-teal-400">Genpact</span>.
-          </p>
+    <main className="min-h-screen selection:bg-teal-500 selection:text-white relative">
+      {/* BACKGROUND LAYER */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-grid opacity-20"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900/0 via-slate-900/80 to-slate-950"></div>
+      </div>
 
-          <div className="flex gap-4 mb-12">
-            <a
-              href="#projects"
-              className="px-6 py-3 border border-teal-400 text-teal-400 rounded hover:bg-teal-400/10 transition-colors font-mono"
-            >
-              Check out my work
-            </a>
-            <a
-              href="/ANIRUDH_CHANDAN_RESUME_2026.pdf"
-              target="_blank"
-              className="px-6 py-3 bg-slate-800 text-slate-200 rounded hover:bg-slate-700 transition-colors font-mono flex items-center gap-2"
-            >
-              <FileText size={18} /> Resume
-            </a>
-          </div>
+      <Navbar />
 
-          <div className="flex items-center gap-6 text-slate-400 mb-12">
-            <a
-              href="https://github.com/anichandan124"
-              target="_blank"
-              className="hover:text-teal-400 transition-colors hover:-translate-y-1 transform duration-300"
+      <div className="relative z-10">
+        {/* --- HERO SECTION --- */}
+        <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-28 md:pt-0">
+          <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-12 mb-16">
+            {/* LEFT SIDE: TEXT */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex-1 text-center md:text-left"
             >
-              <Github size={24} />
-            </a>
-            <a
-              href="https://linkedin.com/in/your-profile"
-              target="_blank"
-              className="hover:text-teal-400 transition-colors hover:-translate-y-1 transform duration-300"
+              <span className="text-teal-400 font-mono text-lg mb-4 block">
+                Hi, my name is
+              </span>
+              <h1 className="text-5xl md:text-7xl font-bold text-slate-100 mb-4 tracking-tight">
+                Anirudh Chandan.
+              </h1>
+              <h2 className="text-4xl md:text-5xl font-bold text-slate-400 mb-6">
+                I build scalable backend systems.
+              </h2>
+              <p className="max-w-xl text-slate-400 text-lg leading-relaxed mb-8 mx-auto md:mx-0">
+                I am a Software Engineer based in India, specializing in
+                high-performance APIs and distributed architectures. From
+                architecting 30+ endpoints at{" "}
+                <span className="text-teal-400">Docplix</span> to optimizing
+                pipelines at <span className="text-teal-400">Genpact</span>.
+              </p>
+
+              <div className="flex flex-wrap gap-4 mb-10 justify-center md:justify-start">
+                <a
+                  href="#projects"
+                  className="px-6 py-3 border border-teal-400 text-teal-400 rounded hover:bg-teal-400/10 transition-colors font-mono"
+                >
+                  Check out my work
+                </a>
+                <a
+                  href="/ANIRUDH_CHANDAN_RESUME_2026.pdf"
+                  target="_blank"
+                  className="px-6 py-3 bg-slate-800 text-slate-200 rounded hover:bg-slate-700 transition-colors font-mono flex items-center gap-2"
+                >
+                  <FileText size={18} /> Resume
+                </a>
+              </div>
+
+              <div className="flex items-center gap-6 text-slate-400 justify-center md:justify-start">
+                <a
+                  href="https://github.com/anichandan124"
+                  target="_blank"
+                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
+                >
+                  <Github size={24} />
+                </a>
+                <a
+                  href="https://linkedin.com"
+                  target="_blank"
+                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
+                >
+                  <Linkedin size={24} />
+                </a>
+                <a
+                  href="mailto:anichandan124@gmail.com"
+                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
+                >
+                  <Mail size={24} />
+                </a>
+              </div>
+            </motion.div>
+
+            {/* RIGHT SIDE: PROFILE IMAGE (Using SpotlightCard) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, rotate: 5 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative w-[280px] h-[280px] md:w-[350px] md:h-[350px] flex-shrink-0"
             >
-              <Linkedin size={24} />
-            </a>
-            <a
-              href="mailto:anichandan124@gmail.com"
-              className="hover:text-teal-400 transition-colors hover:-translate-y-1 transform duration-300"
-            >
-              <Mail size={24} />
-            </a>
+              <SpotlightCard
+                className="w-full h-full p-2 rounded-2xl border-slate-700 bg-slate-800/50"
+                spotlightColor="rgba(45, 212, 191, 0.25)"
+              >
+                <div className="relative w-full h-full rounded-xl overflow-hidden group">
+                  {/* THE IMAGE */}
+                  <Image
+                    src="/profile.jpeg" // <--- Ensure this file exists in /public
+                    alt="Anirudh Chandan"
+                    fill
+                    className="object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105"
+                    priority
+                  />
+
+                  {/* Subtle Gradient Overlay (Fades image slightly at bottom) */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-60"></div>
+
+                  {/* Status Badge */}
+                  <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700 shadow-xl z-20">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-500"></span>
+                    </span>
+                    <span className="text-xs font-mono text-slate-300 font-bold">
+                      Open to Work
+                    </span>
+                  </div>
+                </div>
+              </SpotlightCard>
+
+              {/* Decorative Blur Blobs behind the image */}
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-teal-500/10 rounded-full blur-2xl -z-10"></div>
+              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl -z-10"></div>
+            </motion.div>
           </div>
 
           <ServerMonitor />
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-slate-500"
-        >
-          <ChevronDown size={30} />
-        </motion.div>
-      </section>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 1 }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-slate-500 hidden md:block"
+          >
+            <ChevronDown size={30} />
+          </motion.div>
+        </section>
 
-      {/* 02. Experience */}
-      <Experience />
+        {/* REST OF SECTIONS */}
+        <Experience />
+        <Projects />
+        <Architecture />
+        <Impact />
+        <ApiPlayground />
+        <CodeComparison />
+        <ShardingDemo />
+        <Contact />
 
-      {/* 03. Projects */}
-      <Projects />
-
-      {/* 04. Architecture */}
-      <Architecture />
-
-      {/* 05. Impact */}
-      <Impact />
-
-      {/* 06. API Playground */}
-      <ApiPlayground />
-
-      {/* 07. Code Optimization (New!) */}
-      <CodeComparison />
-
-      <ShardingDemo />
-
-      {/* 08. Contact */}
-      <Contact />
-
-      <footer className="py-6 text-center text-slate-500 text-sm font-mono bg-transparent">
-        <a
-          href="https://github.com/anichandan124"
-          target="_blank"
-          className="hover:text-teal-400 transition-colors"
-        >
-          Designed & Built by Anirudh Chandan
-        </a>
-      </footer>
+        <footer className="py-6 text-center text-slate-500 text-sm font-mono bg-transparent">
+          <a
+            href="https://github.com/anichandan124"
+            target="_blank"
+            className="hover:text-teal-400 transition-colors"
+          >
+            Designed & Built by Anirudh Chandan
+          </a>
+        </footer>
+      </div>
 
       <AiChatbot />
     </main>
