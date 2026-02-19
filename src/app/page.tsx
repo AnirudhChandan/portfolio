@@ -1,36 +1,68 @@
 "use client";
 
+import dynamic from "next/dynamic"; // <--- 1. Import dynamic
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, FileText, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import { useEffect } from "react";
 
 // Infrastructure
 import { SystemProvider } from "@/components/SystemContext";
 import Toaster from "@/components/Toaster";
-// import CommandPalette from "@/components/";
-// import ChaosControl from "@/components/ChaosControl";
 
-// Components
 import Navbar from "@/components/Navbar";
+
+// Standard Imports (Lightweight)
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
 import ServerMonitor from "@/components/ServerMonitor";
-import Architecture from "@/components/Architecture";
-import Impact from "@/components/Impact";
-import ApiPlayground from "@/components/ApiPlayground";
-import CodeComparison from "@/components/CodeComparison";
-import AiChatbot from "@/components/AiChatbot";
-import ShardingDemo from "@/components/ShardingDemo";
 import SpotlightCard from "@/components/SpotlightCard";
-import StorageVisualizer from "@/components/StorageVisualizer"; // <--- NEW
+
+// 2. Dynamic Imports (Heavy Components - Load only when needed)
+const Architecture = dynamic(() => import("@/components/Architecture"), {
+  ssr: false,
+});
+const StorageVisualizer = dynamic(
+  () => import("@/components/StorageVisualizer"),
+  { ssr: false },
+);
+const Impact = dynamic(() => import("@/components/Impact"), { ssr: false });
+const ApiPlayground = dynamic(() => import("@/components/ApiPlayground"), {
+  ssr: false,
+});
+const CodeComparison = dynamic(() => import("@/components/CodeComparison"), {
+  ssr: false,
+});
+const ShardingDemo = dynamic(() => import("@/components/ShardingDemo"), {
+  ssr: false,
+});
+const AiChatbot = dynamic(() => import("@/components/AiChatbot"), {
+  ssr: false,
+});
 
 function PageContent() {
+  // 3. THE CONSOLE EASTER EGG
+  useEffect(() => {
+    console.log(
+      "%c HELLO RECRUITER %c",
+      "background: #2dd4bf; color: #020617; font-weight: bold; padding: 4px; border-radius: 4px;",
+      "color: #2dd4bf; font-family: monospace;",
+    );
+    console.log(
+      "Looking for a Senior Backend/Fullstack Engineer? You found him.",
+    );
+    console.table({
+      Name: "Anirudh Chandan",
+      Specialty: "Distributed Systems & API Design",
+      Status: "Open to new opportunities",
+      Contact: "anichandan124@gmail.com",
+    });
+  }, []);
+
   return (
     <main className="min-h-screen selection:bg-teal-500 selection:text-white relative">
       <Toaster />
-      {/* <CommandPalette />
-      <ChaosControl /> */}
 
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-grid opacity-20"></div>
@@ -66,16 +98,38 @@ function PageContent() {
               <div className="flex flex-wrap gap-4 mb-10 justify-center md:justify-start">
                 <a
                   href="#projects"
-                  className="px-6 py-3 border border-teal-400 text-teal-400 rounded hover:bg-teal-400/10 transition-colors font-mono"
+                  className="px-6 py-3 border border-teal-400 text-teal-400 rounded hover:bg-teal-400/10 transition-colors font-mono text-sm"
                 >
                   Check out my work
                 </a>
                 <a
                   href="/ANIRUDH_CHANDAN_RESUME_2026.pdf"
                   target="_blank"
-                  className="px-6 py-3 bg-slate-800 text-slate-200 rounded hover:bg-slate-700 transition-colors font-mono flex items-center gap-2"
+                  className="px-6 py-3 bg-slate-800 text-slate-200 rounded hover:bg-slate-700 transition-colors font-mono flex items-center gap-2 text-sm"
                 >
                   <FileText size={18} /> Resume
+                </a>
+              </div>
+              <div className="flex items-center gap-6 text-slate-400 justify-center md:justify-start">
+                <a
+                  href="https://github.com/anichandan124"
+                  target="_blank"
+                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
+                >
+                  <Github size={24} />
+                </a>
+                <a
+                  href="https://linkedin.com"
+                  target="_blank"
+                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
+                >
+                  <Linkedin size={24} />
+                </a>
+                <a
+                  href="mailto:anichandan124@gmail.com"
+                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
+                >
+                  <Mail size={24} />
                 </a>
               </div>
             </motion.div>
@@ -100,9 +154,11 @@ function PageContent() {
           </div>
           <ServerMonitor />
         </section>
+
+        {/* Dynamic sections: they will only load when the user nears them */}
         <Experience />
         <Projects />
-        <StorageVisualizer /> {/* <--- Showcase the Database Project */}
+        <StorageVisualizer />
         <Architecture />
         <Impact />
         <ApiPlayground />
