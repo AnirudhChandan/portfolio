@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 226, 232, 240;
+  --foreground-rgb:
+    248, 250, 252; /* Slate 50 - Brighter text for better contrast */
   --background-start-rgb: 2, 6, 23; /* Slate 950 */
   --background-end-rgb: 2, 6, 23;
 }
@@ -13,10 +14,10 @@ body {
   background: rgb(var(--background-start-rgb));
   font-family: sans-serif;
   overflow-x: hidden;
+  /* Add a very subtle radial gradient to the body itself to remove the "flat" feel */
+  background-image: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 70%);
 }
 
-/* --- 1. FILM GRAIN TEXTURE --- */
-/* This adds a subtle static noise that makes the dark mode feel "expensive" */
 .bg-noise {
   position: fixed;
   top: 0;
@@ -25,44 +26,42 @@ body {
   height: 100vh;
   pointer-events: none;
   z-index: 50;
-  opacity: 0.03;
+  opacity: 0.015;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-/* --- 2. CUSTOM TEXT SELECTION --- */
-/* When users highlight text, it should match your brand (Teal) */
 ::selection {
-  background: rgba(45, 212, 191, 0.3); /* Teal-400 with opacity */
+  background: rgba(45, 212, 191, 0.2);
   color: #2dd4bf;
 }
 
-/* --- 3. SLEEK SCROLLBAR --- */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 4px;
-  border: 2px solid #020617; /* Creates padding effect */
+  background: #334155;
+  border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #475569;
 }
 
-/* --- 4. UTILITIES --- */
-.text-balance {
-  text-wrap: balance;
+/* --- FIXING THE REACT FLOW CONTROLS --- */
+.react-flow__controls {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
-
-/* Hide scrollbar for Chrome/Safari/Opera */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+.react-flow__controls-button {
+  background-color: #0f172a !important; /* Slate 900 */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  fill: #94a3b8 !important; /* Slate 400 */
 }
-/* Hide scrollbar for IE, Edge and Firefox */
-.no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+.react-flow__controls-button:hover {
+  background-color: #1e293b !important; /* Slate 800 */
+  fill: #2dd4bf !important; /* Teal 400 hover */
 }

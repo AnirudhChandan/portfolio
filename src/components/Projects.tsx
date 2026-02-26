@@ -17,7 +17,7 @@ const projects: Project[] = [
     description:
       "A disk-based relational B-Tree storage engine implemented in Python. Features a custom Disk Pager, WAL for ACID compliance, and raw binary serialization using struct packing.",
     tech: ["Python", "B-Tree", "Binary Serialization", "File I/O"],
-    github: "https://github.com/anichandan124", // Link to your PyDB repo
+    github: "https://github.com/anichandan124",
     link: "#",
   },
   {
@@ -40,10 +40,16 @@ const projects: Project[] = [
 
 export default function Projects() {
   return (
-    <section id="projects" className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
+    <section
+      id="projects"
+      className="py-24 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-32"
+    >
       <div className="mb-16">
-        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
-          <span className="text-teal-400">03.</span> Featured Work
+        <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
+          <span className="text-teal-400 font-display font-black text-2xl">
+            03.
+          </span>{" "}
+          Featured Work
         </h2>
       </div>
 
@@ -67,7 +73,8 @@ export default function Projects() {
                 </a>
               </div>
             </div>
-            <h3 className="text-xl font-bold text-slate-100 mb-3 group-hover:text-teal-400 transition-colors">
+            {/* Project Title using font-display */}
+            <h3 className="text-2xl font-display font-bold text-slate-100 mb-3 group-hover:text-teal-400 transition-colors tracking-tight">
               {project.title}
             </h3>
             <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-grow">

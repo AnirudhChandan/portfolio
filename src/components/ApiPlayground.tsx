@@ -91,7 +91,10 @@ export default function ApiPlayground() {
   };
 
   return (
-    <section id="playground" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+    <section
+      id="playground"
+      className="py-24 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-32"
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -99,8 +102,11 @@ export default function ApiPlayground() {
         transition={{ duration: 0.5 }}
       >
         <div className="mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
-            <span className="text-teal-400">06.</span> API Playground
+          <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
+            <span className="text-teal-400 font-display font-black text-2xl">
+              06.
+            </span>{" "}
+            API Playground
           </h2>
           <p className="text-slate-400 max-w-2xl text-lg">
             Do not just take my word for it.{" "}

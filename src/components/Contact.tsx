@@ -1,12 +1,11 @@
 "use client";
-
 import { motion } from "framer-motion";
 
 export default function Contact() {
   return (
     <section
       id="contact"
-      className="py-24 px-6 md:px-24 max-w-4xl mx-auto text-center"
+      className="py-32 px-6 md:px-24 max-w-4xl mx-auto text-center scroll-mt-32"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -14,19 +13,21 @@ export default function Contact() {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <p className="text-teal-400 font-mono mb-4">04. What Next?</p>
-        <h2 className="text-4xl md:text-5xl font-bold text-slate-100 mb-6">
+        <p className="text-teal-400 font-mono mb-4 text-sm tracking-wider uppercase">
+          10. What Next?
+        </p>
+        {/* Massive call to action using Display Font */}
+        <h2 className="text-5xl md:text-7xl font-display font-black tracking-tighter text-slate-100 mb-6 drop-shadow-sm">
           Get In Touch
         </h2>
-        <p className="text-slate-400 text-lg leading-relaxed mb-10">
+        <p className="text-slate-400 text-lg leading-relaxed mb-10 max-w-2xl mx-auto">
           I am currently actively looking for new opportunities as a Backend or
           Full Stack Engineer. Whether you have a question or just want to say
           hi, my inbox is always open.
         </p>
-
         <a
           href="mailto:anichandan124@gmail.com"
-          className="inline-block px-8 py-4 border border-teal-400 text-teal-400 font-mono rounded hover:bg-teal-400/10 transition-colors"
+          className="inline-block px-8 py-4 bg-teal-500 text-slate-950 font-bold rounded hover:bg-teal-400 transition-colors shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_25px_rgba(45,212,191,0.4)]"
         >
           Say Hello
         </a>

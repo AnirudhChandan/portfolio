@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, useState, ReactNode } from "react";
-import { motion } from "framer-motion";
+import { useRef, useState, ReactNode, useEffect } from "react";
 
 interface SpotlightCardProps {
   children: ReactNode;
@@ -12,28 +11,36 @@ interface SpotlightCardProps {
 export default function SpotlightCard({
   children,
   className = "",
-  spotlightColor = "rgba(45, 212, 191, 0.15)", // Default Teal glow
+  spotlightColor = "rgba(45, 212, 191, 0.08)", // Slightly increased for the glass effect
 }: SpotlightCardProps) {
   const divRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [opacity, setOpacity] = useState(0);
+  const requestRef = useRef<number | null>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!divRef.current) return;
 
     const div = divRef.current;
     const rect = div.getBoundingClientRect();
+    const targetX = e.clientX - rect.left;
+    const targetY = e.clientY - rect.top;
 
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    if (requestRef.current) cancelAnimationFrame(requestRef.current);
+
+    requestRef.current = requestAnimationFrame(() => {
+      setPosition({ x: targetX, y: targetY });
+    });
   };
 
-  const handleMouseEnter = () => {
-    setOpacity(1);
-  };
+  const handleMouseEnter = () => setOpacity(1);
+  const handleMouseLeave = () => setOpacity(0);
 
-  const handleMouseLeave = () => {
-    setOpacity(0);
-  };
+  useEffect(() => {
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, []);
 
   return (
     <div
@@ -41,22 +48,22 @@ export default function SpotlightCard({
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/50 ${className}`}
+      /* UPGRADED: Removed solid border, added inner highlight, backdrop blur, and slight shadow */
+      className={`relative overflow-hidden rounded-2xl bg-slate-900/40 backdrop-blur-md shadow-2xl transition-all hover:bg-slate-900/60 shadow-black/50 ${className}`}
     >
-      {/* The Spotlight Effect: 
-        A radial gradient that follows the mouse cursor.
-        It sits *behind* the content but *above* the background.
-      */}
+      {/* Delicate inner top highlight to simulate 3D glass edge */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+      {/* Barely visible outer border */}
+      <div className="absolute inset-0 rounded-2xl border border-white/5 pointer-events-none"></div>
+
       <div
-        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+        className="pointer-events-none absolute -inset-px transition duration-500"
         style={{
           opacity,
           background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 40%)`,
         }}
       />
-
-      {/* Content Container */}
-      <div className="relative h-full">{children}</div>
+      <div className="relative h-full z-20">{children}</div>
     </div>
   );
 }

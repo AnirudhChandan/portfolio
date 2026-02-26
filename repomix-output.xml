@@ -41,6 +41,7 @@ The content is organized as follows:
 
 <directory_structure>
 public/
+  ANIRUDH_CHANDAN_RESUME_2026.pdf
   file.svg
   globe.svg
   next.svg
@@ -67,6 +68,9 @@ src/
     ServerMonitor.tsx
     ShardingDemo.tsx
     SpotlightCard.tsx
+    StorageVisualizer.tsx
+    SystemContext.tsx
+    Toaster.tsx
 .gitignore
 eslint.config.mjs
 next.config.ts
@@ -463,7 +467,10 @@ export default function ApiPlayground() {
   };
 
   return (
-    <section id="playground" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+    <section
+      id="playground"
+      className="py-24 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-32"
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -471,8 +478,11 @@ export default function ApiPlayground() {
         transition={{ duration: 0.5 }}
       >
         <div className="mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
-            <span className="text-teal-400">06.</span> API Playground
+          <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
+            <span className="text-teal-400 font-display font-black text-2xl">
+              06.
+            </span>{" "}
+            API Playground
           </h2>
           <p className="text-slate-400 max-w-2xl text-lg">
             Do not just take my word for it.{" "}
@@ -807,15 +817,18 @@ export default function Architecture() {
   return (
     <section
       id="architecture"
-      className="py-24 px-4 md:px-12 max-w-7xl mx-auto h-[800px] relative"
+      className="py-24 px-4 md:px-12 max-w-7xl mx-auto h-[800px] relative scroll-mt-32"
     >
       <div className="mb-8">
-        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
-          <span className="text-teal-400">04.</span> System Architecture
+        <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
+          <span className="text-teal-400 font-display font-black text-2xl">
+            04.
+          </span>{" "}
+          System Architecture
         </h2>
         <p className="text-slate-400 max-w-2xl">
           Interactive map of the <strong>Inventory Migration System</strong> I
-          engineered at Docplix.
+          engineered at Docplix.{" "}
           <span className="text-teal-400"> Click a node</span> to see the
           engineering challenge.
         </p>
@@ -895,31 +908,14 @@ export default function Architecture() {
 <file path="src/components/BackgroundGrid.tsx">
 "use client";
 
-import { motion } from "framer-motion";
-
 export default function BackgroundGrid() {
   return (
     <div className="fixed inset-0 z-[-1] pointer-events-none">
-      {/* 1. The Grid Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      {/* 1. The Grid Pattern (Subtle) */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]"></div>
 
       {/* 2. The Radial Mask (Vignette) */}
-      {/* This creates the "fade to black" effect at the edges so the grid isn't overwhelming */}
-      <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-teal-400 opacity-20 blur-[100px]"></div>
-
-      {/* 3. The "Beam" Animation */}
-      {/* A subtle light that travels down the screen to simulate data flow */}
-      <motion.div
-        initial={{ top: "-10%" }}
-        animate={{ top: "110%" }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "linear",
-          repeatDelay: 2,
-        }}
-        className="absolute left-1/2 w-[1px] h-[200px] bg-gradient-to-b from-transparent via-teal-400 to-transparent opacity-30 shadow-[0_0_20px_2px_rgba(45,212,191,0.3)]"
-      />
+      <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[500px] w-[500px] rounded-full bg-slate-800 opacity-20 blur-[120px]"></div>
     </div>
   );
 }
@@ -929,21 +925,12 @@ export default function BackgroundGrid() {
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
-import {
-  Code2,
-  MoveHorizontal,
-  AlertTriangle,
-  CheckCircle2,
-} from "lucide-react";
+import { MoveHorizontal, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 const legacyCode = `// ❌ THE PROBLEM: N+1 Query Issue
-// Fetching all users first...
 const users = await User.findAll();
 const results = [];
 
-// ...then looping triggers a DB query 
-// for EACH user (Bad Performance)
 for (const user of users) {
   const posts = await Post.findAll({
     where: { userId: user.id }
@@ -956,20 +943,15 @@ for (const user of users) {
 }`;
 
 const optimizedCode = `// ✅ THE FIX: Eager Loading & Projection
-// Fetch everything in ONE optimized query
 const users = await User.findAll({
-  // Use JOIN to fetch related data
   include: [{
     model: Post,
-    // Projection: Select only what we need
     attributes: ['title', 'content'] 
   }],
-  // Index-optimized selection
   attributes: ['id', 'name', 'email'],
   limit: 100
 });`;
 
-// Simple syntax highlighter for the demo
 const HighlightedCode = ({
   code,
   type,
@@ -978,7 +960,7 @@ const HighlightedCode = ({
   type: "bad" | "good";
 }) => {
   return (
-    <pre className="font-mono text-xs md:text-sm leading-6">
+    <pre className="font-mono text-xs md:text-sm leading-6 overflow-x-auto custom-scrollbar">
       {code.split("\n").map((line, i) => (
         <div key={i} className="table-row">
           <span className="table-cell select-none text-slate-700 text-right pr-4 w-8">
@@ -986,7 +968,6 @@ const HighlightedCode = ({
           </span>
           <span className="table-cell">
             {line.split(" ").map((token, j) => {
-              // Simple coloring logic
               let color = "text-slate-300";
               if (token.startsWith("//"))
                 return (
@@ -1009,7 +990,6 @@ const HighlightedCode = ({
                 color = "text-blue-400";
               if (token.includes("{") || token.includes("}"))
                 color = "text-slate-500";
-
               return (
                 <span key={j} className={`${color} mr-1.5`}>
                   {token}
@@ -1028,40 +1008,51 @@ export default function CodeComparison() {
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+  // Safely handling both React Synthetic Events and Native DOM Events
+  const handleMouseMove = (
+    e: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent,
+  ) => {
     if (!isDragging || !containerRef.current) return;
 
     const rect = containerRef.current.getBoundingClientRect();
+
+    // Type-safe touch detection
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
     const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-    const percentage = (x / rect.width) * 100;
 
-    setSliderPosition(percentage);
+    setSliderPosition((x / rect.width) * 100);
   };
 
-  const handleMouseDown = () => setIsDragging(true);
   const handleMouseUp = () => setIsDragging(false);
 
-  // Global event listeners for smooth dragging outside the container
   useEffect(() => {
     if (isDragging) {
       window.addEventListener("mouseup", handleMouseUp);
       window.addEventListener("touchend", handleMouseUp);
+      window.addEventListener("mousemove", handleMouseMove as EventListener);
+      window.addEventListener("touchmove", handleMouseMove as EventListener);
     } else {
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("touchend", handleMouseUp);
+      window.removeEventListener("mousemove", handleMouseMove as EventListener);
+      window.removeEventListener("touchmove", handleMouseMove as EventListener);
     }
     return () => {
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("touchend", handleMouseUp);
+      window.removeEventListener("mousemove", handleMouseMove as EventListener);
+      window.removeEventListener("touchmove", handleMouseMove as EventListener);
     };
   }, [isDragging]);
 
   return (
-    <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+    <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-32">
       <div className="mb-16">
-        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
-          <span className="text-teal-400">07.</span> Code Optimization
+        <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
+          <span className="text-teal-400 font-display font-black text-2xl">
+            07.
+          </span>{" "}
+          Code Optimization
         </h2>
         <p className="text-slate-400 max-w-2xl text-lg">
           I do not just write code; I{" "}
@@ -1071,14 +1062,38 @@ export default function CodeComparison() {
         </p>
       </div>
 
+      {/* --- MOBILE VIEW: Stacked vertically to prevent scroll trapping --- */}
+      <div className="md:hidden flex flex-col gap-6">
+        <div className="bg-[#161b22] border border-slate-800 rounded-xl p-6 shadow-lg">
+          <div className="flex items-center gap-2 text-red-400 mb-4">
+            <AlertTriangle size={18} />
+            <span className="font-bold text-sm tracking-wider uppercase">
+              Legacy Code
+            </span>
+          </div>
+          <HighlightedCode code={legacyCode} type="bad" />
+        </div>
+
+        <div className="bg-[#0d1117] border border-slate-800 rounded-xl p-6 shadow-lg">
+          <div className="flex items-center gap-2 text-emerald-400 mb-4">
+            <CheckCircle2 size={18} />
+            <span className="font-bold text-sm tracking-wider uppercase">
+              Optimized V2.0
+            </span>
+          </div>
+          <HighlightedCode code={optimizedCode} type="good" />
+        </div>
+      </div>
+
+      {/* --- DESKTOP VIEW: Interactive Slider --- */}
       <div
-        className="relative w-full max-w-4xl mx-auto h-[450px] md:h-[400px] select-none rounded-xl overflow-hidden border border-slate-700 shadow-2xl bg-[#0d1117]"
+        className="hidden md:block relative w-full max-w-4xl mx-auto h-[400px] select-none rounded-xl overflow-hidden border border-slate-700 shadow-2xl bg-[#0d1117]"
         ref={containerRef}
-        onMouseMove={handleMouseMove}
-        onTouchMove={handleMouseMove}
+        onMouseDown={() => setIsDragging(true)}
+        onTouchStart={() => setIsDragging(true)}
       >
         {/* RIGHT SIDE (OPTIMIZED CODE - Background Layer) */}
-        <div className="absolute inset-0 bg-[#0d1117] p-6 md:p-8">
+        <div className="absolute inset-0 bg-[#0d1117] p-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 text-emerald-400">
               <CheckCircle2 size={18} />
@@ -1093,13 +1108,11 @@ export default function CodeComparison() {
 
         {/* LEFT SIDE (LEGACY CODE - Foreground Layer) */}
         <div
-          className="absolute inset-0 bg-[#161b22] overflow-hidden border-r border-teal-400/50"
+          className="absolute inset-0 bg-[#161b22] overflow-hidden border-r border-slate-600"
           style={{ width: `${sliderPosition}%` }}
         >
-          <div className="w-full max-w-4xl p-6 md:p-8 whitespace-nowrap">
+          <div className="w-full max-w-4xl p-8 whitespace-nowrap">
             <div className="flex items-center justify-between mb-4 w-[800px]">
-              {" "}
-              {/* Fixed width to prevent wrapping during clip */}
               <div className="flex items-center gap-2 text-red-400">
                 <AlertTriangle size={18} />
                 <span className="font-bold text-sm tracking-wider uppercase">
@@ -1116,25 +1129,13 @@ export default function CodeComparison() {
 
         {/* SLIDER HANDLE */}
         <div
-          className="absolute top-0 bottom-0 w-1 bg-teal-400 cursor-ew-resize z-10 flex items-center justify-center hover:shadow-[0_0_15px_rgba(45,212,191,0.6)] transition-shadow"
+          className="absolute top-0 bottom-0 w-1 bg-slate-400 cursor-ew-resize z-10 flex items-center justify-center hover:bg-teal-400 transition-colors"
           style={{ left: `${sliderPosition}%` }}
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleMouseDown}
         >
-          <div className="w-8 h-8 bg-teal-400 rounded-full flex items-center justify-center shadow-lg transform -translate-x-0.5">
+          <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center shadow-lg transform -translate-x-0.5 border border-slate-400">
             <MoveHorizontal size={16} className="text-slate-900" />
           </div>
         </div>
-
-        {/* Instruction Overlay (Fades out on interaction) */}
-        <motion.div
-          initial={{ opacity: 1 }}
-          animate={{ opacity: isDragging || sliderPosition !== 50 ? 0 : 1 }}
-          transition={{ duration: 0.5 }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none bg-slate-900/80 backdrop-blur px-4 py-2 rounded-full border border-white/10 text-xs text-white"
-        >
-          Drag slider to compare
-        </motion.div>
       </div>
     </section>
   );
@@ -1143,14 +1144,13 @@ export default function CodeComparison() {
 
 <file path="src/components/Contact.tsx">
 "use client";
-
 import { motion } from "framer-motion";
 
 export default function Contact() {
   return (
     <section
       id="contact"
-      className="py-24 px-6 md:px-24 max-w-4xl mx-auto text-center"
+      className="py-32 px-6 md:px-24 max-w-4xl mx-auto text-center scroll-mt-32"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -1158,19 +1158,21 @@ export default function Contact() {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <p className="text-teal-400 font-mono mb-4">04. What Next?</p>
-        <h2 className="text-4xl md:text-5xl font-bold text-slate-100 mb-6">
+        <p className="text-teal-400 font-mono mb-4 text-sm tracking-wider uppercase">
+          10. What Next?
+        </p>
+        {/* Massive call to action using Display Font */}
+        <h2 className="text-5xl md:text-7xl font-display font-black tracking-tighter text-slate-100 mb-6 drop-shadow-sm">
           Get In Touch
         </h2>
-        <p className="text-slate-400 text-lg leading-relaxed mb-10">
+        <p className="text-slate-400 text-lg leading-relaxed mb-10 max-w-2xl mx-auto">
           I am currently actively looking for new opportunities as a Backend or
           Full Stack Engineer. Whether you have a question or just want to say
           hi, my inbox is always open.
         </p>
-
         <a
           href="mailto:anichandan124@gmail.com"
-          className="inline-block px-8 py-4 border border-teal-400 text-teal-400 font-mono rounded hover:bg-teal-400/10 transition-colors"
+          className="inline-block px-8 py-4 bg-teal-500 text-slate-950 font-bold rounded hover:bg-teal-400 transition-colors shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_25px_rgba(45,212,191,0.4)]"
         >
           Say Hello
         </a>
@@ -1214,7 +1216,6 @@ const efficiencyData = [
 ];
 
 // 1. Define the specific shape of the payload item
-// This satisfies the "no-explicit-any" rule by being specific.
 interface PayloadItem {
   value: number | string;
   [key: string]: unknown; // Allows other properties safely
@@ -1230,7 +1231,7 @@ interface CustomTooltipProps {
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-slate-900 border border-slate-700 p-3 rounded shadow-xl">
+      <div className="bg-slate-900/90 backdrop-blur-md border border-white/10 p-3 rounded-lg shadow-xl">
         <p className="text-slate-200 font-mono text-sm">{`${label} : ${payload[0].value}`}</p>
       </div>
     );
@@ -1240,7 +1241,10 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 
 export default function Impact() {
   return (
-    <section id="impact" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+    <section
+      id="impact"
+      className="py-24 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-32"
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -1248,11 +1252,14 @@ export default function Impact() {
         transition={{ duration: 0.5 }}
       >
         <div className="mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
-            <span className="text-teal-400">05.</span> Measuring Impact
+          <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
+            <span className="text-teal-400 font-display font-black text-2xl">
+              05.
+            </span>{" "}
+            Measuring Impact
           </h2>
           <p className="text-slate-400 max-w-2xl text-lg">
-            Engineering iis not just about code; it is about{" "}
+            Engineering is not just about code; it is about{" "}
             <span className="text-teal-400">results</span>. Here is the
             quantifiable impact of my backend optimizations at Docplix and
             Genpact.
@@ -1261,22 +1268,25 @@ export default function Impact() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* CARD 1: LATENCY REDUCTION */}
-          <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8 hover:border-teal-400/30 transition-colors">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="relative overflow-hidden bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-2xl p-8 shadow-2xl transition-all hover:bg-slate-900/60 group">
+            {/* Glass highlight edge */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+
+            <div className="flex items-center gap-3 mb-6 relative z-20">
               <div className="p-3 bg-teal-400/10 rounded-lg text-teal-400">
                 <Zap size={24} />
               </div>
-              <h3 className="text-xl font-bold text-slate-100">
+              <h3 className="text-xl font-display font-bold tracking-tight text-slate-100">
                 Latency Reduction
               </h3>
             </div>
 
-            <div className="h-[200px] w-full">
+            <div className="h-[200px] w-full relative z-20">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={latencyData}>
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="#334155"
+                    stroke="rgba(255,255,255,0.05)"
                     vertical={false}
                   />
                   <XAxis
@@ -1295,7 +1305,7 @@ export default function Impact() {
                   />
                   <Tooltip
                     content={<CustomTooltip />}
-                    cursor={{ fill: "#334155", opacity: 0.2 }}
+                    cursor={{ fill: "rgba(255,255,255,0.02)" }}
                   />
                   <Bar
                     dataKey="ms"
@@ -1307,7 +1317,7 @@ export default function Impact() {
               </ResponsiveContainer>
             </div>
 
-            <p className="mt-6 text-slate-400 text-sm">
+            <p className="mt-6 text-slate-400 text-sm relative z-20">
               Reduced patient record retrieval latency by{" "}
               <span className="text-teal-400 font-bold">40%</span> via advanced
               Sequelize indexing.
@@ -1315,17 +1325,20 @@ export default function Impact() {
           </div>
 
           {/* CARD 2: EFFICIENCY BOOST */}
-          <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8 hover:border-teal-400/30 transition-colors">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="relative overflow-hidden bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-2xl p-8 shadow-2xl transition-all hover:bg-slate-900/60 group">
+            {/* Glass highlight edge */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+
+            <div className="flex items-center gap-3 mb-6 relative z-20">
               <div className="p-3 bg-purple-500/10 rounded-lg text-purple-400">
                 <TrendingUp size={24} />
               </div>
-              <h3 className="text-xl font-bold text-slate-100">
+              <h3 className="text-xl font-display font-bold tracking-tight text-slate-100">
                 Pipeline Efficiency
               </h3>
             </div>
 
-            <div className="h-[200px] w-full">
+            <div className="h-[200px] w-full relative z-20">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={efficiencyData}>
                   <defs>
@@ -1336,7 +1349,7 @@ export default function Impact() {
                   </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="#334155"
+                    stroke="rgba(255,255,255,0.05)"
                     vertical={false}
                   />
                   <XAxis
@@ -1366,7 +1379,7 @@ export default function Impact() {
               </ResponsiveContainer>
             </div>
 
-            <p className="mt-6 text-slate-400 text-sm">
+            <p className="mt-6 text-slate-400 text-sm relative z-20">
               Boosted tax software processing efficiency by{" "}
               <span className="text-purple-400 font-bold">35%</span> using
               Serverless Python pipelines.
@@ -1374,52 +1387,58 @@ export default function Impact() {
           </div>
 
           {/* CARD 3: RELIABILITY METRIC */}
-          <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8 hover:border-teal-400/30 transition-colors flex flex-col justify-between">
-            <div className="flex items-center gap-3">
+          <div className="relative overflow-hidden bg-slate-900/40 backdrop-blur-md border border-white/5 rounded-2xl p-8 shadow-2xl transition-all hover:bg-slate-900/60 flex flex-col justify-between group">
+            {/* Glass highlight edge */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+
+            <div className="flex items-center gap-3 relative z-20">
               <div className="p-3 bg-blue-500/10 rounded-lg text-blue-400">
                 <CheckCircle size={24} />
               </div>
-              <h3 className="text-xl font-bold text-slate-100">
+              <h3 className="text-xl font-display font-bold tracking-tight text-slate-100">
                 Data Consistency
               </h3>
             </div>
 
-            <div className="flex flex-col items-center justify-center h-[200px]">
+            <div className="flex flex-col items-center justify-center h-[200px] relative z-20">
               <div className="relative">
-                {/* Decorative Ring */}
-                <svg className="w-40 h-40 transform -rotate-90">
+                {/* Decorative Ring - Thinned out for elegance */}
+                <svg className="w-44 h-44 transform -rotate-90">
                   <circle
-                    className="text-slate-800"
-                    strokeWidth="12"
+                    className="text-slate-800/50"
+                    strokeWidth="8"
                     stroke="currentColor"
                     fill="transparent"
-                    r="70"
-                    cx="80"
-                    cy="80"
+                    r="80"
+                    cx="88"
+                    cy="88"
                   />
                   <circle
                     className="text-blue-500"
-                    strokeWidth="12"
-                    strokeDasharray={440}
-                    strokeDashoffset={440 - (440 * 99.9) / 100}
+                    strokeWidth="8"
+                    strokeDasharray={502} // 2 * PI * 80
+                    strokeDashoffset={502 - (502 * 99.9) / 100}
                     strokeLinecap="round"
                     stroke="currentColor"
                     fill="transparent"
-                    r="70"
-                    cx="80"
-                    cy="80"
+                    r="80"
+                    cx="88"
+                    cy="88"
                   />
                 </svg>
                 <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
-                  <span className="text-4xl font-bold text-white">99.9%</span>
-                  <span className="text-xs text-slate-400 uppercase tracking-wider mt-1">
+                  {/* High-impact Display Font for the metric */}
+                  <span className="text-5xl font-display font-black tracking-tighter text-white drop-shadow-md">
+                    99.9%
+                  </span>
+                  <span className="text-[10px] text-blue-400 font-bold font-mono uppercase tracking-widest mt-1">
                     Uptime
                   </span>
                 </div>
               </div>
             </div>
 
-            <p className="mt-6 text-slate-400 text-sm">
+            <p className="mt-6 text-slate-400 text-sm relative z-20">
               Maintained{" "}
               <span className="text-blue-400 font-bold">
                 99.9% data consistency
@@ -1650,16 +1669,19 @@ export default function ShardingDemo() {
   const isUnbalanced = maxLoad > 12; // Threshold for "Hot Shard" warning
 
   return (
-    <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+    <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-32">
       <div className="mb-12">
-        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
-          <span className="text-teal-400">08.</span> Distributed Systems
+        <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
+          <span className="text-teal-400 font-display font-black text-2xl">
+            08.
+          </span>{" "}
+          Distributed Systems
         </h2>
         <p className="text-slate-400 max-w-2xl text-lg">
           Scaling is not just about adding servers; it is about{" "}
           <span className="text-teal-400">Data Distribution</span>. Use this
-          simulator to see why I prefer <strong>Hash Sharding</strong> over
-          Range Sharding for high-write workloads.
+          simulator to see why I prefer Hash Sharding over Range Sharding for
+          high-write workloads.
         </p>
       </div>
 
@@ -1814,8 +1836,7 @@ export default function ShardingDemo() {
 <file path="src/components/SpotlightCard.tsx">
 "use client";
 
-import { useRef, useState, ReactNode } from "react";
-import { motion } from "framer-motion";
+import { useRef, useState, ReactNode, useEffect } from "react";
 
 interface SpotlightCardProps {
   children: ReactNode;
@@ -1826,28 +1847,36 @@ interface SpotlightCardProps {
 export default function SpotlightCard({
   children,
   className = "",
-  spotlightColor = "rgba(45, 212, 191, 0.15)", // Default Teal glow
+  spotlightColor = "rgba(45, 212, 191, 0.08)", // Slightly increased for the glass effect
 }: SpotlightCardProps) {
   const divRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [opacity, setOpacity] = useState(0);
+  const requestRef = useRef<number | null>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!divRef.current) return;
 
     const div = divRef.current;
     const rect = div.getBoundingClientRect();
+    const targetX = e.clientX - rect.left;
+    const targetY = e.clientY - rect.top;
 
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    if (requestRef.current) cancelAnimationFrame(requestRef.current);
+
+    requestRef.current = requestAnimationFrame(() => {
+      setPosition({ x: targetX, y: targetY });
+    });
   };
 
-  const handleMouseEnter = () => {
-    setOpacity(1);
-  };
+  const handleMouseEnter = () => setOpacity(1);
+  const handleMouseLeave = () => setOpacity(0);
 
-  const handleMouseLeave = () => {
-    setOpacity(0);
-  };
+  useEffect(() => {
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, []);
 
   return (
     <div
@@ -1855,22 +1884,346 @@ export default function SpotlightCard({
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/50 ${className}`}
+      /* UPGRADED: Removed solid border, added inner highlight, backdrop blur, and slight shadow */
+      className={`relative overflow-hidden rounded-2xl bg-slate-900/40 backdrop-blur-md shadow-2xl transition-all hover:bg-slate-900/60 shadow-black/50 ${className}`}
     >
-      {/* The Spotlight Effect: 
-        A radial gradient that follows the mouse cursor.
-        It sits *behind* the content but *above* the background.
-      */}
+      {/* Delicate inner top highlight to simulate 3D glass edge */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+      {/* Barely visible outer border */}
+      <div className="absolute inset-0 rounded-2xl border border-white/5 pointer-events-none"></div>
+
       <div
-        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+        className="pointer-events-none absolute -inset-px transition duration-500"
         style={{
           opacity,
           background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 40%)`,
         }}
       />
+      <div className="relative h-full z-20">{children}</div>
+    </div>
+  );
+}
+</file>
 
-      {/* Content Container */}
-      <div className="relative h-full">{children}</div>
+<file path="src/components/StorageVisualizer.tsx">
+"use client";
+
+import { useState, useMemo, useEffect, useSyncExternalStore } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Binary,
+  ChevronRight,
+  HardDrive,
+  Cpu,
+  AlertCircle,
+} from "lucide-react";
+import SpotlightCard from "./SpotlightCard";
+import { toast } from "./Toaster";
+
+interface DataRow {
+  id: number;
+  user: string;
+  email: string;
+  binarySignature: string[];
+}
+
+// Logic hoisted outside to remain pure
+const generateBytes = () =>
+  Array.from(
+    { length: 8 },
+    () =>
+      "0x" +
+      Math.floor(Math.random() * 16)
+        .toString(16)
+        .toUpperCase(),
+  );
+
+const initialRows: DataRow[] = [
+  {
+    id: 101,
+    user: "anirudh",
+    email: "ani@dev.com",
+    binarySignature: generateBytes(),
+  },
+  {
+    id: 205,
+    user: "rekha",
+    email: "rekha@sys.io",
+    binarySignature: generateBytes(),
+  },
+];
+
+// --- COMPILER COMPLIANT HYDRATION FIX ---
+// This safely detects if we are on the client side without triggering cascading setState errors
+const emptySubscribe = () => () => {};
+function useIsMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+}
+
+export default function StorageVisualizer() {
+  const [rows, setRows] = useState<DataRow[]>(initialRows);
+  const [pageNumber, setPageNumber] = useState(1);
+  const isMounted = useIsMounted(); // <--- Clean check, no useEffect needed
+
+  const addRow = () => {
+    if (rows.length >= 6) {
+      toast.info("Node Full: Splitting 8KB Page...");
+      setTimeout(() => {
+        setRows([
+          {
+            id: 700,
+            user: "new_node",
+            email: "split@db.io",
+            binarySignature: generateBytes(),
+          },
+        ]);
+        setPageNumber((prev) => prev + 1);
+        toast.success(`Allocated New Page: Page_0${pageNumber + 1}`);
+      }, 800);
+      return;
+    }
+
+    const id = Math.floor(Math.random() * 900) + 100;
+    const newRow: DataRow = {
+      id,
+      user: "guest",
+      email: "user@test.com",
+      binarySignature: generateBytes(),
+    };
+    setRows((prev) => [...prev, newRow].sort((a, b) => a.id - b.id));
+  };
+
+  const diskBytes = useMemo(() => {
+    const allBytes = rows.flatMap((r) => r.binarySignature);
+    const padding = Array(Math.max(0, 64 - allBytes.length)).fill("00");
+    return [...allBytes, ...padding];
+  }, [rows]);
+
+  // Hydration Guard
+  if (!isMounted) return <div className="min-h-[500px]" />;
+
+  return (
+    <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      <div className="mb-12">
+        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
+          <span className="text-teal-400">09.</span> PyDB: Storage Engine
+        </h2>
+        <p className="text-slate-400 max-w-2xl text-lg">
+          I built a disk-based <strong>B-Tree engine</strong> from scratch. This
+          visualizer shows the interaction between the In-Memory Pager and the
+          raw bytes on the physical SSD.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <SpotlightCard className="p-8">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <Cpu className="text-teal-400" size={20} />
+              <h3 className="font-bold text-slate-200">The Pager (RAM)</h3>
+            </div>
+            <button
+              onClick={addRow}
+              className="px-4 py-1.5 bg-teal-500 text-slate-950 text-xs font-bold rounded-full hover:bg-teal-400 transition-all shadow-[0_0_15px_rgba(45,212,191,0.3)]"
+            >
+              + Insert Record
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            <AnimatePresence mode="popLayout">
+              {rows.map((row) => (
+                <motion.div
+                  layout
+                  key={row.id}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, x: 50 }}
+                  className="flex items-center gap-4 p-3 bg-slate-800/30 rounded border border-slate-700/50 font-mono text-xs"
+                >
+                  <span className="text-teal-500 w-12 shrink-0 font-bold">
+                    ID:{row.id}
+                  </span>
+                  <span className="text-slate-400 flex-1 truncate">
+                    {row.user} | {row.email}
+                  </span>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {rows.length >= 5 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-6 p-3 bg-amber-500/10 border border-amber-500/20 rounded flex items-center gap-3 text-amber-400 text-xs font-mono"
+            >
+              <AlertCircle size={14} className="animate-pulse" />
+              <span>
+                WARNING: Page reaching 8KB limit. Next insert will trigger
+                rebalance.
+              </span>
+            </motion.div>
+          )}
+        </SpotlightCard>
+
+        <SpotlightCard
+          className="p-8"
+          spotlightColor="rgba(168, 85, 247, 0.15)"
+        >
+          <div className="flex items-center gap-3 mb-8">
+            <HardDrive className="text-purple-400" size={20} />
+            <h3 className="font-bold text-slate-200">
+              Disk Serialization (Page_0{pageNumber})
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-8 gap-2">
+            {diskBytes.map((byte, i) => (
+              <motion.div
+                key={`${pageNumber}-${i}-${byte}`}
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className={`aspect-square rounded-sm text-[8px] flex items-center justify-center border transition-all duration-300 ${
+                  byte !== "00"
+                    ? "bg-purple-500/30 border-purple-500/50 text-purple-200"
+                    : "bg-slate-900 border-slate-800 text-slate-700"
+                }`}
+              >
+                {byte}
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-slate-800 flex justify-between items-center text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+            <div className="flex flex-col">
+              <span>Offset: {pageNumber === 1 ? "0x0000" : "0x2000"}</span>
+              <span className="text-teal-500/50">ACID: WAL_LOGGED</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Binary size={12} />
+              <span>B-TREE LEAF_NODE</span>
+            </div>
+            <span className="bg-slate-800 px-2 py-1 rounded">
+              Page_0{pageNumber}
+            </span>
+          </div>
+        </SpotlightCard>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/SystemContext.tsx">
+"use client";
+
+import { createContext, useContext, useState, ReactNode } from "react";
+import { toast } from "./Toaster";
+
+interface SystemState {
+  status: "operational" | "degraded";
+  toggleChaos: () => void;
+}
+
+const SystemContext = createContext<SystemState | undefined>(undefined);
+
+export const SystemProvider = ({ children }: { children: ReactNode }) => {
+  const [status, setStatus] = useState<"operational" | "degraded">(
+    "operational",
+  );
+
+  const toggleChaos = () => {
+    if (status === "operational") {
+      setStatus("degraded");
+      toast.error("SYSTEM ALERT: Critical DB Latency Spike!");
+    } else {
+      setStatus("operational");
+      toast.success("Systems normalized.");
+    }
+  };
+
+  return (
+    <SystemContext.Provider value={{ status, toggleChaos }}>
+      {children}
+    </SystemContext.Provider>
+  );
+};
+
+export const useSystem = () => {
+  const context = useContext(SystemContext);
+  if (!context) throw new Error("useSystem must be used within SystemProvider");
+  return context;
+};
+</file>
+
+<file path="src/components/Toaster.tsx">
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle, AlertCircle, Info, X } from "lucide-react";
+
+type ToastType = "success" | "error" | "info";
+type ToastEvent = { message: string; type: ToastType; id: number };
+
+export const toast = {
+  success: (msg: string) => dispatch(msg, "success"),
+  error: (msg: string) => dispatch(msg, "error"),
+  info: (msg: string) => dispatch(msg, "info"),
+};
+
+const dispatch = (message: string, type: ToastType) => {
+  if (typeof window !== "undefined") {
+    const event = new CustomEvent<ToastEvent>("toast", {
+      detail: { message, type, id: Date.now() },
+    });
+    window.dispatchEvent(event);
+  }
+};
+
+export default function Toaster() {
+  const [toasts, setToasts] = useState<ToastEvent[]>([]);
+
+  useEffect(() => {
+    const handleToast = (e: Event) => {
+      const customEvent = e as CustomEvent<ToastEvent>;
+      setToasts((prev) => [...prev, customEvent.detail]);
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== customEvent.detail.id));
+      }, 3000);
+    };
+    window.addEventListener("toast", handleToast);
+    return () => window.removeEventListener("toast", handleToast);
+  }, []);
+
+  return (
+    <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
+      <AnimatePresence>
+        {toasts.map((t) => (
+          <motion.div
+            key={t.id}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            className="pointer-events-auto bg-slate-900/95 backdrop-blur border border-slate-700 p-4 rounded-lg shadow-2xl flex items-center gap-3 min-w-[300px]"
+          >
+            {t.type === "success" && (
+              <CheckCircle size={18} className="text-teal-400" />
+            )}
+            {t.type === "error" && (
+              <AlertCircle size={18} className="text-red-400" />
+            )}
+            <span className="text-sm font-mono text-slate-200">
+              {t.message}
+            </span>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }
@@ -2003,6 +2356,12 @@ const config: Config = {
           950: "#020617",
         },
       },
+      fontFamily: {
+        // Inter for body text
+        sans: ["var(--font-inter)", "sans-serif"],
+        // Space Grotesk for headings and large metrics
+        display: ["var(--font-space-grotesk)", "sans-serif"],
+      },
     },
   },
   plugins: [],
@@ -2047,231 +2406,6 @@ export default config;
 }
 </file>
 
-<file path="src/components/Experience.tsx">
-"use client";
-
-import { motion } from "framer-motion";
-import { Briefcase, Calendar } from "lucide-react";
-import SpotlightCard from "./SpotlightCard"; // <--- Import
-
-const experiences = [
-  {
-    company: "Docplix",
-    role: "Software Engineer",
-    period: "Nov 2025 - Present",
-    description:
-      "Returned to lead backend architecture for the V2.0 migration.",
-    achievements: [
-      "Architected and deployed 30+ RESTful API endpoints using Node.js & Sequelize.",
-      "Ensured 99.9% data consistency during critical inventory migration.",
-      "Resolved critical inventory mismatches using a centralized sync service.",
-    ],
-    tech: ["Node.js", "Sequelize", "React"],
-  },
-  {
-    company: "Genpact",
-    role: "Software Engineer",
-    period: "Apr 2024 - Oct 2025",
-    description:
-      "Promoted from Intern. Built serverless pipelines and high-throughput data systems.",
-    achievements: [
-      "Designed serverless data pipelines (Python/GCP), boosting efficiency by 35%.",
-      "Reduced API response times by 40% using Kafka and Redis caching.",
-      "Integrated GPT-3.5 for automated report summarization.",
-    ],
-    tech: ["Python", "GCP", "Kafka", "Redis"],
-  },
-  {
-    company: "Docplix",
-    role: "Software Engineer",
-    period: "Jan 2020 - July 2024",
-    description:
-      "Early core team member focused on optimizing patient record retrieval.",
-    achievements: [
-      "Reduced patient record retrieval latency by 40% via advanced Sequelize indexing.",
-      "Engineered Real-time Analytics Dashboard using React and Sparkline charts.",
-    ],
-    tech: ["React", "PostgreSQL", "Optimization"],
-  },
-];
-
-export default function Experience() {
-  return (
-    <section id="experience" className="py-24 px-6 md:px-12 max-w-6xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <h2 className="text-3xl md:text-4xl font-bold text-slate-100 mb-16 flex items-center gap-4">
-          <span className="text-teal-400">02.</span> Experience
-        </h2>
-
-        <div className="flex flex-col gap-8">
-          {experiences.map((exp, index) => (
-            // Wrapping each experience in a SpotlightCard
-            <SpotlightCard
-              key={index}
-              className="p-8 md:p-10"
-              spotlightColor="rgba(255, 255, 255, 0.05)"
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-                <div>
-                  <h3 className="text-xl md:text-2xl font-bold text-slate-100">
-                    {exp.role}{" "}
-                    <span className="text-teal-400">@ {exp.company}</span>
-                  </h3>
-                </div>
-                <div className="flex items-center gap-2 text-slate-400 font-mono text-sm bg-slate-800/50 px-3 py-1 rounded-full w-fit">
-                  <Calendar size={14} />
-                  {exp.period}
-                </div>
-              </div>
-
-              <p className="text-slate-300 mb-6 text-lg">{exp.description}</p>
-
-              <ul className="space-y-3 mb-8">
-                {exp.achievements.map((item, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-3 text-slate-400 text-sm md:text-base"
-                  >
-                    <span className="text-teal-400 mt-1.5 text-xs">▹</span>
-                    <span className="leading-relaxed">{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="flex flex-wrap gap-3">
-                {exp.tech.map((tech, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1 bg-slate-800 text-slate-300 text-xs rounded-full font-mono border border-slate-700 hover:text-teal-400 hover:border-teal-400/50 transition-colors cursor-default"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </SpotlightCard>
-          ))}
-        </div>
-      </motion.div>
-    </section>
-  );
-}
-</file>
-
-<file path="src/components/Projects.tsx">
-"use client";
-
-import { Github, ExternalLink, Folder } from "lucide-react";
-import SpotlightCard from "./SpotlightCard"; // <--- Import the new component
-
-interface Project {
-  title: string;
-  description: string;
-  tech: string[];
-  github: string;
-  link: string;
-}
-
-const projects: Project[] = [
-  {
-    title: "Real-Time Chat Application",
-    description:
-      "A scalable full-stack chat platform engineered for high concurrency. Features real-time bi-directional communication, secure JWT authentication, and persistent message storage.",
-    tech: ["Node.js", "Socket.io", "React", "MongoDB", "JWT"],
-    github: "https://github.com/anichandan124",
-    link: "#",
-  },
-  {
-    title: "Movie Recommendation API",
-    description:
-      "A machine-learning powered RESTful API. Implements Content-Based Filtering using Cosine Similarity to provide personalized movie suggestions based on metadata.",
-    tech: ["Python", "Flask", "Scikit-learn", "MongoDB", "API Gateway"],
-    github: "https://github.com/anichandan124",
-    link: "#",
-  },
-  {
-    title: "Inventory Sync Engine",
-    description:
-      "Built for Docplix. A background worker service that synchronizes legacy SQL data with modern NoSQL cloud storage, handling 10k+ records per minute with conflict resolution.",
-    tech: ["Typescript", "PostgreSQL", "BullMQ", "Redis"],
-    github: "https://github.com/anichandan124",
-    link: "#",
-  },
-];
-
-export default function Projects() {
-  return (
-    <section id="projects" className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
-      <div className="mb-16">
-        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
-          <span className="text-teal-400">03.</span> Featured Projects
-        </h2>
-        <p className="text-slate-400 max-w-2xl text-lg">
-          A selection of systems I have architected, focusing on{" "}
-          <span className="text-teal-400">scalability</span> and{" "}
-          <span className="text-teal-400">performance</span>.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project, index) => (
-          // Using SpotlightCard instead of standard div
-          <SpotlightCard key={index} className="p-8 h-full flex flex-col group">
-            {/* Header */}
-            <div className="flex justify-between items-start mb-6">
-              <div className="p-3 bg-slate-800/50 rounded-lg text-teal-400 group-hover:text-white transition-colors">
-                <Folder size={24} />
-              </div>
-              <div className="flex gap-4 text-slate-400 z-20">
-                <a
-                  href={project.github}
-                  target="_blank"
-                  className="hover:text-teal-400 transition-colors transform hover:-translate-y-1 duration-300"
-                >
-                  <Github size={20} />
-                </a>
-                <a
-                  href={project.link}
-                  className="hover:text-teal-400 transition-colors transform hover:-translate-y-1 duration-300"
-                >
-                  <ExternalLink size={20} />
-                </a>
-              </div>
-            </div>
-
-            {/* Title */}
-            <h3 className="text-xl font-bold text-slate-100 mb-3 group-hover:text-teal-400 transition-colors">
-              {project.title}
-            </h3>
-
-            {/* Description */}
-            <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-grow">
-              {project.description}
-            </p>
-
-            {/* Tech Stack */}
-            <div className="flex flex-wrap gap-2 mt-auto">
-              {project.tech.map((t, i) => (
-                <span
-                  key={i}
-                  className="text-xs font-mono text-teal-400/80 bg-teal-400/5 px-2 py-1 rounded border border-teal-400/10"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          </SpotlightCard>
-        ))}
-      </div>
-    </section>
-  );
-}
-</file>
-
 <file path="postcss.config.mjs">
 /** @type {import('postcss-load-config').Config} */
 const config = {
@@ -2290,7 +2424,8 @@ export default config;
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 226, 232, 240;
+  --foreground-rgb:
+    248, 250, 252; /* Slate 50 - Brighter text for better contrast */
   --background-start-rgb: 2, 6, 23; /* Slate 950 */
   --background-end-rgb: 2, 6, 23;
 }
@@ -2300,10 +2435,10 @@ body {
   background: rgb(var(--background-start-rgb));
   font-family: sans-serif;
   overflow-x: hidden;
+  /* Add a very subtle radial gradient to the body itself to remove the "flat" feel */
+  background-image: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 70%);
 }
 
-/* --- 1. FILM GRAIN TEXTURE --- */
-/* This adds a subtle static noise that makes the dark mode feel "expensive" */
 .bg-noise {
   position: fixed;
   top: 0;
@@ -2312,57 +2447,65 @@ body {
   height: 100vh;
   pointer-events: none;
   z-index: 50;
-  opacity: 0.03;
+  opacity: 0.015;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-/* --- 2. CUSTOM TEXT SELECTION --- */
-/* When users highlight text, it should match your brand (Teal) */
 ::selection {
-  background: rgba(45, 212, 191, 0.3); /* Teal-400 with opacity */
+  background: rgba(45, 212, 191, 0.2);
   color: #2dd4bf;
 }
 
-/* --- 3. SLEEK SCROLLBAR --- */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 4px;
-  border: 2px solid #020617; /* Creates padding effect */
+  background: #334155;
+  border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #475569;
 }
 
-/* --- 4. UTILITIES --- */
-.text-balance {
-  text-wrap: balance;
+/* --- FIXING THE REACT FLOW CONTROLS --- */
+.react-flow__controls {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
-
-/* Hide scrollbar for Chrome/Safari/Opera */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+.react-flow__controls-button {
+  background-color: #0f172a !important; /* Slate 900 */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  fill: #94a3b8 !important; /* Slate 400 */
 }
-/* Hide scrollbar for IE, Edge and Firefox */
-.no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+.react-flow__controls-button:hover {
+  background-color: #1e293b !important; /* Slate 800 */
+  fill: #2dd4bf !important; /* Teal 400 hover */
 }
 </file>
 
 <file path="src/app/layout.tsx">
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import BackgroundGrid from "@/components/BackgroundGrid";
 import Navbar from "@/components/Navbar";
 
-const inter = Inter({ subsets: ["latin"] });
+// Setup Inter for body text
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+// Setup Space Grotesk for headings and impact numbers
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+});
 
 export const metadata: Metadata = {
   title: "Anirudh Chandan | Software Engineer",
@@ -2377,11 +2520,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      {/* ADDED 'bg-noise' class here in a separate div to overlay everything */}
       <body
-        className={`${inter.className} relative bg-slate-950 text-slate-200 antialiased`}
+        /* Inject both font variables and set default to sans */
+        className={`${inter.variable} ${spaceGrotesk.variable} font-sans relative bg-slate-950 text-slate-200 antialiased`}
       >
-        {/* The Noise Overlay */}
         <div className="bg-noise" />
 
         <Navbar />
@@ -2390,6 +2532,259 @@ export default function RootLayout({
         {children}
       </body>
     </html>
+  );
+}
+</file>
+
+<file path="src/components/Experience.tsx">
+"use client";
+
+import { motion } from "framer-motion";
+import { Calendar, Briefcase, ChevronRight } from "lucide-react";
+import SpotlightCard from "./SpotlightCard";
+
+const experiences = [
+  {
+    company: "Docplix",
+    role: "Lead Backend Architect (V2.0)",
+    period: "Nov 2025 - Present",
+    type: "Infrastructure",
+    description:
+      "Spearheading the migration from a monolithic legacy system to a decoupled, high-performance microservices architecture.",
+    achievements: [
+      "Architected 30+ RESTful endpoints ensuring 99.9% data consistency.",
+      "Engineered a centralized sync service to resolve critical inventory mismatches.",
+      "Optimized Sequelize query patterns for high-concurrency patient dashboards.",
+    ],
+    tech: ["Node.js", "Sequelize", "Microservices", "Redis"],
+  },
+  {
+    company: "Genpact",
+    role: "Software Engineer",
+    period: "Apr 2024 - Oct 2025",
+    type: "Data Engineering",
+    description:
+      "Promoted from intern to lead serverless pipeline development for tax computation software.",
+    achievements: [
+      "Designed serverless data pipelines (Python/GCP) boosting efficiency by 35%.",
+      "Reduced API response times by 40% using Kafka event streams.",
+      "Integrated LLM summarization for automated reporting.",
+    ],
+    tech: ["Python", "GCP", "Kafka", "Docker"],
+  },
+  {
+    company: "Docplix",
+    role: "Junior Software Engineer",
+    period: "Jan 2020 - July 2024",
+    type: "Product Engineering",
+    description:
+      "Early member of the engineering team focused on optimizing core health record systems.",
+    achievements: [
+      "Reduced patient record retrieval latency by 40% via advanced indexing.",
+      "Built real-time analytics dashboard with React and interactive charts.",
+    ],
+    tech: ["React", "PostgreSQL", "SQL Optimization"],
+  },
+];
+
+export default function Experience() {
+  return (
+    <section
+      id="experience"
+      className="py-24 px-6 md:px-12 max-w-7xl mx-auto relative scroll-mt-32"
+    >
+      {/* Huge background number using font-display */}
+      <div className="absolute top-10 right-10 text-[15rem] font-black font-display text-slate-800/20 select-none pointer-events-none tracking-tighter">
+        02
+      </div>
+
+      <div className="mb-20">
+        <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
+          <span className="text-teal-400 font-display font-black text-2xl">
+            02.
+          </span>{" "}
+          Professional Path
+        </h2>
+        <p className="text-slate-400 max-w-2xl text-lg leading-relaxed">
+          My career has been a journey through{" "}
+          <span className="text-teal-400">system design</span>, from
+          product-focused engineering to high-scale infrastructure architecture.
+        </p>
+      </div>
+
+      <div className="relative">
+        <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-teal-500/50 via-slate-800 to-transparent hidden md:block"></div>
+
+        <div className="space-y-12">
+          {experiences.map((exp, index) => (
+            <div
+              key={index}
+              className={`flex flex-col md:flex-row items-center w-full ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}
+            >
+              <div className="w-full md:w-5/12">
+                <motion.div
+                  initial={{ opacity: 0, x: index % 2 === 0 ? 50 : -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                >
+                  <SpotlightCard className="p-6 md:p-8">
+                    <div className="flex justify-between items-start mb-4">
+                      <span className="px-3 py-1 bg-teal-500/10 text-teal-400 text-[10px] font-mono rounded-full border border-teal-500/20 uppercase tracking-widest">
+                        {exp.type}
+                      </span>
+                      <div className="flex items-center gap-2 text-slate-500 font-mono text-[10px]">
+                        <Calendar size={12} />
+                        {exp.period}
+                      </div>
+                    </div>
+                    {/* Role heading using font-display */}
+                    <h3 className="text-2xl font-display font-bold text-white mb-1 tracking-tight">
+                      {exp.role}
+                    </h3>
+                    <p className="text-teal-400 font-mono text-sm mb-6">
+                      @ {exp.company}
+                    </p>
+                    <ul className="space-y-3 mb-8">
+                      {exp.achievements.map((ach, i) => (
+                        <li
+                          key={i}
+                          className="flex items-start gap-3 text-slate-400 text-sm"
+                        >
+                          <ChevronRight
+                            size={14}
+                            className="text-teal-500 mt-1 shrink-0"
+                          />
+                          <span>{ach}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
+                      {exp.tech.map((t) => (
+                        <span
+                          key={t}
+                          className="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-1 rounded border border-white/5"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </SpotlightCard>
+                </motion.div>
+              </div>
+              <div className="relative flex items-center justify-center w-full md:w-2/12 my-6 md:my-0">
+                <div className="w-10 h-10 rounded-full bg-slate-950 border border-slate-800 flex items-center justify-center z-10 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                  <Briefcase size={16} className="text-teal-400" />
+                </div>
+                <div className="absolute w-12 h-12 bg-teal-500/10 rounded-full blur-xl"></div>
+              </div>
+              <div className="hidden md:block w-5/12"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/Projects.tsx">
+"use client";
+
+import { Github, ExternalLink, Folder, Database } from "lucide-react";
+import SpotlightCard from "./SpotlightCard";
+
+interface Project {
+  title: string;
+  description: string;
+  tech: string[];
+  github: string;
+  link: string;
+}
+
+const projects: Project[] = [
+  {
+    title: "PyDB: Storage Engine",
+    description:
+      "A disk-based relational B-Tree storage engine implemented in Python. Features a custom Disk Pager, WAL for ACID compliance, and raw binary serialization using struct packing.",
+    tech: ["Python", "B-Tree", "Binary Serialization", "File I/O"],
+    github: "https://github.com/anichandan124",
+    link: "#",
+  },
+  {
+    title: "Real-Time Chat Application",
+    description:
+      "A scalable full-stack chat platform engineered for high concurrency. Features real-time bi-directional communication and persistent message storage.",
+    tech: ["Node.js", "Socket.io", "React", "MongoDB"],
+    github: "https://github.com/anichandan124",
+    link: "#",
+  },
+  {
+    title: "Inventory Sync Engine",
+    description:
+      "Built for Docplix. A background worker service that synchronizes legacy SQL data with modern NoSQL cloud storage, handling conflict resolution at scale.",
+    tech: ["Typescript", "PostgreSQL", "BullMQ", "Redis"],
+    github: "https://github.com/anichandan124",
+    link: "#",
+  },
+];
+
+export default function Projects() {
+  return (
+    <section
+      id="projects"
+      className="py-24 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-32"
+    >
+      <div className="mb-16">
+        <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
+          <span className="text-teal-400 font-display font-black text-2xl">
+            03.
+          </span>{" "}
+          Featured Work
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {projects.map((project, index) => (
+          <SpotlightCard key={index} className="p-8 h-full flex flex-col group">
+            <div className="flex justify-between items-start mb-6">
+              <div className="p-3 bg-slate-800/50 rounded-lg text-teal-400 group-hover:text-white transition-colors">
+                {project.title.includes("PyDB") ? (
+                  <Database size={24} />
+                ) : (
+                  <Folder size={24} />
+                )}
+              </div>
+              <div className="flex gap-4 text-slate-400 z-20">
+                <a href={project.github} target="_blank">
+                  <Github size={20} className="hover:text-teal-400" />
+                </a>
+                <a href={project.link}>
+                  <ExternalLink size={20} className="hover:text-teal-400" />
+                </a>
+              </div>
+            </div>
+            {/* Project Title using font-display */}
+            <h3 className="text-2xl font-display font-bold text-slate-100 mb-3 group-hover:text-teal-400 transition-colors tracking-tight">
+              {project.title}
+            </h3>
+            <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-grow">
+              {project.description}
+            </p>
+            <div className="flex flex-wrap gap-2 mt-auto">
+              {project.tech.map((t, i) => (
+                <span
+                  key={i}
+                  className="text-[10px] font-mono text-teal-400/80 bg-teal-400/5 px-2 py-1 rounded border border-teal-400/10 uppercase tracking-tighter"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </SpotlightCard>
+        ))}
+      </div>
+    </section>
   );
 }
 </file>
@@ -2433,181 +2828,180 @@ export default function RootLayout({
 <file path="src/app/page.tsx">
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, FileText, ChevronDown } from "lucide-react";
-import Image from "next/image"; // <--- Import Image component
+import { Github, Linkedin, Mail, FileText } from "lucide-react";
+import Image from "next/image";
+import { useEffect } from "react";
 
-// Components
+// Infrastructure
+import { SystemProvider } from "@/components/SystemContext";
+import Toaster from "@/components/Toaster";
 import Navbar from "@/components/Navbar";
+
+// Standard Imports
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
 import ServerMonitor from "@/components/ServerMonitor";
-import Architecture from "@/components/Architecture";
-import Impact from "@/components/Impact";
-import ApiPlayground from "@/components/ApiPlayground";
-import CodeComparison from "@/components/CodeComparison";
-import AiChatbot from "@/components/AiChatbot";
-import ShardingDemo from "@/components/ShardingDemo";
-import SpotlightCard from "@/components/SpotlightCard"; // <--- We use this for the profile pic wrapper
+import SpotlightCard from "@/components/SpotlightCard";
 
-export default function Home() {
+// Dynamic Imports
+const Architecture = dynamic(() => import("@/components/Architecture"), {
+  ssr: false,
+});
+const StorageVisualizer = dynamic(
+  () => import("@/components/StorageVisualizer"),
+  { ssr: false },
+);
+const Impact = dynamic(() => import("@/components/Impact"), { ssr: false });
+const ApiPlayground = dynamic(() => import("@/components/ApiPlayground"), {
+  ssr: false,
+});
+const CodeComparison = dynamic(() => import("@/components/CodeComparison"), {
+  ssr: false,
+});
+const ShardingDemo = dynamic(() => import("@/components/ShardingDemo"), {
+  ssr: false,
+});
+const AiChatbot = dynamic(() => import("@/components/AiChatbot"), {
+  ssr: false,
+});
+
+function PageContent() {
+  useEffect(() => {
+    console.log(
+      "%c HELLO RECRUITER %c",
+      "background: #2dd4bf; color: #020617; font-weight: bold; padding: 4px; border-radius: 4px;",
+      "color: #2dd4bf; font-family: monospace;",
+    );
+    console.table({
+      Name: "Anirudh Chandan",
+      Specialty: "Distributed Systems & API Design",
+      Status: "Open to new opportunities",
+      Contact: "anichandan124@gmail.com",
+    });
+  }, []);
+
   return (
-    <main className="min-h-screen selection:bg-teal-500 selection:text-white relative">
-      {/* BACKGROUND LAYER */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-grid opacity-20"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900/0 via-slate-900/80 to-slate-950"></div>
-      </div>
-
+    <main className="min-h-screen selection:bg-teal-500/30 selection:text-teal-200 relative">
+      <Toaster />
       <Navbar />
 
       <div className="relative z-10">
-        {/* --- HERO SECTION --- */}
-        <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-28 md:pt-0">
-          <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-12 mb-16">
-            {/* LEFT SIDE: TEXT */}
+        <section
+          id="home"
+          className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-32 md:pt-0 scroll-mt-32"
+        >
+          <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-12 mb-12">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
               className="flex-1 text-center md:text-left"
             >
-              <span className="text-teal-400 font-mono text-lg mb-4 block">
+              <span className="text-teal-400 font-mono text-sm tracking-wider uppercase mb-4 block">
                 Hi, my name is
               </span>
-              <h1 className="text-5xl md:text-7xl font-bold text-slate-100 mb-4 tracking-tight">
+              {/* Added font-display and font-black for massive visual impact */}
+              <h1 className="text-5xl md:text-7xl font-display font-black text-slate-50 mb-4 tracking-tighter drop-shadow-sm">
                 Anirudh Chandan.
               </h1>
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-400 mb-6">
+              {/* Added font-display tracking-tight */}
+              <h2 className="text-3xl md:text-5xl font-display font-bold tracking-tight text-slate-300 mb-6 drop-shadow-sm">
                 I build scalable backend systems.
               </h2>
               <p className="max-w-xl text-slate-400 text-lg leading-relaxed mb-8 mx-auto md:mx-0">
-                I am a Software Engineer based in India, specializing in
-                high-performance APIs and distributed architectures. From
-                architecting 30+ endpoints at{" "}
-                <span className="text-teal-400">Docplix</span> to optimizing
-                pipelines at <span className="text-teal-400">Genpact</span>.
+                Software Engineer specializing in high-performance APIs and
+                distributed architectures. Creator of the PyDB storage engine.
               </p>
 
               <div className="flex flex-wrap gap-4 mb-10 justify-center md:justify-start">
                 <a
                   href="#projects"
-                  className="px-6 py-3 border border-teal-400 text-teal-400 rounded hover:bg-teal-400/10 transition-colors font-mono"
+                  className="px-6 py-3 border border-white/10 text-slate-300 rounded-lg hover:bg-white/5 hover:text-white transition-all font-mono text-sm backdrop-blur-sm"
                 >
                   Check out my work
                 </a>
                 <a
                   href="/ANIRUDH_CHANDAN_RESUME_2026.pdf"
                   target="_blank"
-                  className="px-6 py-3 bg-slate-800 text-slate-200 rounded hover:bg-slate-700 transition-colors font-mono flex items-center gap-2"
+                  className="px-6 py-3 bg-teal-500 text-slate-950 font-bold rounded-lg hover:bg-teal-400 transition-all font-mono flex items-center gap-2 text-sm shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_25px_rgba(45,212,191,0.5)]"
                 >
                   <FileText size={18} /> Resume
                 </a>
               </div>
 
-              <div className="flex items-center gap-6 text-slate-400 justify-center md:justify-start">
+              <div className="flex items-center gap-6 text-slate-500 justify-center md:justify-start">
                 <a
                   href="https://github.com/anichandan124"
                   target="_blank"
-                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
+                  className="hover:text-slate-300 transition-colors"
                 >
                   <Github size={24} />
                 </a>
                 <a
                   href="https://linkedin.com"
                   target="_blank"
-                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
+                  className="hover:text-slate-300 transition-colors"
                 >
                   <Linkedin size={24} />
                 </a>
                 <a
                   href="mailto:anichandan124@gmail.com"
-                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
+                  className="hover:text-slate-300 transition-colors"
                 >
                   <Mail size={24} />
                 </a>
               </div>
             </motion.div>
 
-            {/* RIGHT SIDE: PROFILE IMAGE (Using SpotlightCard) */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, rotate: 5 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative w-[280px] h-[280px] md:w-[350px] md:h-[350px] flex-shrink-0"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative w-[280px] h-[280px] md:w-[320px] md:h-[320px] flex-shrink-0"
             >
-              <SpotlightCard
-                className="w-full h-full p-2 rounded-2xl border-slate-700 bg-slate-800/50"
-                spotlightColor="rgba(45, 212, 191, 0.25)"
-              >
-                <div className="relative w-full h-full rounded-xl overflow-hidden group">
-                  {/* THE IMAGE */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-teal-500/20 to-purple-500/20 rounded-2xl blur-2xl"></div>
+              <div className="relative w-full h-full p-1 rounded-2xl bg-gradient-to-b from-white/10 to-white/0">
+                <div className="relative w-full h-full rounded-xl overflow-hidden group bg-slate-900">
                   <Image
-                    src="/profile.jpeg" // <--- Ensure this file exists in /public
-                    alt="Anirudh Chandan"
+                    src="/profile.jpeg"
+                    alt="Anirudh"
                     fill
-                    className="object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105"
+                    className="object-cover transition-all duration-700 grayscale hover:grayscale-0 opacity-80 hover:opacity-100"
                     priority
                   />
-
-                  {/* Subtle Gradient Overlay (Fades image slightly at bottom) */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-60"></div>
-
-                  {/* Status Badge */}
-                  <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700 shadow-xl z-20">
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-500"></span>
-                    </span>
-                    <span className="text-xs font-mono text-slate-300 font-bold">
-                      Open to Work
-                    </span>
-                  </div>
                 </div>
-              </SpotlightCard>
-
-              {/* Decorative Blur Blobs behind the image */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-teal-500/10 rounded-full blur-2xl -z-10"></div>
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl -z-10"></div>
+              </div>
             </motion.div>
           </div>
 
-          <ServerMonitor />
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 1 }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-slate-500 hidden md:block"
-          >
-            <ChevronDown size={30} />
-          </motion.div>
+          <div className="max-w-4xl mx-auto md:mx-0">
+            <ServerMonitor />
+          </div>
         </section>
 
-        {/* REST OF SECTIONS */}
-        <Experience />
-        <Projects />
-        <Architecture />
-        <Impact />
-        <ApiPlayground />
-        <CodeComparison />
-        <ShardingDemo />
-        <Contact />
-
-        <footer className="py-6 text-center text-slate-500 text-sm font-mono bg-transparent">
-          <a
-            href="https://github.com/anichandan124"
-            target="_blank"
-            className="hover:text-teal-400 transition-colors"
-          >
-            Designed & Built by Anirudh Chandan
-          </a>
-        </footer>
+        <div className="flex flex-col gap-32 pb-32 mt-20">
+          <Experience />
+          <Projects />
+          <StorageVisualizer />
+          <Architecture />
+          <Impact />
+          <ApiPlayground />
+          <CodeComparison />
+          <ShardingDemo />
+          <Contact />
+        </div>
       </div>
-
       <AiChatbot />
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <SystemProvider>
+      <PageContent />
+    </SystemProvider>
   );
 }
 </file>

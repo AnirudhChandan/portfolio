@@ -1,25 +1,24 @@
 "use client";
 
-import dynamic from "next/dynamic"; // <--- 1. Import dynamic
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, FileText, ChevronDown } from "lucide-react";
+import { Github, Linkedin, Mail, FileText } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
 
 // Infrastructure
 import { SystemProvider } from "@/components/SystemContext";
 import Toaster from "@/components/Toaster";
-
 import Navbar from "@/components/Navbar";
 
-// Standard Imports (Lightweight)
+// Standard Imports
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
 import ServerMonitor from "@/components/ServerMonitor";
 import SpotlightCard from "@/components/SpotlightCard";
 
-// 2. Dynamic Imports (Heavy Components - Load only when needed)
+// Dynamic Imports
 const Architecture = dynamic(() => import("@/components/Architecture"), {
   ssr: false,
 });
@@ -42,15 +41,11 @@ const AiChatbot = dynamic(() => import("@/components/AiChatbot"), {
 });
 
 function PageContent() {
-  // 3. THE CONSOLE EASTER EGG
   useEffect(() => {
     console.log(
       "%c HELLO RECRUITER %c",
       "background: #2dd4bf; color: #020617; font-weight: bold; padding: 4px; border-radius: 4px;",
       "color: #2dd4bf; font-family: monospace;",
-    );
-    console.log(
-      "Looking for a Senior Backend/Fullstack Engineer? You found him.",
     );
     console.table({
       Name: "Anirudh Chandan",
@@ -61,110 +56,123 @@ function PageContent() {
   }, []);
 
   return (
-    <main className="min-h-screen selection:bg-teal-500 selection:text-white relative">
+    <main className="min-h-screen selection:bg-teal-500/30 selection:text-teal-200 relative">
       <Toaster />
-
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-grid opacity-20"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900/0 via-slate-900/80 to-slate-950"></div>
-      </div>
-
       <Navbar />
 
       <div className="relative z-10">
         <section
           id="home"
-          className="min-h-screen flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto pt-28 md:pt-0"
+          className="min-h-screen flex flex-col justify-center px-4 md:px-12 max-w-7xl mx-auto pt-32 md:pt-20 scroll-mt-32"
         >
-          <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-12 mb-16">
+          {/* THE BENTO BOX GRID */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 w-full">
+            {/* BLOCK 1: INTRO (Spans 8 columns) */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex-1 text-center md:text-left"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="col-span-1 md:col-span-8 lg:col-span-8"
             >
-              <span className="text-teal-400 font-mono text-lg mb-4 block">
-                Hi, my name is
-              </span>
-              <h1 className="text-5xl md:text-7xl font-bold text-slate-100 mb-4 tracking-tight">
-                Anirudh Chandan.
-              </h1>
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-400 mb-6">
-                I build scalable backend systems.
-              </h2>
-              <p className="max-w-xl text-slate-400 text-lg leading-relaxed mb-8 mx-auto md:mx-0">
-                Software Engineer specializing in high-performance APIs and
-                distributed architectures. Creator of PyDB storage engine.
-              </p>
-              <div className="flex flex-wrap gap-4 mb-10 justify-center md:justify-start">
-                <a
-                  href="#projects"
-                  className="px-6 py-3 border border-teal-400 text-teal-400 rounded hover:bg-teal-400/10 transition-colors font-mono text-sm"
-                >
-                  Check out my work
-                </a>
-                <a
-                  href="/ANIRUDH_CHANDAN_RESUME_2026.pdf"
-                  target="_blank"
-                  className="px-6 py-3 bg-slate-800 text-slate-200 rounded hover:bg-slate-700 transition-colors font-mono flex items-center gap-2 text-sm"
-                >
-                  <FileText size={18} /> Resume
-                </a>
-              </div>
-              <div className="flex items-center gap-6 text-slate-400 justify-center md:justify-start">
-                <a
-                  href="https://github.com/anichandan124"
-                  target="_blank"
-                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
-                >
-                  <Github size={24} />
-                </a>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
-                >
-                  <Linkedin size={24} />
-                </a>
-                <a
-                  href="mailto:anichandan124@gmail.com"
-                  className="hover:text-teal-400 hover:-translate-y-1 transition-all"
-                >
-                  <Mail size={24} />
-                </a>
-              </div>
-            </motion.div>
+              <SpotlightCard className="p-8 md:p-12 h-full flex flex-col justify-center">
+                <span className="text-teal-400 font-mono text-sm tracking-wider uppercase mb-4 block">
+                  System Status: Online
+                </span>
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-black text-slate-50 mb-4 tracking-tighter drop-shadow-sm leading-none">
+                  Anirudh Chandan.
+                </h1>
+                <h2 className="text-2xl md:text-4xl font-display font-bold tracking-tight text-slate-300 mb-6 drop-shadow-sm">
+                  I build scalable backend systems.
+                </h2>
+                <p className="max-w-xl text-slate-400 text-lg leading-relaxed mb-10">
+                  Software Engineer specializing in high-performance APIs and
+                  distributed architectures. Creator of the PyDB storage engine.
+                </p>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="relative w-[280px] h-[280px] md:w-[350px] md:h-[350px] flex-shrink-0"
-            >
-              <SpotlightCard className="w-full h-full p-2 rounded-2xl border-slate-700 bg-slate-800/50">
-                <div className="relative w-full h-full rounded-xl overflow-hidden group">
-                  <Image
-                    src="/profile.jpeg"
-                    alt="Anirudh"
-                    fill
-                    className="object-cover transition-all duration-700 grayscale group-hover:grayscale-0"
-                    priority
-                  />
+                <div className="flex flex-wrap items-center gap-4 mb-10">
+                  {/* Added Spring Physics to buttons */}
+                  <motion.a
+                    whileHover={{ scale: 0.97 }}
+                    whileTap={{ scale: 0.95 }}
+                    href="#projects"
+                    className="px-6 py-3 border border-white/10 text-slate-300 rounded-lg hover:bg-white/5 hover:text-white transition-colors font-mono text-sm backdrop-blur-sm"
+                  >
+                    View Architecture
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ scale: 0.97 }}
+                    whileTap={{ scale: 0.95 }}
+                    href="/ANIRUDH_CHANDAN_RESUME_2026.pdf"
+                    target="_blank"
+                    className="px-6 py-3 bg-teal-500 text-slate-950 font-bold rounded-lg hover:bg-teal-400 transition-colors font-mono flex items-center gap-2 text-sm shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_25px_rgba(45,212,191,0.5)]"
+                  >
+                    <FileText size={18} /> Initialize Resume
+                  </motion.a>
+                </div>
+
+                <div className="flex items-center gap-6 text-slate-500">
+                  <motion.a
+                    whileHover={{ y: -3, scale: 1.1 }}
+                    href="https://github.com/anichandan124"
+                    target="_blank"
+                    className="hover:text-slate-300 transition-colors"
+                  >
+                    <Github size={24} />
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ y: -3, scale: 1.1 }}
+                    href="https://linkedin.com"
+                    target="_blank"
+                    className="hover:text-slate-300 transition-colors"
+                  >
+                    <Linkedin size={24} />
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ y: -3, scale: 1.1 }}
+                    href="mailto:anichandan124@gmail.com"
+                    className="hover:text-slate-300 transition-colors"
+                  >
+                    <Mail size={24} />
+                  </motion.a>
                 </div>
               </SpotlightCard>
             </motion.div>
+
+            {/* BLOCK 2: PROFILE PICTURE (Spans 4 columns) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="col-span-1 md:col-span-4 lg:col-span-4 min-h-[300px] md:min-h-full"
+            >
+              <SpotlightCard className="w-full h-full p-0 overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent z-10 pointer-events-none"></div>
+                <Image
+                  src="/profile.jpeg"
+                  alt="Anirudh Chandan"
+                  fill
+                  className="object-cover transition-all duration-700 grayscale group-hover:grayscale-0 opacity-70 group-hover:opacity-100 scale-100 group-hover:scale-105"
+                  priority
+                />
+              </SpotlightCard>
+            </motion.div>
+
+            {/* BLOCK 3: SERVER METRICS (4 Mini Cards integrated into grid) */}
+            <ServerMonitor />
           </div>
-          <ServerMonitor />
         </section>
 
-        {/* Dynamic sections: they will only load when the user nears them */}
-        <Experience />
-        <Projects />
-        <StorageVisualizer />
-        <Architecture />
-        <Impact />
-        <ApiPlayground />
-        <CodeComparison />
-        <ShardingDemo />
-        <Contact />
+        <div className="flex flex-col gap-32 pb-32 mt-32">
+          <Experience />
+          <Projects />
+          <StorageVisualizer />
+          <Architecture />
+          <Impact />
+          <ApiPlayground />
+          <CodeComparison />
+          <ShardingDemo />
+          <Contact />
+        </div>
       </div>
       <AiChatbot />
     </main>

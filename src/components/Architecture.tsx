@@ -177,15 +177,18 @@ export default function Architecture() {
   return (
     <section
       id="architecture"
-      className="py-24 px-4 md:px-12 max-w-7xl mx-auto h-[800px] relative"
+      className="py-24 px-4 md:px-12 max-w-7xl mx-auto h-[800px] relative scroll-mt-32"
     >
       <div className="mb-8">
-        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6 flex items-center gap-4">
-          <span className="text-teal-400">04.</span> System Architecture
+        <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
+          <span className="text-teal-400 font-display font-black text-2xl">
+            04.
+          </span>{" "}
+          System Architecture
         </h2>
         <p className="text-slate-400 max-w-2xl">
           Interactive map of the <strong>Inventory Migration System</strong> I
-          engineered at Docplix.
+          engineered at Docplix.{" "}
           <span className="text-teal-400"> Click a node</span> to see the
           engineering challenge.
         </p>

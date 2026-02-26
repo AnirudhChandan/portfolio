@@ -9,6 +9,12 @@ const config: Config = {
           950: "#020617",
         },
       },
+      fontFamily: {
+        // Inter for body text
+        sans: ["var(--font-inter)", "sans-serif"],
+        // Space Grotesk for headings and large metrics
+        display: ["var(--font-space-grotesk)", "sans-serif"],
+      },
     },
   },
   plugins: [],

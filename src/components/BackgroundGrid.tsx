@@ -1,29 +1,63 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export default function BackgroundGrid() {
+  // We use a small hydration delay to prevent layout shifts and animation glitches on initial render
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return (
+      <div className="fixed inset-0 z-[-1] bg-slate-950 pointer-events-none"></div>
+    );
+  }
+
   return (
-    <div className="fixed inset-0 z-[-1] pointer-events-none">
-      {/* 1. The Grid Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+    <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-slate-950">
+      {/* Base anchor gradient. 
+        Keeps the center slightly lighter and the extreme edges pitch black to frame the content.
+      */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900/40 via-slate-950 to-slate-950"></div>
 
-      {/* 2. The Radial Mask (Vignette) */}
-      {/* This creates the "fade to black" effect at the edges so the grid isn't overwhelming */}
-      <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-teal-400 opacity-20 blur-[100px]"></div>
-
-      {/* 3. The "Beam" Animation */}
-      {/* A subtle light that travels down the screen to simulate data flow */}
+      {/* 1. Purple/Blue Blob (Top Left) 
+        Hardware accelerated via framer-motion transforms
+      */}
       <motion.div
-        initial={{ top: "-10%" }}
-        animate={{ top: "110%" }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "linear",
-          repeatDelay: 2,
+        animate={{
+          x: ["0%", "10%", "0%"],
+          y: ["0%", "10%", "0%"],
+          scale: [1, 1.1, 1],
         }}
-        className="absolute left-1/2 w-[1px] h-[200px] bg-gradient-to-b from-transparent via-teal-400 to-transparent opacity-30 shadow-[0_0_20px_2px_rgba(45,212,191,0.3)]"
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -top-[10%] -left-[10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] bg-purple-600/15 rounded-full blur-[120px] will-change-transform"
+      />
+
+      {/* 2. Vibrant Teal Blob (Center Right) 
+        Moves in counter-phase to the purple blob to create an interlocking fluid effect
+      */}
+      <motion.div
+        animate={{
+          x: ["0%", "-15%", "0%"],
+          y: ["0%", "15%", "0%"],
+          scale: [1, 1.2, 1],
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[30%] -right-[10%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-teal-500/15 rounded-full blur-[120px] will-change-transform"
+      />
+
+      {/* 3. Dark Blue Deep Anchor (Bottom Center) 
+        Provides a heavy base color so the bottom of the page doesn't feel empty
+      */}
+      <motion.div
+        animate={{
+          x: ["0%", "20%", "0%"],
+          y: ["0%", "-10%", "0%"],
+          scale: [1, 1.15, 1],
+        }}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -bottom-[20%] left-[20%] w-[70vw] h-[70vw] max-w-[1000px] max-h-[1000px] bg-blue-600/15 rounded-full blur-[150px] will-change-transform"
       />
     </div>
   );

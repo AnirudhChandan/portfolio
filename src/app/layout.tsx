@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import BackgroundGrid from "@/components/BackgroundGrid";
 import Navbar from "@/components/Navbar";
 
-const inter = Inter({ subsets: ["latin"] });
+// Setup Inter for body text
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+// Setup Space Grotesk for headings and impact numbers
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+});
 
 export const metadata: Metadata = {
   title: "Anirudh Chandan | Software Engineer",
@@ -19,11 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      {/* ADDED 'bg-noise' class here in a separate div to overlay everything */}
       <body
-        className={`${inter.className} relative bg-slate-950 text-slate-200 antialiased`}
+        /* Inject both font variables and set default to sans */
+        className={`${inter.variable} ${spaceGrotesk.variable} font-sans relative bg-slate-950 text-slate-200 antialiased`}
       >
-        {/* The Noise Overlay */}
         <div className="bg-noise" />
 
         <Navbar />
