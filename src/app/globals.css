@@ -3,8 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb:
-    248, 250, 252; /* Slate 50 - Brighter text for better contrast */
+  --foreground-rgb: 248, 250, 252; /* Slate 50 */
   --background-start-rgb: 2, 6, 23; /* Slate 950 */
   --background-end-rgb: 2, 6, 23;
 }
@@ -14,10 +13,13 @@ body {
   background: rgb(var(--background-start-rgb));
   font-family: sans-serif;
   overflow-x: hidden;
-  /* Add a very subtle radial gradient to the body itself to remove the "flat" feel */
+  /* Subtle radial gradient to give depth behind the Aurora blobs */
   background-image: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 70%);
 }
 
+/* --- UTILITIES --- */
+
+/* Grainy Texture Overlay */
 .bg-noise {
   position: fixed;
   top: 0;
@@ -30,11 +32,13 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
+/* Custom Text Selection Color */
 ::selection {
-  background: rgba(45, 212, 191, 0.2);
+  background: rgba(45, 212, 191, 0.2); /* Teal 400 with opacity */
   color: #2dd4bf;
 }
 
+/* --- SCROLLBAR CUSTOMIZATION --- */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -42,14 +46,14 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #334155; /* Slate 700 */
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #475569; /* Slate 600 */
 }
 
-/* --- FIXING THE REACT FLOW CONTROLS --- */
+/* --- REACT FLOW OVERRIDES (Architecture Diagram) --- */
 .react-flow__controls {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
   border-radius: 8px !important;
@@ -64,4 +68,24 @@ body {
 .react-flow__controls-button:hover {
   background-color: #1e293b !important; /* Slate 800 */
   fill: #2dd4bf !important; /* Teal 400 hover */
+}
+
+/* --- INFINITE MARQUEE ANIMATION --- */
+/* Used in TechMarquee.tsx for the seamless loop */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: scroll 40s linear infinite;
+}
+
+/* Pause the animation when the user hovers over the container */
+.group:hover .animate-marquee {
+  animation-play-state: paused;
 }

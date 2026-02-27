@@ -2,28 +2,40 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Activity, Server, Zap, Database } from "lucide-react";
+import { Activity, Server, Zap, Database, Globe } from "lucide-react";
 import SpotlightCard from "./SpotlightCard";
 
 export default function ServerMonitor() {
-  // Simulated State for "Live" Metrics
-  const [latency, setLatency] = useState(24);
-  const [requests, setRequests] = useState(1240);
-  const [dbLoad, setDbLoad] = useState(42);
+  const [latency, setLatency] = useState<number | null>(null);
+  const [location, setLocation] = useState("Detecting...");
+  const [status, setStatus] = useState("Initializing");
+  const [requests, setRequests] = useState(0);
 
-  // Update metrics every 2 seconds to simulate activity
   useEffect(() => {
+    // 1. Initial Ping for Location & Status
+    const checkHealth = async () => {
+      const start = performance.now();
+      try {
+        const res = await fetch("/api/health");
+        const data = await res.json();
+        const end = performance.now();
+
+        setLatency(Math.round(end - start));
+        setLocation(data.location);
+        setStatus(data.status);
+      } catch (e) {
+        setStatus("Offline");
+      }
+    };
+
+    checkHealth();
+
+    // 2. Simulate "Live Request Count" (Mocking a websocket stream for visual activity)
+    // In a real app, this would be a socket subscription
     const interval = setInterval(() => {
-      setLatency((prev) =>
-        Math.max(10, Math.min(60, prev + (Math.random() * 10 - 5))),
-      );
-      setRequests((prev) =>
-        Math.max(1000, Math.min(5000, prev + (Math.random() * 200 - 100))),
-      );
-      setDbLoad((prev) =>
-        Math.max(20, Math.min(80, prev + (Math.random() * 10 - 5))),
-      );
-    }, 2000);
+      setRequests((prev) => prev + Math.floor(Math.random() * 5));
+    }, 1000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -49,15 +61,19 @@ export default function ServerMonitor() {
           </div>
           <div className="text-teal-400 font-display font-bold text-xl md:text-2xl flex items-center gap-2 tracking-tight">
             <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
+              <span
+                className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${status === "operational" ? "bg-teal-400" : "bg-amber-400"}`}
+              ></span>
+              <span
+                className={`relative inline-flex rounded-full h-3 w-3 ${status === "operational" ? "bg-teal-500" : "bg-amber-500"}`}
+              ></span>
             </span>
-            Operational
+            {status === "operational" ? "Operational" : status}
           </div>
         </SpotlightCard>
       </motion.div>
 
-      {/* Metric 2: API Latency */}
+      {/* Metric 2: Real User Latency */}
       <motion.div
         variants={cardVariants}
         initial="hidden"
@@ -68,16 +84,16 @@ export default function ServerMonitor() {
         <SpotlightCard className="p-6 h-full flex flex-col justify-center">
           <div className="flex items-center gap-2 text-slate-400 text-xs font-mono uppercase mb-3">
             <Zap size={14} className="text-yellow-400" />
-            Avg. Latency
+            Your Latency
           </div>
           <div className="text-slate-200 font-display font-bold text-2xl md:text-3xl tracking-tighter">
-            {latency.toFixed(0)}
+            {latency !== null ? latency : "--"}
             <span className="text-lg text-slate-500 ml-1">ms</span>
           </div>
         </SpotlightCard>
       </motion.div>
 
-      {/* Metric 3: Throughput */}
+      {/* Metric 3: User Location (The "Hook") */}
       <motion.div
         variants={cardVariants}
         initial="hidden"
@@ -87,16 +103,16 @@ export default function ServerMonitor() {
       >
         <SpotlightCard className="p-6 h-full flex flex-col justify-center">
           <div className="flex items-center gap-2 text-slate-400 text-xs font-mono uppercase mb-3">
-            <Server size={14} className="text-purple-400" />
-            Req/Sec
+            <Globe size={14} className="text-purple-400" />
+            Connected From
           </div>
-          <div className="text-slate-200 font-display font-bold text-2xl md:text-3xl tracking-tighter">
-            {requests.toFixed(0)}
+          <div className="text-slate-200 font-display font-bold text-xl md:text-2xl tracking-tight truncate">
+            {location}
           </div>
         </SpotlightCard>
       </motion.div>
 
-      {/* Metric 4: DB Load */}
+      {/* Metric 4: Total Requests (Simulated) */}
       <motion.div
         variants={cardVariants}
         initial="hidden"
@@ -107,19 +123,19 @@ export default function ServerMonitor() {
         <SpotlightCard className="p-6 h-full flex flex-col justify-center">
           <div className="flex items-center justify-between text-slate-400 text-xs font-mono uppercase mb-3">
             <div className="flex items-center gap-2">
-              <Database size={14} className="text-blue-400" />
-              DB Load
+              <Server size={14} className="text-blue-400" />
+              Total Req
             </div>
-            <span className="text-blue-400 font-bold">
-              {dbLoad.toFixed(0)}%
-            </span>
           </div>
-          <div className="w-full bg-slate-800 rounded-full h-2.5 mt-1 overflow-hidden">
+          <div className="text-slate-200 font-display font-bold text-2xl md:text-3xl tracking-tighter">
+            {1240 + requests}
+          </div>
+          <div className="w-full bg-slate-800 rounded-full h-1 mt-3 overflow-hidden">
             <motion.div
               className="bg-blue-500 h-full rounded-full"
-              style={{ width: `${dbLoad}%` }}
-              animate={{ width: `${dbLoad}%` }}
-              transition={{ type: "spring", stiffness: 50, damping: 15 }}
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
             />
           </div>
         </SpotlightCard>

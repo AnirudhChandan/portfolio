@@ -14,9 +14,11 @@ import Navbar from "@/components/Navbar";
 // Standard Imports
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
-import Contact from "@/components/Contact";
 import ServerMonitor from "@/components/ServerMonitor";
 import SpotlightCard from "@/components/SpotlightCard";
+
+// --- CHANGED: Import TerminalContact instead of Contact ---
+import TerminalContact from "@/components/TerminalContact";
 
 // Dynamic Imports
 const Architecture = dynamic(() => import("@/components/Architecture"), {
@@ -36,8 +38,6 @@ const CodeComparison = dynamic(() => import("@/components/CodeComparison"), {
 const ShardingDemo = dynamic(() => import("@/components/ShardingDemo"), {
   ssr: false,
 });
-
-// NEW: Import the Command Palette instead of the Chatbot
 const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
   ssr: false,
 });
@@ -174,11 +174,12 @@ function PageContent() {
           <ApiPlayground />
           <CodeComparison />
           <ShardingDemo />
-          <Contact />
+
+          {/* --- CHANGED: Using TerminalContact here --- */}
+          <TerminalContact />
         </div>
       </div>
 
-      {/* THE NEW COMMAND PALETTE */}
       <CommandPalette />
     </main>
   );
