@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, ReactNode, useEffect } from "react";
+import { motion } from "framer-motion";
 
 interface SpotlightCardProps {
   children: ReactNode;
@@ -11,7 +12,7 @@ interface SpotlightCardProps {
 export default function SpotlightCard({
   children,
   className = "",
-  spotlightColor = "rgba(45, 212, 191, 0.08)", // Slightly increased for the glass effect
+  spotlightColor = "rgba(45, 212, 191, 0.08)",
 }: SpotlightCardProps) {
   const divRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -43,17 +44,19 @@ export default function SpotlightCard({
   }, []);
 
   return (
-    <div
+    <motion.div
       ref={divRef}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      /* UPGRADED: Removed solid border, added inner highlight, backdrop blur, and slight shadow */
-      className={`relative overflow-hidden rounded-2xl bg-slate-900/40 backdrop-blur-md shadow-2xl transition-all hover:bg-slate-900/60 shadow-black/50 ${className}`}
+      /* TACTICAL PHYSICS: Scale down slightly on hover, further on click */
+      whileHover={{ scale: 0.985 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+      /* Changed transition-all to transition-colors so it doesn't fight Framer's transform */
+      className={`relative overflow-hidden rounded-2xl bg-slate-900/40 backdrop-blur-md shadow-2xl transition-colors duration-300 hover:bg-slate-900/60 shadow-black/50 cursor-pointer ${className}`}
     >
-      {/* Delicate inner top highlight to simulate 3D glass edge */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
-      {/* Barely visible outer border */}
       <div className="absolute inset-0 rounded-2xl border border-white/5 pointer-events-none"></div>
 
       <div
@@ -64,6 +67,6 @@ export default function SpotlightCard({
         }}
       />
       <div className="relative h-full z-20">{children}</div>
-    </div>
+    </motion.div>
   );
 }

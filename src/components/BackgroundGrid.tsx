@@ -1,13 +1,24 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+// --- COMPILER COMPLIANT HYDRATION FIX ---
+// This safely detects if we are on the client side without triggering cascading setState errors
+const emptySubscribe = () => () => {};
+
+function useIsMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true, // Client snapshot
+    () => false, // Server snapshot
+  );
+}
 
 export default function BackgroundGrid() {
-  // We use a small hydration delay to prevent layout shifts and animation glitches on initial render
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useIsMounted();
 
+  // If we are rendering on the server, return a flat black background to prevent hydration mismatches
   if (!mounted) {
     return (
       <div className="fixed inset-0 z-[-1] bg-slate-950 pointer-events-none"></div>

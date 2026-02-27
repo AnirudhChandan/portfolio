@@ -36,7 +36,9 @@ const CodeComparison = dynamic(() => import("@/components/CodeComparison"), {
 const ShardingDemo = dynamic(() => import("@/components/ShardingDemo"), {
   ssr: false,
 });
-const AiChatbot = dynamic(() => import("@/components/AiChatbot"), {
+
+// NEW: Import the Command Palette instead of the Chatbot
+const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
   ssr: false,
 });
 
@@ -90,18 +92,19 @@ function PageContent() {
                 </p>
 
                 <div className="flex flex-wrap items-center gap-4 mb-10">
-                  {/* Added Spring Physics to buttons */}
                   <motion.a
                     whileHover={{ scale: 0.97 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileTap={{ scale: 0.93 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     href="#projects"
-                    className="px-6 py-3 border border-white/10 text-slate-300 rounded-lg hover:bg-white/5 hover:text-white transition-colors font-mono text-sm backdrop-blur-sm"
+                    className="px-6 py-3 border border-white/10 text-slate-300 rounded-lg hover:bg-white/5 hover:text-white transition-colors font-mono text-sm backdrop-blur-sm shadow-xl"
                   >
                     View Architecture
                   </motion.a>
                   <motion.a
                     whileHover={{ scale: 0.97 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileTap={{ scale: 0.93 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     href="/ANIRUDH_CHANDAN_RESUME_2026.pdf"
                     target="_blank"
                     className="px-6 py-3 bg-teal-500 text-slate-950 font-bold rounded-lg hover:bg-teal-400 transition-colors font-mono flex items-center gap-2 text-sm shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_25px_rgba(45,212,191,0.5)]"
@@ -174,7 +177,9 @@ function PageContent() {
           <Contact />
         </div>
       </div>
-      <AiChatbot />
+
+      {/* THE NEW COMMAND PALETTE */}
+      <CommandPalette />
     </main>
   );
 }
