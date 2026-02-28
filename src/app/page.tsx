@@ -116,7 +116,7 @@ function PageContent() {
                 <div className="flex items-center gap-6 text-slate-500">
                   <motion.a
                     whileHover={{ y: -3, scale: 1.1 }}
-                    href="https://github.com/anichandan124"
+                    href="https://github.com/AnirudhChandan"
                     target="_blank"
                     className="hover:text-slate-300 transition-colors"
                   >
@@ -124,7 +124,7 @@ function PageContent() {
                   </motion.a>
                   <motion.a
                     whileHover={{ y: -3, scale: 1.1 }}
-                    href="https://linkedin.com"
+                    href="https://www.linkedin.com/in/anirudh-chandan-82bb121a6/"
                     target="_blank"
                     className="hover:text-slate-300 transition-colors"
                   >

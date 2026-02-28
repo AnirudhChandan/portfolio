@@ -16,8 +16,7 @@ const heroProject = {
   description:
     "A disk-based relational B-Tree storage engine implemented in Python. Features a custom Disk Pager, WAL for ACID compliance, and raw binary serialization using struct packing. Engineered to handle high-throughput reads/writes with strict O(log n) performance.",
   tech: ["Python", "B-Tree", "Binary Serialization", "File I/O", "ACID"],
-  github: "https://github.com/anichandan124",
-  link: "#",
+  github: "https://github.com/AnirudhChandan/PyDB",
 };
 
 const otherProjects = [
@@ -26,16 +25,13 @@ const otherProjects = [
     description:
       "A scalable full-stack chat platform engineered for high concurrency. Features real-time bi-directional communication, websocket connection pooling, and persistent message storage.",
     tech: ["Node.js", "Socket.io", "React", "MongoDB"],
-    github: "https://github.com/anichandan124",
-    link: "#",
+    github: "https://github.com/AnirudhChandan/chat-app-v2",
   },
   {
     title: "Inventory Sync Engine",
     description:
       "Built for Docplix. A background worker service that synchronizes legacy SQL data with modern NoSQL cloud storage, handling conflict resolution, race conditions, and retry logic at scale.",
     tech: ["Typescript", "PostgreSQL", "BullMQ", "Redis"],
-    github: "https://github.com/anichandan124",
-    link: "#",
   },
 ];
 
@@ -110,12 +106,12 @@ export default function Projects() {
                     >
                       <Github size={22} />
                     </a>
-                    <a
+                    {/* <a
                       href={heroProject.link}
                       className="hover:text-teal-400 transition-colors"
                     >
                       <ExternalLink size={22} />
-                    </a>
+                    </a> */}
                   </div>
                 </div>
                 <h3 className="text-3xl md:text-4xl font-display font-bold text-slate-100 mb-4 tracking-tight group-hover:text-teal-400 transition-colors">
@@ -206,12 +202,12 @@ export default function Projects() {
                     >
                       <Github size={20} />
                     </a>
-                    <a
+                    {/* <a
                       href={project.link}
                       className="hover:text-teal-400 transition-colors"
                     >
                       <ExternalLink size={20} />
-                    </a>
+                    </a> */}
                   </div>
                 </div>
                 <h3 className="text-2xl font-display font-bold text-slate-100 mb-3 group-hover:text-teal-400 transition-colors tracking-tight">
