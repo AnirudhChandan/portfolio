@@ -77,7 +77,7 @@ export default function StorageVisualizer() {
     <section id="storage" className="py-24 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-32">
       <div className="mb-12">
         <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
-          <span className="text-teal-400 font-display font-black text-2xl">04.</span> PyDB:
+          <span className="text-teal-400 font-display font-black text-2xl">01.</span> PyDB:
           Storage Engine
         </h2>
         <p className="text-slate-400 max-w-2xl text-lg leading-relaxed">

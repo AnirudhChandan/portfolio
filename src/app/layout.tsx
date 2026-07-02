@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -7,6 +7,11 @@ import BackgroundGrid from "@/components/BackgroundGrid";
 import Navbar from "@/components/Navbar";
 import ScrollProgress from "@/components/ScrollProgress";
 import BootSequence from "@/components/BootSequence";
+import CursorGlow from "@/components/CursorGlow";
+
+export const viewport: Viewport = {
+  themeColor: "#020617",
+};
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
@@ -81,6 +86,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </a>
         <BootSequence />
         <ScrollProgress />
+        <CursorGlow />
         <div className="bg-noise" />
 
         <Navbar />

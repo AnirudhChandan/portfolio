@@ -151,14 +151,13 @@ export default function CommandPalette() {
             ?.scrollIntoView({ behavior: "smooth" }),
       },
       {
-        id: "nav-architecture",
-        title: "Go to System Architecture",
+        id: "nav-lab",
+        title: "Enter the Lab (live demos)",
         category: "Navigation",
         icon: <Cpu size={16} />,
-        perform: () =>
-          document
-            .getElementById("architecture")
-            ?.scrollIntoView({ behavior: "smooth" }),
+        perform: () => {
+          window.location.href = "/lab";
+        },
       },
     ],
     [],

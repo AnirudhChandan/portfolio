@@ -146,7 +146,7 @@ wal.append({ op: "COMMIT", txId });          // 3. mark it done`}</Code>
       </Section>
 
       <DemoCTA
-        href="/#storage"
+        href="/lab#storage"
         title="See it running"
         desc="The TypeScript port runs live on the home page. Insert keys, watch splits, read the WAL."
         label="Open the demo"

@@ -19,37 +19,12 @@ import SpotlightCard from "@/components/SpotlightCard";
 import StatsSection from "@/components/StatsSection";
 import Services from "@/components/Services";
 import Testimonials from "@/components/Testimonials";
+import LabTeaser from "@/components/LabTeaser";
 
 // --- CHANGED: Import TerminalContact instead of Contact ---
 import TerminalContact from "@/components/TerminalContact";
 
-// Lightweight placeholder shown while heavy client-only sections hydrate.
-function SectionSkeleton() {
-  return (
-    <div className="py-24 px-6 md:px-12 max-w-7xl mx-auto animate-pulse" aria-hidden="true">
-      <div className="h-10 w-64 bg-slate-800/60 rounded-lg mb-8" />
-      <div className="h-80 bg-slate-900/40 border border-white/5 rounded-xl" />
-    </div>
-  );
-}
-
-// Dynamic Imports (client-only interactive sections)
-const Architecture = dynamic(() => import("@/components/Architecture"), {
-  ssr: false,
-  loading: SectionSkeleton,
-});
-const StorageVisualizer = dynamic(() => import("@/components/StorageVisualizer"), {
-  ssr: false,
-  loading: SectionSkeleton,
-});
-const ShardingDemo = dynamic(() => import("@/components/ShardingDemo"), {
-  ssr: false,
-  loading: SectionSkeleton,
-});
-const RateLimitDemo = dynamic(() => import("@/components/RateLimitDemo"), {
-  ssr: false,
-  loading: SectionSkeleton,
-});
+// Dynamic import (client-only modal). The heavy interactive demos now live at /lab.
 const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
   ssr: false,
 });
@@ -136,7 +111,7 @@ function PageContent() {
                       whileTap={{ scale: 0.95 }}
                       href="/ANIRUDH_CHANDAN_RESUME_2026.pdf"
                       target="_blank"
-                      className="px-6 py-3 bg-teal-500 text-slate-950 font-bold rounded-lg hover:bg-teal-400 transition-colors font-mono flex items-center gap-2 text-sm shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_28px_rgba(45,212,191,0.5)]"
+                      className="px-6 py-3 bg-gradient-to-r from-teal-300 to-cyan-400 text-slate-950 font-bold rounded-lg hover:from-teal-200 hover:to-cyan-300 transition-all font-mono flex items-center gap-2 text-sm shadow-[0_0_24px_rgba(45,212,191,0.45)] hover:shadow-[0_0_36px_rgba(45,212,191,0.65)]"
                     >
                       <FileText size={18} /> Hire me full-time
                     </motion.a>
@@ -192,13 +167,29 @@ function PageContent() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="col-span-1 md:col-span-4 lg:col-span-4 min-h-[300px] md:min-h-full"
             >
-              <SpotlightCard className="w-full h-full p-0 overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent z-10 pointer-events-none"></div>
+              <SpotlightCard className="w-full h-full p-0 overflow-hidden group relative">
+                {/* Duotone tint (teal→purple), lifts on hover to reveal full color */}
+                <div className="absolute inset-0 z-10 bg-gradient-to-tr from-teal-500/30 via-slate-950/10 to-purple-500/30 pointer-events-none opacity-80 group-hover:opacity-0 transition-opacity duration-700" />
+                {/* Bottom fade */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent z-10 pointer-events-none" />
+                {/* Scanlines */}
+                <div className="absolute inset-0 z-10 pointer-events-none opacity-[0.18] bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,0,0,0.4)_3px)]" />
+                {/* Viewfinder corner brackets */}
+                <div className="absolute inset-4 z-20 pointer-events-none">
+                  <span className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-teal-400/60" />
+                  <span className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-teal-400/60" />
+                  <span className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-teal-400/60" />
+                  <span className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-teal-400/60" />
+                </div>
+                {/* Status label */}
+                <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2 font-mono text-[10px] text-teal-300 uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" /> operator
+                </div>
                 <Image
                   src="/profile.jpeg"
                   alt="Anirudh Chandan"
                   fill
-                  className="object-cover transition-all duration-700 grayscale group-hover:grayscale-0 opacity-70 group-hover:opacity-100 scale-100 group-hover:scale-105"
+                  className="object-cover transition-all duration-700 grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100 scale-100 group-hover:scale-105"
                   priority
                 />
               </SpotlightCard>
@@ -213,10 +204,7 @@ function PageContent() {
           <Experience />
           <StatsSection />
           <Projects />
-          <StorageVisualizer />
-          <Architecture />
-          <ShardingDemo />
-          <RateLimitDemo />
+          <LabTeaser />
           <Services />
           <Testimonials />
           <TerminalContact />

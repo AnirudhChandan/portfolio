@@ -25,6 +25,22 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* --- VIEW TRANSITIONS (cross-document; progressive enhancement) --- */
+/* Smooth cross-fade when navigating between home / blog / lab via real links. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
 /* --- UTILITIES --- */
 
 /* Grainy Texture Overlay */
