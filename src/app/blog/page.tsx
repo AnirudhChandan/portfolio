@@ -1,22 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
+import { posts } from "@/lib/posts";
 
 export const metadata: Metadata = {
   title: "Writing",
   description: "Notes on systems, databases, and building things from scratch — by Anirudh Chandan.",
 };
-
-const posts = [
-  {
-    slug: "building-pydb",
-    title: "Building a B-Tree Storage Engine From Scratch",
-    excerpt:
-      "Why I built a database instead of using one — pages, a pager, a B-Tree, splits, and a Write-Ahead Log, all from first principles.",
-    date: "July 2026",
-    read: "9 min read",
-  },
-];
 
 export default function BlogIndex() {
   return (
@@ -32,7 +22,7 @@ export default function BlogIndex() {
         Writing
       </h1>
       <p className="text-slate-400 text-lg mb-16">
-        Notes on systems, databases, and building things from scratch.
+        Notes on systems, databases, and things I&apos;ve had to fix at 2am.
       </p>
 
       <div className="flex flex-col gap-4">
@@ -42,7 +32,8 @@ export default function BlogIndex() {
             href={`/blog/${p.slug}`}
             className="group block rounded-xl border border-white/5 bg-slate-900/40 p-6 md:p-8 hover:border-teal-500/30 transition-colors"
           >
-            <div className="flex items-center gap-3 text-[11px] font-mono text-slate-500 uppercase tracking-widest mb-3">
+            <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono text-slate-500 uppercase tracking-widest mb-3">
+              <span className="text-teal-400">{p.tag}</span>
               <span>{p.date}</span>
               <span className="flex items-center gap-1">
                 <Clock size={12} /> {p.read}
