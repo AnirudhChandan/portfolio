@@ -2,8 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Home, User, Briefcase, Mail, Search } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 const navItems = [
   { name: "Home", href: "#home", icon: Home },
@@ -13,12 +12,13 @@ const navItems = [
 ];
 
 export default function Navbar() {
-  const [isMac, setIsMac] = useState(true);
-
-  // Client-side detection for correct keyboard shortcut rendering
-  useEffect(() => {
-    setIsMac(navigator.userAgent.toUpperCase().indexOf("MAC") >= 0);
-  }, []);
+  // Platform detection without an effect (avoids a cascading render).
+  // Server renders ⌘K by default; the client patches it after hydration.
+  const isMac = useSyncExternalStore(
+    () => () => {},
+    () => navigator.userAgent.toUpperCase().includes("MAC"),
+    () => true,
+  );
 
   const openCommandPalette = () => {
     window.dispatchEvent(new CustomEvent("open-command-palette"));
@@ -36,6 +36,7 @@ export default function Navbar() {
           <motion.a
             key={item.name}
             href={item.href}
+            aria-label={item.name}
             whileHover={{ scale: 0.95 }}
             whileTap={{ scale: 0.9 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -53,6 +54,7 @@ export default function Navbar() {
         {/* CMD+K Trigger */}
         <motion.button
           onClick={openCommandPalette}
+          aria-label="Open command palette"
           whileHover={{ scale: 0.95 }}
           whileTap={{ scale: 0.9 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}

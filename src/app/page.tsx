@@ -9,7 +9,6 @@ import { useEffect } from "react";
 // Infrastructure
 import { SystemProvider } from "@/components/SystemContext";
 import Toaster from "@/components/Toaster";
-import Navbar from "@/components/Navbar";
 
 // Standard Imports
 import Experience from "@/components/Experience";
@@ -20,23 +19,32 @@ import SpotlightCard from "@/components/SpotlightCard";
 // --- CHANGED: Import TerminalContact instead of Contact ---
 import TerminalContact from "@/components/TerminalContact";
 
-// Dynamic Imports
+// Lightweight placeholder shown while heavy client-only sections hydrate.
+function SectionSkeleton() {
+  return (
+    <div className="py-24 px-6 md:px-12 max-w-7xl mx-auto animate-pulse" aria-hidden="true">
+      <div className="h-10 w-64 bg-slate-800/60 rounded-lg mb-8" />
+      <div className="h-80 bg-slate-900/40 border border-white/5 rounded-xl" />
+    </div>
+  );
+}
+
+// Dynamic Imports (client-only interactive sections)
 const Architecture = dynamic(() => import("@/components/Architecture"), {
   ssr: false,
+  loading: SectionSkeleton,
 });
-const StorageVisualizer = dynamic(
-  () => import("@/components/StorageVisualizer"),
-  { ssr: false },
-);
-const Impact = dynamic(() => import("@/components/Impact"), { ssr: false });
-const ApiPlayground = dynamic(() => import("@/components/ApiPlayground"), {
+const StorageVisualizer = dynamic(() => import("@/components/StorageVisualizer"), {
   ssr: false,
-});
-const CodeComparison = dynamic(() => import("@/components/CodeComparison"), {
-  ssr: false,
+  loading: SectionSkeleton,
 });
 const ShardingDemo = dynamic(() => import("@/components/ShardingDemo"), {
   ssr: false,
+  loading: SectionSkeleton,
+});
+const RateLimitDemo = dynamic(() => import("@/components/RateLimitDemo"), {
+  ssr: false,
+  loading: SectionSkeleton,
 });
 const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
   ssr: false,
@@ -60,7 +68,6 @@ function PageContent() {
   return (
     <main className="min-h-screen selection:bg-teal-500/30 selection:text-teal-200 relative">
       <Toaster />
-      <Navbar />
 
       <div className="relative z-10">
         <section
@@ -96,7 +103,7 @@ function PageContent() {
                     whileHover={{ scale: 0.97 }}
                     whileTap={{ scale: 0.93 }}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    href="#projects"
+                    href="#architecture"
                     className="px-6 py-3 border border-white/10 text-slate-300 rounded-lg hover:bg-white/5 hover:text-white transition-colors font-mono text-sm backdrop-blur-sm shadow-xl"
                   >
                     View Architecture
@@ -118,14 +125,18 @@ function PageContent() {
                     whileHover={{ y: -3, scale: 1.1 }}
                     href="https://github.com/AnirudhChandan"
                     target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Anirudh Chandan on GitHub"
                     className="hover:text-slate-300 transition-colors"
                   >
                     <Github size={24} />
                   </motion.a>
                   <motion.a
                     whileHover={{ y: -3, scale: 1.1 }}
-                    href="https://www.linkedin.com/in/anirudh-chandan-82bb121a6/"
+                    href="https://www.linkedin.com/in/anirudh-chandan/"
                     target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Anirudh Chandan on LinkedIn"
                     className="hover:text-slate-300 transition-colors"
                   >
                     <Linkedin size={24} />
@@ -133,6 +144,7 @@ function PageContent() {
                   <motion.a
                     whileHover={{ y: -3, scale: 1.1 }}
                     href="mailto:anichandan124@gmail.com"
+                    aria-label="Email Anirudh Chandan"
                     className="hover:text-slate-300 transition-colors"
                   >
                     <Mail size={24} />
@@ -170,14 +182,48 @@ function PageContent() {
           <Projects />
           <StorageVisualizer />
           <Architecture />
-          <Impact />
-          <ApiPlayground />
-          <CodeComparison />
           <ShardingDemo />
+          <RateLimitDemo />
 
-          {/* --- CHANGED: Using TerminalContact here --- */}
           <TerminalContact />
         </div>
+
+        <footer className="border-t border-white/5 py-10 px-6 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-slate-500 text-sm font-mono">
+          <span>© 2026 Anirudh Chandan · Built with Next.js &amp; TypeScript</span>
+          <div className="flex items-center gap-6">
+            <a
+              href="https://github.com/AnirudhChandan"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-teal-400 transition-colors"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://www.linkedin.com/in/anirudh-chandan/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-teal-400 transition-colors"
+            >
+              LinkedIn
+            </a>
+            <a
+              href="https://leetcode.com/u/crytondre/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-teal-400 transition-colors"
+            >
+              LeetCode
+            </a>
+            <a
+              href="/ANIRUDH_CHANDAN_RESUME_2026.pdf"
+              target="_blank"
+              className="hover:text-teal-400 transition-colors"
+            >
+              Résumé
+            </a>
+          </div>
+        </footer>
       </div>
 
       <CommandPalette />

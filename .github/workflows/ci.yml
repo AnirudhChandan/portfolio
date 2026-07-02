@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Production build
+        run: npm run build
+        env:
+          # Placeholders — routes are dynamic and never executed during build,
+          # but this documents the required vars and keeps the build hermetic.
+          UPSTASH_REDIS_REST_URL: https://example.upstash.io
+          UPSTASH_REDIS_REST_TOKEN: ci-placeholder
+          RESEND_API_KEY: ci-placeholder
+          CONTACT_TO_EMAIL: ci@example.com

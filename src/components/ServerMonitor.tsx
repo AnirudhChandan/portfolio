@@ -2,41 +2,40 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Activity, Server, Zap, Database, Globe } from "lucide-react";
+import { Activity, Server, Zap, Globe } from "lucide-react";
 import SpotlightCard from "./SpotlightCard";
 
 export default function ServerMonitor() {
   const [latency, setLatency] = useState<number | null>(null);
   const [location, setLocation] = useState("Detecting...");
   const [status, setStatus] = useState("Initializing");
-  const [requests, setRequests] = useState(0);
+  const [totalRequests, setTotalRequests] = useState<number | null>(null);
 
   useEffect(() => {
-    // 1. Initial Ping for Location & Status
+    let active = true;
+    // Poll the real /api/health edge route: measures round-trip latency and reads
+    // a real request counter (Redis INCR) + geo/status. No simulated numbers.
     const checkHealth = async () => {
       const start = performance.now();
       try {
-        const res = await fetch("/api/health");
+        const res = await fetch("/api/health", { cache: "no-store" });
         const data = await res.json();
-        const end = performance.now();
-
-        setLatency(Math.round(end - start));
-        setLocation(data.location);
-        setStatus(data.status);
-      } catch (e) {
-        setStatus("Offline");
+        if (!active) return;
+        setLatency(Math.round(performance.now() - start));
+        setLocation(data.location ?? "Unknown");
+        setStatus(data.status ?? "operational");
+        setTotalRequests(typeof data.totalRequests === "number" ? data.totalRequests : null);
+      } catch {
+        if (active) setStatus("Offline");
       }
     };
 
     checkHealth();
-
-    // 2. Simulate "Live Request Count" (Mocking a websocket stream for visual activity)
-    // In a real app, this would be a socket subscription
-    const interval = setInterval(() => {
-      setRequests((prev) => prev + Math.floor(Math.random() * 5));
-    }, 1000);
-
-    return () => clearInterval(interval);
+    const interval = setInterval(checkHealth, 5000);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const cardVariants = {
@@ -128,7 +127,7 @@ export default function ServerMonitor() {
             </div>
           </div>
           <div className="text-slate-200 font-display font-bold text-2xl md:text-3xl tracking-tighter">
-            {1240 + requests}
+            {totalRequests !== null ? totalRequests.toLocaleString() : "—"}
           </div>
           <div className="w-full bg-slate-800 rounded-full h-1 mt-3 overflow-hidden">
             <motion.div

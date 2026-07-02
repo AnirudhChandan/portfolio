@@ -21,17 +21,17 @@ const heroProject = {
 
 const otherProjects = [
   {
-    title: "Real-Time Chat Architecture",
+    title: "Nexus Chat",
     description:
-      "A scalable full-stack chat platform engineered for high concurrency. Features real-time bi-directional communication, websocket connection pooling, and persistent message storage.",
-    tech: ["Node.js", "Socket.io", "React", "MongoDB"],
+      "A scalable real-time backend applying HLD/LLD for high throughput: a BullMQ queue decouples ingestion from DB writes, a write-behind cache cuts writes by 99%, and Postgres range partitioning enables scalable historical reads.",
+    tech: ["Node.js", "PostgreSQL", "Redis", "BullMQ"],
     github: "https://github.com/AnirudhChandan/chat-app-v2",
   },
   {
-    title: "Inventory Sync Engine",
+    title: "ProjAuto",
     description:
-      "Built for Docplix. A background worker service that synchronizes legacy SQL data with modern NoSQL cloud storage, handling conflict resolution, race conditions, and retry logic at scale.",
-    tech: ["Typescript", "PostgreSQL", "BullMQ", "Redis"],
+      "Top contributor (180+ commits, full-stack) on a multi-tenant platform of 120+ services and 220+ entities. Eliminated N+1 queries across 53 endpoints (15.6s → 2.4s) and added a distributed token-bucket rate limiter, Redis caching, and multi-tenant RBAC.",
+    tech: ["React", "Java", "Spring Boot", "Redis"],
   },
 ];
 

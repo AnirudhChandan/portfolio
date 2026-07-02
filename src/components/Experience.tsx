@@ -7,44 +7,32 @@ import SpotlightCard from "./SpotlightCard";
 const experiences = [
   {
     company: "Docplix",
-    role: "Lead Backend Architect (V2.0)",
+    role: "Software Engineer",
     period: "Nov 2025 - Present",
     type: "Infrastructure",
     description:
-      "Spearheading the migration from a monolithic legacy system to a decoupled, high-performance microservices architecture.",
+      "Leading backend design for the migration from a monolithic legacy system to a decoupled, high-performance microservices architecture.",
     achievements: [
-      "Architected 30+ RESTful endpoints ensuring 99.9% data consistency.",
-      "Engineered a centralized sync service to resolve critical inventory mismatches.",
-      "Optimized Sequelize query patterns for high-concurrency patient dashboards.",
+      "Led design & delivery of 30+ scalable REST APIs with a zero-downtime migration and 100% data integrity.",
+      "Architected a push-based event system (WebSockets + Redis Pub/Sub), cutting backend traffic by 80%.",
+      "Applied optimistic concurrency control and distributed Redis locks to eliminate race conditions across services.",
+      "Reduced record-retrieval latency by 40% via indexing and SQL execution-plan optimization.",
     ],
-    tech: ["Node.js", "Sequelize", "Microservices", "Redis"],
+    tech: ["Node.js", "WebSockets", "Redis", "Microservices"],
   },
   {
     company: "Genpact",
     role: "Software Engineer",
-    period: "Apr 2024 - Oct 2025",
+    period: "Feb 2024 - Oct 2025",
     type: "Data Engineering",
     description:
       "Promoted from intern to lead serverless pipeline development for tax computation software.",
     achievements: [
-      "Designed serverless data pipelines (Python/GCP) boosting efficiency by 35%.",
-      "Reduced API response times by 40% using Kafka event streams.",
-      "Integrated LLM summarization for automated reporting.",
+      "Engineered an idempotent Kafka ingestion pipeline guaranteeing exactly-once processing across distributed partitions.",
+      "Built resilient Python (Flask) microservices with automated retries and Dead Letter Queues, serving 24 modules with zero data loss.",
+      "Integrated structured logging and distributed tracing across serverless GCP services, cutting production MTTR by 40%.",
     ],
     tech: ["Python", "GCP", "Kafka", "Docker"],
-  },
-  {
-    company: "Docplix",
-    role: "Junior Software Engineer",
-    period: "Jan 2020 - July 2024",
-    type: "Product Engineering",
-    description:
-      "Early member of the engineering team focused on optimizing core health record systems.",
-    achievements: [
-      "Reduced patient record retrieval latency by 40% via advanced indexing.",
-      "Built real-time analytics dashboard with React and interactive charts.",
-    ],
-    tech: ["React", "PostgreSQL", "SQL Optimization"],
   },
 ];
 
@@ -76,7 +64,7 @@ export default function Experience() {
         <p className="text-slate-400 max-w-2xl text-lg leading-relaxed">
           My career has been a journey through{" "}
           <span className="text-teal-400">system design</span>, from
-          product-focused engineering to high-scale infrastructure architecture.
+          data engineering to high-scale infrastructure architecture.
         </p>
       </motion.div>
 

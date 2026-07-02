@@ -71,7 +71,7 @@ export default function CommandPalette() {
         category: "Projects",
         icon: <Database size={16} />,
         perform: () =>
-          window.open("https://github.com/anichandan124", "_blank"),
+          window.open("https://github.com/AnirudhChandan", "_blank"),
       },
       {
         id: "contact",
@@ -88,14 +88,18 @@ export default function CommandPalette() {
         category: "Connect",
         icon: <Github size={16} />,
         perform: () =>
-          window.open("https://github.com/anichandan124", "_blank"),
+          window.open("https://github.com/AnirudhChandan", "_blank"),
       },
       {
         id: "linkedin",
         title: "Open LinkedIn Profile",
         category: "Connect",
         icon: <Linkedin size={16} />,
-        perform: () => window.open("https://linkedin.com", "_blank"),
+        perform: () =>
+          window.open(
+            "https://www.linkedin.com/in/anirudh-chandan/",
+            "_blank",
+          ),
       },
       {
         id: "nav-experience",

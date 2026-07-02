@@ -2,15 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import {
-  Terminal,
-  CheckCircle2,
-  Loader2,
-  Wifi,
-  Minimize,
-  Maximize,
-  X,
-} from "lucide-react";
+import { Terminal, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "./Toaster";
 
 export default function TerminalContact() {
@@ -59,20 +51,41 @@ export default function TerminalContact() {
         const delay = (ms: number) =>
           new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-        // Cinematic delay sequence
         setHistory((prev) => [...prev, "Initializing secure handshake..."]);
-        await delay(800);
-
+        await delay(500);
         setHistory((prev) => [...prev, "Encrypting payload (AES-256)..."]);
-        await delay(800);
 
-        setHistory((prev) => [...prev, "Routing through proxy nodes..."]);
-        await delay(1200);
+        // Real POST to the /api/contact endpoint (Zod-validated, rate-limited).
+        try {
+          const res = await fetch("/api/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, message }),
+          });
+          const data = await res.json().catch(() => ({}));
 
-        console.log("Packet Sent:", { email, message });
+          if (!res.ok) {
+            setHistory((prev) => [
+              ...prev,
+              `❌ Error: ${data?.error ?? "Transmission failed."}`,
+            ]);
+            setStep("message");
+            setMessage("");
+            return;
+          }
 
-        setStep("success");
-        toast.success("Transmission Received.");
+          setHistory((prev) => [
+            ...prev,
+            data?.delivered === false
+              ? "⚠ Accepted — server-side email delivery not configured yet."
+              : "Routing through proxy nodes... ✓ delivered",
+          ]);
+          setStep("success");
+          toast.success("Transmission Received.");
+        } catch {
+          setHistory((prev) => [...prev, "❌ Error: Network failure. Please retry."]);
+          setStep("message");
+        }
       }
     }
   };
@@ -90,7 +103,7 @@ export default function TerminalContact() {
       >
         <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center justify-center gap-4 tracking-tight">
           <span className="text-teal-400 font-display font-black text-2xl">
-            10.
+            08.
           </span>{" "}
           Initialize Handshake
         </h2>
