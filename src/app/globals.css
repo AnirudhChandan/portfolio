@@ -15,6 +15,14 @@ body {
   overflow-x: hidden;
   /* Subtle radial gradient to give depth behind the Aurora blobs */
   background-image: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 70%);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Tabular figures for stat numbers so they don't jitter as they update */
+.font-display {
+  font-variant-numeric: tabular-nums;
 }
 
 /* --- UTILITIES --- */

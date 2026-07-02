@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import BackgroundGrid from "@/components/BackgroundGrid";
 import Navbar from "@/components/Navbar";
+import ScrollProgress from "@/components/ScrollProgress";
+import BootSequence from "@/components/BootSequence";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
@@ -75,12 +79,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <a href="#home" className="skip-link">
           Skip to content
         </a>
+        <BootSequence />
+        <ScrollProgress />
         <div className="bg-noise" />
 
         <Navbar />
         <BackgroundGrid />
 
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

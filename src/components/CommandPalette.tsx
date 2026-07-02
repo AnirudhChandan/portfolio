@@ -14,7 +14,10 @@ import {
   X,
   Cpu,
   LayoutTemplate,
-  Calendar, // <-- Import Calendar Icon
+  Calendar,
+  Copy,
+  BookOpen,
+  Briefcase as BriefcaseIcon,
 } from "lucide-react";
 
 // Import the new Modal
@@ -51,7 +54,7 @@ export default function CommandPalette() {
       // --- NEW COMMAND: SCHEDULE INTERVIEW ---
       {
         id: "schedule",
-        title: "Schedule Interview",
+        title: "Book a call",
         category: "Connect",
         icon: <Calendar size={16} />,
         perform: () => setIsBookingOpen(true), // Opens the modal
@@ -59,11 +62,37 @@ export default function CommandPalette() {
       // ---------------------------------------
       {
         id: "resume",
-        title: "Download Resume",
+        title: "Download Résumé",
         category: "Documents",
         icon: <FileText size={16} />,
         perform: () =>
           window.open("/ANIRUDH_CHANDAN_RESUME_2026.pdf", "_blank"),
+      },
+      {
+        id: "copy-email",
+        title: "Copy Email Address",
+        category: "Connect",
+        icon: <Copy size={16} />,
+        perform: () => {
+          navigator.clipboard?.writeText("anichandan124@gmail.com");
+        },
+      },
+      {
+        id: "blog",
+        title: "Read: Building a B-Tree Engine",
+        category: "Writing",
+        icon: <BookOpen size={16} />,
+        perform: () => {
+          window.location.href = "/blog/building-pydb";
+        },
+      },
+      {
+        id: "nav-services",
+        title: "Go to Services",
+        category: "Navigation",
+        icon: <BriefcaseIcon size={16} />,
+        perform: () =>
+          document.getElementById("services")?.scrollIntoView({ behavior: "smooth" }),
       },
       {
         id: "pydb",
@@ -165,12 +194,20 @@ export default function CommandPalette() {
       document.body.style.overflow = "hidden";
     };
 
+    // Lets any element (e.g. the hero "Work with me" button) open the booking modal.
+    const handleOpenBooking = () => {
+      setIsBookingOpen(true);
+      document.body.style.overflow = "hidden";
+    };
+
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("open-command-palette", handleCustomEvent);
+    window.addEventListener("open-booking", handleOpenBooking);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("open-command-palette", handleCustomEvent);
+      window.removeEventListener("open-booking", handleOpenBooking);
     };
   }, [closePalette, isBookingOpen]);
 
