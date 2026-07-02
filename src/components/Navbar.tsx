@@ -1,14 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Home, User, Briefcase, Mail, Search } from "lucide-react";
+import { Home, User, Briefcase, Mail, Search, BookOpen } from "lucide-react";
 import { useSyncExternalStore } from "react";
 
+// Absolute-hash hrefs so the nav works from sub-pages (e.g. /blog) too.
 const navItems = [
-  { name: "Home", href: "#home", icon: Home },
-  { name: "Experience", href: "#experience", icon: User },
-  { name: "Work", href: "#projects", icon: Briefcase },
-  { name: "Contact", href: "#contact", icon: Mail },
+  { name: "Home", href: "/#home", icon: Home },
+  { name: "Experience", href: "/#experience", icon: User },
+  { name: "Work", href: "/#projects", icon: Briefcase },
+  { name: "Writing", href: "/blog", icon: BookOpen },
+  { name: "Contact", href: "/#contact", icon: Mail },
 ];
 
 export default function Navbar() {

@@ -45,4 +45,22 @@ export const posts: PostMeta[] = [
     read: "6 min read",
     tag: "Performance · Databases",
   },
+  {
+    slug: "lost-update",
+    title: "Two requests, one row, and a lost update",
+    excerpt:
+      "Two people saved the same record a second apart and one edit silently vanished. On the lost-update race, optimistic concurrency, and when to reach for a distributed lock.",
+    date: "March 2026",
+    read: "7 min read",
+    tag: "Concurrency · Systems",
+  },
+  {
+    slug: "retry-storms",
+    title: "Your retry logic is a small DDoS you wrote yourself",
+    excerpt:
+      "A downstream service hiccuped for thirty seconds. Our retries turned it into a four-minute outage. On backoff, jitter, knowing when to quit, and the dead-letter queue.",
+    date: "February 2026",
+    read: "6 min read",
+    tag: "Resilience · Systems",
+  },
 ];
