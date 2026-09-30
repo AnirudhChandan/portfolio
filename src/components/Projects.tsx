@@ -2,70 +2,94 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Github, Folder, Database, HardDrive, Zap, ArrowRight } from "lucide-react";
+import { Github, Folder, Database, HardDrive, Zap, ArrowRight, FileCheck } from "lucide-react";
 import SpotlightCard from "./SpotlightCard";
 import CaseStudyPanel, { type CaseStudy } from "./CaseStudyPanel";
 
 const heroProject: CaseStudy = {
   title: "PyDB: Storage Engine",
   description:
-    "A disk-based relational B-Tree storage engine implemented in Python. Features a custom Disk Pager, WAL for ACID compliance, and raw binary serialization using struct packing. Engineered for high-throughput reads/writes with strict O(log n) performance.",
-  tech: ["Python", "B-Tree", "Binary Serialization", "File I/O", "ACID"],
+    "A transactional storage engine in pure Python with zero dependencies: an 8 KB pager, clustered and secondary B-Tree indexes, and a write-ahead log with redo recovery and atomic checkpoints. Crash recovery is tested by killing a writer process with SIGKILL mid-workload.",
+  tech: ["Python", "B-Tree", "Write-ahead log", "Crash recovery", "pytest", "CI"],
   github: "https://github.com/AnirudhChandan/PyDB",
   problem:
-    "I wanted to understand database internals deeply — so instead of using a database, I built one from scratch.",
+    "I wanted to understand what a database does between a SQL statement and the disk, so instead of using one I built one.",
   approach: [
-    "Fixed-size paging with a disk pager that manages raw bytes",
-    "A B-Tree index for O(log n) point and range reads",
-    "A Write-Ahead Log (log-before-apply) for crash recovery and ACID guarantees",
+    "Fixed 8 KB pages owned by a single pager — the only component that touches the data files",
+    "A clustered B-Tree (id → row) and a secondary B-Tree (hash of email → id) for O(log n) lookups",
+    "A write-ahead log: every insert is fsync'd to the log before it counts as committed",
+    "Checkpoints write a new file and rename it over the old one, so the data file is never half-written",
   ],
   architecture:
-    "Pager → B-Tree → WAL. Every mutation is written to the log before the page changes, so a crash can always be replayed to a consistent state.",
+    "insert → WAL START (fsync) → change pages in memory → WAL COMMIT (fsync). On restart: redo every committed transaction since the last checkpoint, drop the rest.",
   outcome: [
-    "0.29ms reads on the disk-backed B-Tree",
-    "ACID-compliant crash recovery via the WAL",
-    "Ported to TypeScript — it now runs live in this browser (see the Storage Engine section above)",
+    "~0.20 ms indexed reads and ~2,650 durable inserts/sec on a laptop",
+    "20 tests in CI, including SIGKILL mid-workload and mid-checkpoint — no acknowledged insert is ever lost",
+    "The first version failed that test and lost every committed write; the fix is written up on the blog",
+    "A separate TypeScript B+Tree built on the same ideas runs live in the Lab",
   ],
 };
 
 const otherProjects: CaseStudy[] = [
   {
-    title: "Nexus Chat",
+    title: "Document Workflow Platform",
     description:
-      "A scalable real-time backend applying HLD/LLD for high throughput: a BullMQ queue decouples ingestion from DB writes, a write-behind cache cuts writes by 99%, and Postgres range partitioning enables scalable historical reads.",
-    tech: ["Node.js", "PostgreSQL", "Redis", "BullMQ"],
-    github: "https://github.com/AnirudhChandan/chat-app-v2",
-    problem: "Real-time chat needs to stay fast even when write volume spikes.",
+      "Client work: a multi-tenant platform that classifies incoming documents, checks them against customer-editable rules, and routes them through maker-checker review with a full audit trail.",
+    tech: ["Python", "FastAPI", "PostgreSQL", "Celery"],
+    problem:
+      "Shipping operations run on documents that have to agree with each other — weights on a bill of lading against the manifest, crew lists, dates across forms — and checking that by eye doesn't scale.",
     approach: [
-      "A BullMQ queue decouples message ingestion from database writes",
-      "A write-behind cache absorbs bursts and batches writes",
-      "Postgres range partitioning keeps historical reads scalable",
+      "Layered classification that refuses to guess: unclear documents go to a human",
+      "Validation rules in YAML that the customer edits themselves, including cross-document checks",
+      "Maker-checker review with recorded overrides; every version immutable, every check traced",
+      "Tenant isolation enforced by PostgreSQL row-level security, not just application code",
     ],
     architecture:
-      "Producer → BullMQ → worker → write-behind cache → range-partitioned Postgres.",
+      "Upload → classify → extract → validate (YAML rules) → review queue → immutable version + audit event. Celery workers, Postgres with RLS.",
     outcome: [
-      "99% fewer database writes via the write-behind cache",
-      "Scalable historical reads through range partitioning",
-      "Ingestion stays healthy even when the database slows down",
+      "400+ automated tests",
+      "A second industry pack (procure-to-pay, 3-way match) ran with zero engine changes",
+    ],
+  },
+  {
+    title: "Nexus Chat",
+    description:
+      "A real-time chat backend built so the socket layer never waits on the database: BullMQ decouples ingestion from persistence, read receipts batch through Redis, and Postgres range partitioning keeps history fast. 1:1 video over WebRTC.",
+    tech: ["Node.js", "Socket.IO", "PostgreSQL", "Redis", "BullMQ", "WebRTC"],
+    github: "https://github.com/AnirudhChandan/nexus-chat",
+    problem: "Real-time chat has to stay responsive even when write volume spikes or the database slows down.",
+    approach: [
+      "A BullMQ queue decouples message ingestion from database writes",
+      "Read receipts are collected in Redis and flushed in 10-second batches",
+      "Postgres range partitioning on messages keeps historical reads scalable",
+      "WebRTC for 1:1 video, with the socket server doing signalling",
+    ],
+    architecture:
+      "Socket.IO gateway → BullMQ → worker → range-partitioned Postgres; receipts → Redis → batched flush.",
+    outcome: [
+      "~99% fewer read-receipt writes from batching",
+      "The socket layer never blocks on the database",
+      "Historical reads stay fast as the messages table grows",
     ],
   },
   {
     title: "ProjAuto",
     description:
-      "Top contributor (180+ commits, full-stack) on a multi-tenant platform of 120+ services and 220+ entities. Eliminated N+1 queries across 53 endpoints (15.6s → 2.4s) and added a distributed token-bucket rate limiter, Redis caching, and multi-tenant RBAC.",
-    tech: ["React", "Java", "Spring Boot", "Redis"],
+      "Top contributor (180+ commits) on a multi-tenant SaaS ERP with 20+ live tenants and 120+ services. Eliminated N+1 queries across 53 endpoints (15.6s → 2.4s), built a distributed token-bucket rate limiter, and closed account-takeover and cross-tenant IDOR holes.",
+    tech: ["Java", "Spring Boot", "React", "Redis"],
     problem:
-      "A multi-tenant platform (120+ services, 220+ entities) had slow, N+1-heavy endpoints.",
+      "A multi-tenant ERP migrated from a legacy Java monolith had slow, N+1-heavy endpoints and tenant-isolation gaps.",
     approach: [
+      "Migrated the legacy monolith to Spring Boot + React",
       "Profiled and eliminated N+1 queries across 53 endpoints",
-      "Added a distributed token-bucket rate limiter at the gateway",
-      "Introduced Redis caching and multi-tenant RBAC",
+      "Added a distributed token-bucket rate limiter",
+      "Found and closed account-takeover and cross-tenant IDOR vulnerabilities",
     ],
-    architecture: "React + Spring Boot, multi-tenant, Redis-cached, rate-limited at the gateway.",
+    architecture: "React + Spring Boot, multi-tenant, rate-limited, Redis-backed.",
     outcome: [
-      "15.6s → 2.4s on the worst hot endpoints",
+      "15.6s → 2.4s on the worst endpoints",
       "180+ commits as the top contributor",
-      "Consistent per-tenant isolation via RBAC",
+      "Tenants can no longer read each other's records by changing an id",
     ],
   },
 ];
@@ -101,7 +125,7 @@ export default function Projects() {
         className="mb-16"
       >
         <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center gap-4 tracking-tight">
-          <span className="text-teal-400 font-display font-black text-2xl">03.</span> Featured Work
+          <span className="text-teal-400 font-display font-black text-2xl">02.</span> Featured Work
         </h2>
       </motion.div>
 
@@ -162,7 +186,7 @@ export default function Projects() {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
                       </span>
-                      <span className="text-[10px] text-teal-400 font-mono uppercase">I/O Active</span>
+                      <span className="text-[10px] text-teal-400 font-mono uppercase">8 KB pages</span>
                     </div>
                   </div>
                   <div className="bg-[#020408] border border-slate-800 rounded-xl p-4 shadow-inner">
@@ -186,7 +210,7 @@ export default function Projects() {
           </SpotlightCard>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {otherProjects.map((project, index) => (
             <motion.div
               key={index}
@@ -199,7 +223,13 @@ export default function Projects() {
               <SpotlightCard className="p-8 h-full flex flex-col group">
                 <div className="flex justify-between items-start mb-8">
                   <div className="p-3 bg-slate-800/50 rounded-xl text-teal-400 group-hover:text-white group-hover:bg-slate-700 transition-colors border border-white/5">
-                    {project.title.includes("Chat") ? <Zap size={24} /> : <Folder size={24} />}
+                    {project.title.includes("Chat") ? (
+                      <Zap size={24} />
+                    ) : project.title.includes("Document") ? (
+                      <FileCheck size={24} />
+                    ) : (
+                      <Folder size={24} />
+                    )}
                   </div>
                   {project.github && (
                     <a

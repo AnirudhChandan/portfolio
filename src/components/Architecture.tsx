@@ -1,16 +1,7 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
-import ReactFlow, {
-  Background,
-  Controls,
-  addEdge,
-  useNodesState,
-  useEdgesState,
-  Connection,
-  Edge,
-  Node, // <--- 1. Import the Node Type
-} from "reactflow";
+import React, { useState } from "react";
+import ReactFlow, { Background, Controls, useNodesState, Edge, Node } from "reactflow";
 import "reactflow/dist/style.css";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -31,36 +22,36 @@ interface NodeDetail {
   icon: LucideIcon;
 }
 
-// --- DATA: The "Resume Wins" mapped to Architecture Nodes ---
+// Every "Key impact" line below is also on the résumé.
 const nodeDetails: Record<string, NodeDetail> = {
   "1": {
-    title: "Frontend Client (React)",
-    desc: "The entry point for the Clinical Dashboard. Engineered a dual-view (List/Calendar) architecture and real-time analytics charts.",
-    metrics: "Improved clinician workflow by 25%",
+    title: "Clinic dashboards",
+    desc: "The web app clinics use every day. It used to poll the API every few seconds for anything new; it now holds a WebSocket open and gets told when something changes.",
+    metrics: "4,000+ clinics on the platform",
     icon: Globe,
   },
   "2": {
-    title: "API Gateway (Node.js)",
-    desc: "Centralized RESTful API layer handling inventory and patient data. Architected 30+ endpoints to decouple the legacy monolith.",
-    metrics: "Handled 99.9% Data Consistency",
+    title: "Node.js API",
+    desc: "The REST layer (Express + Sequelize) that the v1→v2 migration moved behind. I built and led 30+ of its endpoints as one of four engineers.",
+    metrics: "30+ APIs · zero-downtime migration",
     icon: Server,
   },
   "3": {
-    title: "Synchronization Service",
-    desc: "A custom background service designed to mitigate data drift between the new Inventory System (V2) and the Legacy System (V1).",
-    metrics: "Zero Critical Mismatches",
+    title: "Sync service",
+    desc: "Keeps records consistent while several clients write to them at once. Optimistic concurrency (a version column checked in the UPDATE) handles single-row races; distributed Redis locks cover the multi-step ones.",
+    metrics: "Race conditions behind concurrent-write mismatches eliminated",
     icon: Cpu,
   },
   "4": {
-    title: "Redis Cache Layer",
-    desc: "Implemented caching patterns for high-read endpoints (like patient search) to offload the primary database.",
-    metrics: "Reduced Latency by 40%",
+    title: "Redis",
+    desc: "Two jobs: short-lived locks for the sync service, and Pub/Sub so whichever API instance handles a write can notify the instance holding the user's WebSocket.",
+    metrics: "80% less backend traffic after replacing polling",
     icon: Layers,
   },
   "5": {
-    title: "Primary DB (Sequelize/SQL)",
-    desc: "The source of truth. Optimized with advanced indexing strategies to handle complex health-record retrieval queries.",
-    metrics: "Optimized Query Performance",
+    title: "SQL database",
+    desc: "The source of truth. The v1→v2 migration moved live clinic data onto the new schema without taking the platform down.",
+    metrics: "100% data integrity through the migration",
     icon: Database,
   },
 };
@@ -70,104 +61,49 @@ const initialNodes: Node[] = [
   {
     id: "1",
     position: { x: 250, y: 0 },
-    data: { label: "React Client" },
-    style: {
-      background: "#0f172a",
-      color: "#fff",
-      border: "1px solid #2dd4bf",
-      width: 150,
-    },
+    data: { label: "Clinic dashboards" },
+    style: { background: "#0f172a", color: "#fff", border: "1px solid #2dd4bf", width: 170 },
   },
   {
     id: "2",
     position: { x: 250, y: 150 },
-    data: { label: "Node.js API Gateway" },
-    style: {
-      background: "#0f172a",
-      color: "#fff",
-      border: "1px solid #94a3b8",
-      width: 180,
-    },
+    data: { label: "Node.js API" },
+    style: { background: "#0f172a", color: "#fff", border: "1px solid #94a3b8", width: 170 },
   },
   {
     id: "3",
-    position: { x: 50, y: 300 },
-    data: { label: "Sync Service" },
-    style: {
-      background: "#1e1b4b",
-      color: "#c7d2fe",
-      border: "1px dashed #6366f1",
-      width: 160,
-    },
+    position: { x: 40, y: 300 },
+    data: { label: "Sync service" },
+    style: { background: "#1e1b4b", color: "#c7d2fe", border: "1px dashed #6366f1", width: 160 },
   },
   {
     id: "4",
-    position: { x: 450, y: 300 },
-    data: { label: "Redis Cache" },
-    style: {
-      background: "#3f1c1c",
-      color: "#fca5a5",
-      border: "1px solid #ef4444",
-      width: 140,
-    },
+    position: { x: 470, y: 300 },
+    data: { label: "Redis (locks · Pub/Sub)" },
+    style: { background: "#3f1c1c", color: "#fca5a5", border: "1px solid #ef4444", width: 170 },
   },
   {
     id: "5",
     position: { x: 250, y: 450 },
-    data: { label: "PostgreSQL DB" },
-    style: {
-      background: "#0f172a",
-      color: "#fff",
-      border: "2px solid #2dd4bf",
-      width: 160,
-    },
+    data: { label: "SQL database" },
+    style: { background: "#0f172a", color: "#fff", border: "2px solid #2dd4bf", width: 170 },
   },
 ];
 
 const initialEdges: Edge[] = [
-  {
-    id: "e1-2",
-    source: "1",
-    target: "2",
-    animated: true,
-    style: { stroke: "#2dd4bf" },
-  },
-  {
-    id: "e2-3",
-    source: "2",
-    target: "3",
-    animated: true,
-    label: "Sync Events",
-  },
-  {
-    id: "e2-4",
-    source: "2",
-    target: "4",
-    animated: true,
-    label: "Cache Hit/Miss",
-  },
+  { id: "e1-2", source: "1", target: "2", animated: true, label: "REST", style: { stroke: "#2dd4bf" } },
+  { id: "e2-3", source: "2", target: "3", animated: true, label: "writes" },
+  { id: "e3-4", source: "3", target: "4", label: "locks" },
+  { id: "e2-4", source: "2", target: "4", animated: true, label: "publish" },
+  { id: "e4-1", source: "4", target: "1", animated: true, label: "push (WebSocket)", style: { stroke: "#f87171" } },
   { id: "e2-5", source: "2", target: "5", style: { stroke: "#fff" } },
-  {
-    id: "e3-5",
-    source: "3",
-    target: "5",
-    animated: true,
-    style: { stroke: "#6366f1" },
-    label: "Write Back",
-  },
+  { id: "e3-5", source: "3", target: "5", animated: true, style: { stroke: "#6366f1" }, label: "versioned UPDATE" },
 ];
 
 export default function Architecture() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, , onNodesChange] = useNodesState(initialNodes);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
-  const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges],
-  );
-
-  // 2. Use the proper type here instead of 'any'
   const onNodeClick = (_: React.MouseEvent, node: Node) => {
     setSelectedNode(node.id);
   };
@@ -187,20 +123,18 @@ export default function Architecture() {
           System Architecture
         </h2>
         <p className="text-slate-400 max-w-2xl">
-          Interactive map of the <strong>Inventory Migration System</strong> I
-          engineered at Docplix.{" "}
-          <span className="text-teal-400"> Click a node</span> to see the
-          engineering challenge.
+          A simplified map of the EHR backend I work on at Docplix: the v1→v2 migration, the
+          sync layer, and the switch from polling to push.{" "}
+          <span className="text-teal-400">Click a node</span> for what it does and what changed.
         </p>
       </div>
 
       <div className="h-[600px] w-full border border-slate-800 rounded-xl bg-slate-950/50 overflow-hidden relative">
         <ReactFlow
           nodes={nodes}
-          edges={edges}
+          edges={initialEdges}
           onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
+          nodesConnectable={false}
           onNodeClick={onNodeClick}
           fitView
           attributionPosition="bottom-left"
@@ -221,6 +155,7 @@ export default function Architecture() {
             >
               <button
                 onClick={() => setSelectedNode(null)}
+                aria-label="Close details"
                 className="absolute top-4 right-4 text-slate-400 hover:text-white"
               >
                 <X size={24} />
@@ -256,7 +191,7 @@ export default function Architecture() {
         {/* Instruction Overlay (Disappears on interaction) */}
         {!selectedNode && (
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-slate-800/80 px-4 py-2 rounded-full text-slate-300 text-sm pointer-events-none border border-slate-700">
-            Interact with the nodes to explore logic
+            Click a node · drag to rearrange
           </div>
         )}
       </div>

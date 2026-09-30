@@ -26,7 +26,7 @@ const demos = [
   {
     icon: <GitBranch size={20} />,
     title: "System Architecture",
-    desc: "The interactive map of the inventory migration system behind it all.",
+    desc: "A clickable map of the EHR backend I work on: migration, sync, and push.",
     href: "/lab#architecture",
   },
 ];
@@ -38,7 +38,7 @@ export default function LabTeaser() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
             <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-4 flex items-center gap-4 tracking-tight">
-              <span className="text-purple-400 font-display font-black text-2xl">04.</span> The Lab
+              <span className="text-purple-400 font-display font-black text-2xl">03.</span> The Lab
             </h2>
             <p className="text-slate-400 max-w-2xl text-lg leading-relaxed">
               I don&apos;t just describe systems, I build them. These run for real in your browser.

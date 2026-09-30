@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Github, Code2, Users, GitFork } from "lucide-react";
+import { Github, Code2, Gauge, Flame } from "lucide-react";
 import Reveal from "./Reveal";
 
 interface Stats {
   github: { repos: number | null; followers: number | null };
-  leetcode: { solved: number | null };
+  leetcode: { solved: number | null; medium: number | null; hard: number | null };
 }
 
 export default function StatsSection() {
@@ -26,29 +26,14 @@ export default function StatsSection() {
     };
   }, []);
 
-  const solved = stats?.leetcode.solved ?? null;
-  const repos = stats?.github.repos ?? null;
-  const followers = stats?.github.followers ?? null;
+  const lc = stats?.leetcode;
+  const LEETCODE = "https://leetcode.com/u/crytondre/";
 
+  // Live from LeetCode's API (cached for an hour); the fallback matches the résumé.
   const cards = [
-    {
-      icon: <Code2 size={16} />,
-      label: "LeetCode solved",
-      value: solved != null ? String(solved) : "450+",
-      href: "https://leetcode.com/u/crytondre/",
-    },
-    {
-      icon: <GitFork size={16} />,
-      label: "Public repos",
-      value: repos != null ? String(repos) : "20+",
-      href: "https://github.com/AnirudhChandan?tab=repositories",
-    },
-    {
-      icon: <Users size={16} />,
-      label: "GitHub followers",
-      value: followers != null ? String(followers) : "—",
-      href: "https://github.com/AnirudhChandan",
-    },
+    { icon: <Code2 size={16} />, label: "LeetCode solved", value: lc?.solved ?? "450+", href: LEETCODE },
+    { icon: <Gauge size={16} />, label: "Medium", value: lc?.medium ?? "—", href: LEETCODE },
+    { icon: <Flame size={16} />, label: "Hard", value: lc?.hard ?? "—", href: LEETCODE },
   ];
 
   return (
@@ -64,7 +49,7 @@ export default function StatsSection() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Reveal className="lg:col-span-2">
-          <div className="rounded-xl border border-white/5 bg-slate-900/40 p-6 h-full">
+          <div className="rounded-xl border border-white/5 bg-slate-900/40 p-6 h-full flex flex-col">
             <div className="flex items-center gap-2 text-slate-400 text-xs font-mono uppercase mb-4">
               <Github size={14} className="text-teal-400" /> GitHub contributions
             </div>
@@ -75,7 +60,9 @@ export default function StatsSection() {
                 alt="Anirudh Chandan's GitHub contribution graph"
                 loading="lazy"
                 onError={() => setGraphOk(false)}
-                className="w-full opacity-90"
+                // The chart is drawn for a light page: invert it, then rotate the hue back so
+                // empty days go dark and active days stay teal.
+                className="w-full my-auto opacity-90 [filter:invert(1)_hue-rotate(180deg)_brightness(0.9)]"
               />
             ) : (
               <div className="text-slate-500 text-sm font-mono py-10 text-center">

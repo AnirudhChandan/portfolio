@@ -20,7 +20,9 @@ async function fetchGitHub(): Promise<{ repos: number | null; followers: number 
   }
 }
 
-async function fetchLeetCode(): Promise<{ solved: number | null } | null> {
+type LeetCode = { solved: number | null; easy: number | null; medium: number | null; hard: number | null };
+
+async function fetchLeetCode(): Promise<LeetCode | null> {
   try {
     const res = await fetch("https://leetcode.com/graphql", {
       method: "POST",
@@ -46,8 +48,8 @@ async function fetchLeetCode(): Promise<{ solved: number | null } | null> {
     };
     const nums = d.data?.matchedUser?.submitStatsGlobal?.acSubmissionNum;
     if (!Array.isArray(nums)) return null;
-    const all = nums.find((n) => n.difficulty === "All");
-    return { solved: all?.count ?? null };
+    const count = (d: string) => nums.find((n) => n.difficulty === d)?.count ?? null;
+    return { solved: count("All"), easy: count("Easy"), medium: count("Medium"), hard: count("Hard") };
   } catch {
     return null;
   }
@@ -58,7 +60,7 @@ export async function GET() {
   return NextResponse.json(
     {
       github: github ?? { repos: null, followers: null },
-      leetcode: leetcode ?? { solved: null },
+      leetcode: leetcode ?? { solved: null, easy: null, medium: null, hard: null },
       users: { github: GH_USER, leetcode: LC_USER },
     },
     { headers: { "cache-control": "s-maxage=3600, stale-while-revalidate=86400" } },
