@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, ReactNode, useEffect } from "react";
-import { motion } from "framer-motion";
 
 interface SpotlightCardProps {
   children: ReactNode;
@@ -44,17 +43,14 @@ export default function SpotlightCard({
   }, []);
 
   return (
-    <motion.div
+    <div
       ref={divRef}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      /* TACTICAL PHYSICS: Scale down slightly on hover, further on click */
-      whileHover={{ scale: 0.985 }}
-      whileTap={{ scale: 0.97 }}
-      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      /* Changed transition-all to transition-colors so it doesn't fight Framer's transform */
-      className={`relative overflow-hidden rounded-2xl bg-slate-900/40 backdrop-blur-md shadow-2xl transition-colors duration-300 hover:bg-slate-900/60 shadow-black/50 cursor-pointer ${className}`}
+      // Cards are containers, not buttons: no press animation or pointer cursor,
+      // so only the links and buttons inside them read as clickable.
+      className={`relative overflow-hidden rounded-2xl bg-slate-900/40 backdrop-blur-md shadow-2xl transition-colors duration-300 hover:bg-slate-900/60 shadow-black/50 ${className}`}
     >
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
       <div className="absolute inset-0 rounded-2xl border border-white/5 pointer-events-none"></div>
@@ -67,6 +63,6 @@ export default function SpotlightCard({
         }}
       />
       <div className="relative h-full z-20">{children}</div>
-    </motion.div>
+    </div>
   );
 }

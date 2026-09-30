@@ -36,16 +36,19 @@ export default function StorageVisualizer() {
 
   const snap = useSyncExternalStore(engine.subscribe, engine.getSnapshot, engine.getSnapshot);
 
+  const lastSplitVersion = useRef(0);
+
   // Seed a small tree once on mount so a real split is already visible.
   const seededRef = useRef(false);
   useEffect(() => {
     if (seededRef.current) return;
     seededRef.current = true;
     for (let i = 0; i < 7; i++) engine.insertRandom();
+    // Splits caused by this seed data aren't the visitor's doing; don't toast them.
+    lastSplitVersion.current = engine.getSnapshot().version;
   }, [engine]);
 
   // Fire a toast on real split events (driven by the engine, not a timer).
-  const lastSplitVersion = useRef(0);
   useEffect(() => {
     if (snap.lastSplit && snap.version !== lastSplitVersion.current) {
       lastSplitVersion.current = snap.version;
@@ -81,10 +84,20 @@ export default function StorageVisualizer() {
           Storage Engine
         </h2>
         <p className="text-slate-400 max-w-2xl text-lg leading-relaxed">
-          A <strong className="text-slate-200">real B+Tree</strong> running in your browser — a
-          TypeScript port of my PyDB engine. Insert rows and watch genuine node splits, the raw
-          serialized page bytes, and the Write-Ahead Log. No mock data; the same code is covered by
-          unit tests.
+          A <strong className="text-slate-200">real B+Tree</strong> running in your browser, built on
+          the same ideas as my Python{" "}
+          <a
+            href="https://github.com/AnirudhChandan/PyDB"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-teal-300 hover:underline"
+          >
+            PyDB
+          </a>{" "}
+          engine but sized so you can watch it: 256-byte pages, fanout 4. Insert rows and see genuine
+          node splits, the raw serialized page bytes, and the write-ahead log. Nothing here is mocked,
+          and the same module is covered by unit tests. It lives in memory, so it logs every change but
+          has nothing to recover from; the crash-tested recovery lives in the Python engine.
         </p>
       </div>
 
@@ -95,7 +108,7 @@ export default function StorageVisualizer() {
           { label: "pages", value: snap.nodeCount },
           { label: "height", value: snap.height },
           { label: "order", value: snap.order },
-          { label: "wal_entries", value: snap.wal.length },
+          { label: "wal_entries", value: snap.walTotal },
         ].map((s) => (
           <span
             key={s.label}
@@ -261,7 +274,7 @@ export default function StorageVisualizer() {
             <div className="flex flex-col">
               <span>Offset: 0x{((activePage?.pageId ?? 0) * PAGE_SIZE).toString(16).padStart(4, "0")}</span>
               <span className="text-teal-500/60">
-                {activePage?.usedBytes}/{PAGE_SIZE} bytes · ACID: WAL_LOGGED
+                {activePage?.usedBytes}/{PAGE_SIZE} bytes · WAL-logged
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -279,7 +292,7 @@ export default function StorageVisualizer() {
             <span className="text-teal-400 font-mono text-xs">▚</span> Write-Ahead Log
           </h3>
           <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-            log-before-apply · {snap.wal.length} entries
+            log-before-apply · {snap.walTotal} entries
           </span>
         </div>
         <div className="max-h-48 overflow-y-auto font-mono text-[10px] leading-relaxed">

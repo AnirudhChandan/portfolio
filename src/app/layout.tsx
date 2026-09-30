@@ -6,7 +6,8 @@ import "./globals.css";
 import BackgroundGrid from "@/components/BackgroundGrid";
 import Navbar from "@/components/Navbar";
 import ScrollProgress from "@/components/ScrollProgress";
-import BootSequence from "@/components/BootSequence";
+import CommandPalette from "@/components/CommandPalette";
+import Toaster from "@/components/Toaster";
 import CursorGlow from "@/components/CursorGlow";
 
 export const viewport: Viewport = {
@@ -18,7 +19,7 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space
 
 const SITE_URL = "https://anirudh-chandan.vercel.app";
 const DESCRIPTION =
-  "Backend & systems engineer specializing in scalable APIs, distributed systems, and databases. Creator of PyDB, a from-scratch B-Tree storage engine — explore live, interactive demos.";
+  "Backend engineer building APIs, data pipelines and databases — an EHR backend for 4,000+ clinics, a document-workflow platform, and PyDB, a storage engine written from scratch. Live demos and writing inside.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -84,7 +85,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <a href="#home" className="skip-link">
           Skip to content
         </a>
-        <BootSequence />
         <ScrollProgress />
         <CursorGlow />
         <div className="bg-noise" />
@@ -93,6 +93,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <BackgroundGrid />
 
         {children}
+        <CommandPalette />
+        <Toaster />
         <Analytics />
         <SpeedInsights />
       </body>

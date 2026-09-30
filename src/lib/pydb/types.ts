@@ -65,6 +65,7 @@ export interface EngineSnapshot {
   nodes: BTreeNodeSnapshot[]; // full tree (for the "Pager / RAM" view)
   pages: PageSnapshot[]; // physical pages (for the "Disk" view)
   wal: WalEntry[]; // append-only log (tail-capped for the UI)
+  walTotal: number; // entries ever appended (the tail above is capped)
   lastSplit: SplitEvent | null; // set when the last op caused a split
   activePageId: NodeId | null; // page touched by the most recent op
   lastOp: { kind: "insert" | "update" | "delete" | "reset" | "none"; key: number | null };

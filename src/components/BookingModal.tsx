@@ -1,11 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Calendar, Loader2, ShieldCheck } from "lucide-react";
+import { X, Loader2, CalendarDays } from "lucide-react";
 import { useState } from "react";
 
-// REPLACE THIS WITH YOUR ACTUAL CALENDLY OR CAL.COM LINK
-// Example: "https://calendly.com/your-username" or "https://cal.com/your-username"
 const CALENDAR_URL = "https://calendly.com/anichandan124/30min";
 
 interface BookingModalProps {
@@ -36,6 +34,9 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Book a call"
               className="w-full max-w-5xl h-[85vh] bg-[#0d1117] border border-slate-700 rounded-xl overflow-hidden shadow-2xl pointer-events-auto flex flex-col relative"
             >
               {/* Window Header */}
@@ -44,6 +45,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                   <div className="flex gap-1.5">
                     <button
                       onClick={onClose}
+                      aria-label="Close booking"
                       className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-400 transition-colors"
                     />
                     <div className="w-3 h-3 rounded-full bg-yellow-500" />
@@ -51,15 +53,14 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                   </div>
                   <div className="h-4 w-px bg-white/10 mx-1" />
                   <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-                    <ShieldCheck size={12} className="text-teal-400" />
-                    <span className="uppercase tracking-wider">
-                      Secure Uplink :: Scheduling Protocol
-                    </span>
+                    <CalendarDays size={12} className="text-teal-400" />
+                    <span className="uppercase tracking-wider">Book a 30-minute call</span>
                   </div>
                 </div>
 
                 <button
                   onClick={onClose}
+                  aria-label="Close booking"
                   className="p-1.5 hover:bg-white/5 rounded-md text-slate-500 hover:text-white transition-colors"
                 >
                   <X size={16} />
@@ -73,7 +74,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d1117] z-10 text-teal-500 gap-4">
                     <Loader2 size={40} className="animate-spin" />
                     <span className="font-mono text-sm tracking-widest animate-pulse">
-                      ESTABLISHING CONNECTION...
+                      Loading calendar…
                     </span>
                   </div>
                 )}
@@ -84,7 +85,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                   height="100%"
                   frameBorder="0"
                   onLoad={() => setIsLoading(false)}
-                  title="Schedule Interview"
+                  title="Book a call with Anirudh"
                   className="w-full h-full"
                 ></iframe>
               </div>

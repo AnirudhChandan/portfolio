@@ -18,7 +18,7 @@ export default function NotFound() {
             <span className="w-3 h-3 rounded-full bg-green-500/60" />
           </div>
           <span className="text-[10px] text-slate-400 uppercase tracking-widest flex items-center gap-2">
-            <ShieldAlert size={12} className="text-amber-400" /> guest@anirudh.dev
+            <ShieldAlert size={12} className="text-amber-400" /> anirudh-chandan.vercel.app
           </span>
           <span className="w-10" />
         </div>

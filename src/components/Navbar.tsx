@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Home, User, Briefcase, Mail, Search, BookOpen } from "lucide-react";
+import { Home, User, Briefcase, Mail, Search, BookOpen, FlaskConical } from "lucide-react";
 import { useSyncExternalStore } from "react";
 
 // Absolute-hash hrefs so the nav works from sub-pages (e.g. /blog) too.
@@ -9,6 +9,7 @@ const navItems = [
   { name: "Home", href: "/#home", icon: Home },
   { name: "Experience", href: "/#experience", icon: User },
   { name: "Work", href: "/#projects", icon: Briefcase },
+  { name: "Lab", href: "/lab", icon: FlaskConical },
   { name: "Writing", href: "/blog", icon: BookOpen },
   { name: "Contact", href: "/#contact", icon: Mail },
 ];
@@ -42,7 +43,7 @@ export default function Navbar() {
             whileHover={{ scale: 0.95 }}
             whileTap={{ scale: 0.9 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="relative px-4 py-2 text-sm font-mono text-slate-400 hover:text-teal-400 transition-colors rounded-full hover:bg-white/5 flex items-center gap-2 group"
+            className="relative px-3 md:px-4 py-2 text-sm font-mono text-slate-400 hover:text-teal-400 transition-colors rounded-full hover:bg-white/5 flex items-center gap-2 group"
           >
             <item.icon size={16} />
             <span className="hidden sm:block">{item.name}</span>

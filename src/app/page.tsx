@@ -1,15 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, FileText, Calendar } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
 import Magnetic from "@/components/Magnetic";
 
-// Infrastructure
-import { SystemProvider } from "@/components/SystemContext";
-import Toaster from "@/components/Toaster";
 
 // Standard Imports
 import Experience from "@/components/Experience";
@@ -18,18 +14,12 @@ import ServerMonitor from "@/components/ServerMonitor";
 import SpotlightCard from "@/components/SpotlightCard";
 import StatsSection from "@/components/StatsSection";
 import Services from "@/components/Services";
-import Testimonials from "@/components/Testimonials";
 import LabTeaser from "@/components/LabTeaser";
+import WritingTeaser from "@/components/WritingTeaser";
 
-// --- CHANGED: Import TerminalContact instead of Contact ---
 import TerminalContact from "@/components/TerminalContact";
 
-// Dynamic import (client-only modal). The heavy interactive demos now live at /lab.
-const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
-  ssr: false,
-});
-
-function PageContent() {
+export default function Home() {
   useEffect(() => {
     console.log(
       "%c HELLO RECRUITER %c",
@@ -46,8 +36,6 @@ function PageContent() {
 
   return (
     <main className="min-h-screen selection:bg-teal-500/30 selection:text-teal-200 relative">
-      <Toaster />
-
       <div className="relative z-10">
         <section
           id="home"
@@ -68,7 +56,7 @@ function PageContent() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-400" />
                   </span>
-                  Available — Senior Backend roles &amp; freelance
+                  Open to backend &amp; AI engineering roles · freelance
                 </div>
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-black text-slate-50 mb-4 tracking-tighter drop-shadow-sm leading-none">
                   Anirudh Chandan.
@@ -77,17 +65,17 @@ function PageContent() {
                   I build scalable backend systems.
                 </h2>
                 <p className="max-w-xl text-slate-400 text-lg leading-relaxed mb-8">
-                  Backend &amp; systems engineer specializing in high-performance
-                  APIs, distributed systems, and databases. Creator of the PyDB
-                  storage engine.
+                  Backend engineer, ~3 years in. I&apos;ve built the APIs behind a healthcare
+                  platform used by 4,000+ clinics, a document-workflow platform with audit
+                  trails, and PyDB, a storage engine written from scratch.
                 </p>
 
-                {/* Proof-stat strip — real, defensible numbers */}
+                {/* Proof-stat strip — every number here is also on the résumé */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10 max-w-xl">
                   {[
-                    { n: "40%", l: "API latency ↓" },
-                    { n: "99.9%", l: "data consistency" },
-                    { n: "80%", l: "backend traffic ↓" },
+                    { n: "4,000+", l: "clinics on my APIs" },
+                    { n: "6.5×", l: "faster endpoints" },
+                    { n: "80%", l: "polling traffic cut" },
                     { n: "450+", l: "LeetCode solved" },
                   ].map((s) => (
                     <div
@@ -183,7 +171,7 @@ function PageContent() {
                 </div>
                 {/* Status label */}
                 <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2 font-mono text-[10px] text-teal-300 uppercase tracking-widest">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" /> operator
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" /> Bengaluru, India
                 </div>
                 <Image
                   src="/profile.jpeg"
@@ -205,14 +193,27 @@ function PageContent() {
           <StatsSection />
           <Projects />
           <LabTeaser />
+          <WritingTeaser />
           <Services />
-          <Testimonials />
           <TerminalContact />
         </div>
 
         <footer className="border-t border-white/5 py-10 px-6 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-slate-500 text-sm font-mono">
-          <span>© 2026 Anirudh Chandan · Built with Next.js &amp; TypeScript</span>
+          <span>
+            © 2026 Anirudh Chandan · Built with Next.js &amp; TypeScript ·{" "}
+            <a
+              href="https://github.com/AnirudhChandan/portfolio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-teal-400 transition-colors"
+            >
+              source
+            </a>
+          </span>
           <div className="flex items-center gap-6">
+            <a href="/lab" className="hover:text-teal-400 transition-colors">
+              Lab
+            </a>
             <a href="/blog" className="hover:text-teal-400 transition-colors">
               Writing
             </a>
@@ -250,16 +251,6 @@ function PageContent() {
           </div>
         </footer>
       </div>
-
-      <CommandPalette />
     </main>
-  );
-}
-
-export default function Home() {
-  return (
-    <SystemProvider>
-      <PageContent />
-    </SystemProvider>
   );
 }

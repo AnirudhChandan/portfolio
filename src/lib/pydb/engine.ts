@@ -170,6 +170,7 @@ export class StorageEngine {
       nodes,
       pages: this.pager.snapshotPages(),
       wal: this.wal.snapshot(),
+      walTotal: this.wal.length,
       lastSplit: this.lastSplit,
       activePageId: this.activePageId,
       lastOp: this.lastOp,

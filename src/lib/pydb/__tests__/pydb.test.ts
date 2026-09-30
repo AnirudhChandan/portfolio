@@ -102,6 +102,15 @@ describe("PyDB B+Tree engine", () => {
     }
   });
 
+  it("counts every WAL entry even though the snapshot only carries the tail", () => {
+    const db = new StorageEngine({ seed: 6 });
+    for (let i = 0; i < 60; i++) db.insertRandom(); // well past the 48-entry tail
+    const snap = db.getSnapshot();
+    expect(snap.wal.length).toBe(48);
+    expect(snap.walTotal).toBeGreaterThan(48);
+    expect(snap.wal[snap.wal.length - 1].lsn).toBe(snap.walTotal - 1);
+  });
+
   it("serializes the real key bytes into the leaf page (little-endian)", () => {
     const db = new StorageEngine({ seed: 3 });
     db.insert(0x1234, { user: "grace", email: "grace@db.io" });

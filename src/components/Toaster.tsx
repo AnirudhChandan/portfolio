@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, AlertCircle, Info, X } from "lucide-react";
+import { CheckCircle, AlertCircle, Info } from "lucide-react";
 
 type ToastType = "success" | "error" | "info";
 type ToastEvent = { message: string; type: ToastType; id: number };
@@ -16,7 +16,7 @@ export const toast = {
 const dispatch = (message: string, type: ToastType) => {
   if (typeof window !== "undefined") {
     const event = new CustomEvent<ToastEvent>("toast", {
-      detail: { message, type, id: Date.now() },
+      detail: { message, type, id: Date.now() + Math.random() },
     });
     window.dispatchEvent(event);
   }
@@ -38,7 +38,11 @@ export default function Toaster() {
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
+    <div
+      role="status"
+      aria-live="polite"
+      className="fixed bottom-4 right-4 z-[250] flex flex-col gap-2 pointer-events-none"
+    >
       <AnimatePresence>
         {toasts.map((t) => (
           <motion.div
@@ -54,6 +58,7 @@ export default function Toaster() {
             {t.type === "error" && (
               <AlertCircle size={18} className="text-red-400" />
             )}
+            {t.type === "info" && <Info size={18} className="text-sky-400" />}
             <span className="text-sm font-mono text-slate-200">
               {t.message}
             </span>

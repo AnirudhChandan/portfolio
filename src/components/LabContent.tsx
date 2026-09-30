@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Toaster from "@/components/Toaster";
+import { useEffect } from "react";
 
 function Skeleton() {
   return (
@@ -29,16 +29,39 @@ const RateLimitDemo = dynamic(() => import("@/components/RateLimitDemo"), {
   loading: Skeleton,
 });
 
+const SECTION_IDS = ["storage", "architecture", "sharding", "ratelimit"];
+
+// The demos render client-side only, so when someone arrives via /lab#sharding the
+// browser has already tried (and failed) to scroll before the section exists. Wait
+// until every demo has rendered (earlier ones change height as they mount), then
+// scroll once, a frame later so the layout has settled.
+function useScrollToHashWhenReady() {
+  useEffect(() => {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (!SECTION_IDS.includes(id)) return;
+    let frame = 0;
+    const deadline = performance.now() + 4000;
+    const tick = () => {
+      const ready = SECTION_IDS.every((s) => document.getElementById(s));
+      if (ready || performance.now() > deadline) {
+        frame = requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView());
+      } else {
+        frame = requestAnimationFrame(tick);
+      }
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+}
+
 export default function LabContent() {
+  useScrollToHashWhenReady();
   return (
-    <>
-      <Toaster />
-      <div className="flex flex-col gap-16 pb-32">
-        <StorageVisualizer />
-        <Architecture />
-        <ShardingDemo />
-        <RateLimitDemo />
-      </div>
-    </>
+    <div className="flex flex-col gap-16 pb-32">
+      <StorageVisualizer />
+      <Architecture />
+      <ShardingDemo />
+      <RateLimitDemo />
+    </div>
   );
 }
