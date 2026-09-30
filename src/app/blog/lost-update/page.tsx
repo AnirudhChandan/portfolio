@@ -15,12 +15,7 @@ export const metadata: Metadata = {
 
 export default function LostUpdate() {
   return (
-    <ArticleLayout
-      tag="Concurrency · Systems"
-      date="March 2026"
-      read="7 min read"
-      title="Two requests, one row, and a lost update"
-    >
+    <ArticleLayout slug="lost-update">
       <Lead>
         <p>
           Two clinicians opened the same patient record, both edited the medication list, and both hit

@@ -14,12 +14,7 @@ export const metadata: Metadata = {
 
 export default function RetryStorms() {
   return (
-    <ArticleLayout
-      tag="Resilience · Systems"
-      date="February 2026"
-      read="6 min read"
-      title="Your retry logic is a small DDoS you wrote yourself"
-    >
+    <ArticleLayout slug="retry-storms">
       <Lead>
         <p>
           A downstream service had a bad thirty seconds. Nothing serious, a brief hiccup. Our system

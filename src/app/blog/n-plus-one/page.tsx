@@ -14,12 +14,7 @@ export const metadata: Metadata = {
 
 export default function NPlusOne() {
   return (
-    <ArticleLayout
-      tag="Performance · Databases"
-      date="April 2026"
-      read="6 min read"
-      title="53 endpoints, one lazy loop, 15.6 seconds"
-    >
+    <ArticleLayout slug="n-plus-one">
       <Lead>
         <p>
           A page took 15.6 seconds to load. Not the first load, not a cold cache. Every single time.

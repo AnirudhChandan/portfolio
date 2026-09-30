@@ -14,12 +14,7 @@ export const metadata: Metadata = {
 
 export default function ExactlyOnceKafka() {
   return (
-    <ArticleLayout
-      tag="Distributed Systems · Kafka"
-      date="May 2026"
-      read="8 min read"
-      title="Exactly-once is mostly a marketing slide"
-    >
+    <ArticleLayout slug="exactly-once-kafka">
       <Lead>
         <p>
           A deploy went out on a Thursday. Rolling restart, nothing dramatic. A few minutes later a

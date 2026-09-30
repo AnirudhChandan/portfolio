@@ -15,12 +15,7 @@ export const metadata: Metadata = {
 
 export default function KillingPolling() {
   return (
-    <ArticleLayout
-      tag="Real-time · Systems"
-      date="June 2026"
-      read="7 min read"
-      title="We were polling our own database to death"
-    >
+    <ArticleLayout slug="killing-polling">
       <Lead>
         <p>
           A clinician pinged me on a Tuesday to say the dashboard felt &ldquo;laggy.&rdquo; It

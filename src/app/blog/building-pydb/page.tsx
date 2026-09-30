@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ArticleLayout, Section, Lead, Code, DemoCTA } from "@/components/BlogUI";
 
 export const metadata: Metadata = {
@@ -15,12 +16,7 @@ export const metadata: Metadata = {
 
 export default function BuildingPyDB() {
   return (
-    <ArticleLayout
-      tag="Systems · Databases"
-      date="July 2026"
-      read="9 min read"
-      title="Building a B-Tree Storage Engine From Scratch"
-    >
+    <ArticleLayout slug="building-pydb">
       <Lead>
         <p>
           I use databases every day. Postgres, Redis, Mongo, whatever the job needs. But &ldquo;I can
@@ -32,7 +28,7 @@ export default function BuildingPyDB() {
           Four ideas do most of the work: <span className="text-teal-300">pages</span>, a{" "}
           <span className="text-teal-300">pager</span>, a <span className="text-teal-300">B-Tree</span>,
           and a <span className="text-teal-300">Write-Ahead Log</span>. Once those clicked, the rest
-          was detail. Later I rewrote the whole thing in TypeScript so it runs live on this site.
+          was detail. Later I built a smaller TypeScript version of it that runs live on this site.
         </p>
       </Lead>
 
@@ -48,9 +44,9 @@ export default function BuildingPyDB() {
       <Section title="Everything is a page">
         <p>
           A database doesn&apos;t read your file one byte at a time. It reads fixed-size blocks called
-          pages (real engines use 4 to 8 KB; I used something smaller so the bytes stay readable in the
-          visualizer). Every tree node and every row lives inside a page, which has a short header and
-          then a run of cells:
+          pages. Real engines use 4 to 8 KB, and so does PyDB; the version in the visualizer uses
+          256-byte pages so you can actually read them. Every tree node and every row lives inside a
+          page, which has a short header and then a run of cells:
         </p>
         <Code>{`leaf page:
   [ roleTag:1 | keyCount:2 | rightSibling:4 | pad:1 ]  header
@@ -120,18 +116,28 @@ for (const b of encode(user)) page[p++] = b;`}</Code>
 pager.writeLeaf(pageId, keys, values);       // 2. then apply it
 wal.append({ op: "COMMIT", txId });          // 3. mark it done`}</Code>
         <p>
-          That ordering is the A and the D of ACID falling out of one rule: log before you apply. The
-          WAL panel in the demo shows the log growing live, with strictly increasing sequence numbers.
+          That ordering is necessary, but it isn&apos;t enough on its own. My first version followed
+          it exactly and still lost every committed write when I killed the process, because it
+          replayed the wrong transactions onto a data file that was never made durable. What you
+          replay, and what you replay it onto, matter as much as the order you write in. I wrote that
+          one up separately:{" "}
+          <Link href="/blog/pydb-crash-test" className="text-teal-300 hover:underline">
+            my database lost every committed write, and one test found it
+          </Link>
+          .
         </p>
       </Section>
 
       <Section title="From Python to the browser">
         <p>
-          PyDB started in Python. To make it interactive here, I reimplemented the same architecture in
-          TypeScript. Same pager, same B+Tree, same WAL, running entirely client-side with no backend.
-          The nice side effect: the exact module the unit tests drive is the module the page renders.
-          When a test asserts &ldquo;all leaves stay at equal depth after 500 random inserts,&rdquo;
-          it&apos;s checking the code you&apos;re clicking on.
+          PyDB started in Python. To make it interactive here, I built a TypeScript version on the
+          same ideas, scaled down so you can watch it: 256-byte pages instead of 8 KB, a fanout of four,
+          and deletes and internal-node splits that the Python engine doesn&apos;t have. It keeps a
+          write-ahead log too, but it lives in memory, so there&apos;s nothing to recover from; the
+          crash-recovery tests live in the Python repo. The nice side effect: the exact module the unit
+          tests drive is the module the page renders. When a test asserts &ldquo;all leaves stay at
+          equal depth after 500 random inserts,&rdquo; it&apos;s checking the code you&apos;re clicking
+          on.
         </p>
       </Section>
 
@@ -139,16 +145,17 @@ wal.append({ op: "COMMIT", txId });          // 3. mark it done`}</Code>
         <p>
           Build the smallest real version first. A B-Tree that only does insert, search, and splits,
           but does them correctly, teaches you more than a half-built engine with every feature stubbed
-          out. Write the invariant tests early: sorted order, equal leaf depth, log-before-apply. They
-          turn &ldquo;I think this works&rdquo; into &ldquo;this provably works.&rdquo; And serialize to
-          real bytes, not to a convenient object. The bytes are where the understanding actually lives.
+          out. Write the invariant tests early: sorted order, equal leaf depth, log-before-apply. Then
+          write the one that kills the process, because that&apos;s the one that tells you whether the
+          word &ldquo;durable&rdquo; is true. And serialize to real bytes, not to a convenient object.
+          The bytes are where the understanding actually lives.
         </p>
       </Section>
 
       <DemoCTA
         href="/lab#storage"
         title="See it running"
-        desc="The TypeScript port runs live on the home page. Insert keys, watch splits, read the WAL."
+        desc="The TypeScript version runs live in the Lab. Insert keys, watch splits, read the WAL."
         label="Open the demo"
       />
     </ArticleLayout>
