@@ -37,7 +37,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
               role="dialog"
               aria-modal="true"
               aria-label="Book a call"
-              className="w-full max-w-5xl h-[85vh] bg-[#0d1117] border border-slate-700 rounded-xl overflow-hidden shadow-2xl pointer-events-auto flex flex-col relative"
+              className="w-full max-w-5xl h-[85vh] bg-slate-950 border border-slate-700 rounded-xl overflow-hidden shadow-2xl pointer-events-auto flex flex-col relative"
             >
               {/* Window Header */}
               <div className="h-12 bg-slate-900 border-b border-white/5 flex items-center justify-between px-4 shrink-0">
@@ -71,7 +71,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
               <div className="flex-1 relative bg-white">
                 {/* Loading Spinner overlay */}
                 {isLoading && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d1117] z-10 text-teal-500 gap-4">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 z-10 text-teal-500 gap-4">
                     <Loader2 size={40} className="animate-spin" />
                     <span className="font-mono text-sm tracking-widest animate-pulse">
                       Loading calendar…

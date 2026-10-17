@@ -1,18 +1,24 @@
 import type { Config } from "tailwindcss";
 
+// Colours come from CSS variables (globals.css) so one data-theme switch on <html>
+// re-skins every page, including the blog and Lab, without per-component dark: classes.
+const v = (name: string) => `rgb(var(--${name}) / <alpha-value>)`;
+const scale = (name: string, steps: number[]) =>
+  Object.fromEntries(steps.map((s) => [s, v(`${name}-${s}`)]));
+const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+
 const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: {
-        slate: {
-          950: "#020617",
-        },
+        slate: scale("slate", STEPS),
+        teal: scale("teal", STEPS),
+        white: v("white"),
+        black: v("black"),
       },
       fontFamily: {
-        // Inter for body text
         sans: ["var(--font-inter)", "sans-serif"],
-        // Space Grotesk for headings and large metrics
         display: ["var(--font-space-grotesk)", "sans-serif"],
       },
     },

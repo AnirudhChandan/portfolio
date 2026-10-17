@@ -98,7 +98,7 @@ export default function TerminalContact() {
         className="mb-12 text-center"
       >
         <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-6 flex items-center justify-center gap-4 tracking-tight">
-          <span className="text-teal-400 font-display font-black text-2xl">06.</span> Get in touch
+              Get in touch
         </h2>
         <p className="text-slate-400 max-w-2xl mx-auto text-lg">
           Hiring, a project, or a question about something I wrote — type it below, or email{" "}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { track } from "@/lib/track";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -61,6 +62,7 @@ export default function CommandPalette() {
   }, []);
 
   const openBooking = useCallback(() => {
+    track("booking_open");
     setIsOpen(false);
     setQuery("");
     setIsBookingOpen(true);
@@ -126,11 +128,43 @@ export default function CommandPalette() {
         perform: () => goToSection("experience"),
       },
       {
-        id: "nav-projects",
-        title: "Go to Projects",
+        id: "nav-work",
+        title: "Go to Selected work",
         category: "Navigation",
         icon: <LayoutTemplate size={16} />,
-        perform: () => goToSection("projects"),
+        perform: () => goToSection("work"),
+      },
+      {
+        id: "nav-proof",
+        title: "Go to Proof",
+        category: "Navigation",
+        icon: <LayoutTemplate size={16} />,
+        perform: () => goToSection("proof"),
+      },
+      {
+        id: "nav-services",
+        title: "Go to Services (freelance)",
+        category: "Navigation",
+        icon: <LayoutTemplate size={16} />,
+        perform: () => goToSection("services"),
+      },
+      {
+        id: "nav-now",
+        title: "What I'm working on now",
+        category: "Navigation",
+        icon: <BookOpen size={16} />,
+        perform: () => {
+          window.location.href = "/now";
+        },
+      },
+      {
+        id: "nav-checklist",
+        title: "12 questions to ask before hiring a developer",
+        category: "Navigation",
+        icon: <BookOpen size={16} />,
+        perform: () => {
+          window.location.href = "/checklist";
+        },
       },
       {
         id: "nav-blog",

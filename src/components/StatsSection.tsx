@@ -37,7 +37,7 @@ export default function StatsSection() {
   ];
 
   return (
-    <section id="stats" className="py-16 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-32">
+    <section id="stats" className="px-5 md:px-12 max-w-7xl mx-auto scroll-mt-28">
       <Reveal>
         <div className="flex items-center gap-3 mb-8">
           <span className="text-[10px] font-mono text-teal-400 uppercase tracking-[0.3em]">
@@ -49,7 +49,7 @@ export default function StatsSection() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Reveal className="lg:col-span-2">
-          <div className="rounded-xl border border-white/5 bg-slate-900/40 p-6 h-full flex flex-col">
+          <div className="rounded-2xl border border-white/[0.07] bg-slate-900/50 p-6 h-full flex flex-col">
             <div className="flex items-center gap-2 text-slate-400 text-xs font-mono uppercase mb-4">
               <Github size={14} className="text-teal-400" /> GitHub contributions
             </div>
@@ -62,7 +62,7 @@ export default function StatsSection() {
                 onError={() => setGraphOk(false)}
                 // The chart is drawn for a light page: invert it, then rotate the hue back so
                 // empty days go dark and active days stay teal.
-                className="w-full my-auto opacity-90 [filter:invert(1)_hue-rotate(180deg)_brightness(0.9)]"
+                className="gh-graph w-full my-auto opacity-90"
               />
             ) : (
               <div className="text-slate-500 text-sm font-mono py-10 text-center">
@@ -87,7 +87,7 @@ export default function StatsSection() {
                 href={c.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block rounded-xl border border-white/5 bg-slate-900/40 p-5 hover:border-teal-500/30 transition-colors h-full"
+                className="block rounded-2xl border border-white/[0.07] bg-slate-900/50 p-5 hover:border-teal-500/30 transition-colors h-full"
               >
                 <div className="flex items-center gap-2 text-slate-500 mb-2">{c.icon}</div>
                 <div className="text-2xl md:text-3xl font-display font-black text-slate-100">

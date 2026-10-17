@@ -27,7 +27,7 @@ const nodeDetails: Record<string, NodeDetail> = {
   "1": {
     title: "Clinic dashboards",
     desc: "The web app clinics use every day. It used to poll the API every few seconds for anything new; it now holds a WebSocket open and gets told when something changes.",
-    metrics: "4,000+ clinics on the platform",
+    metrics: "2,300+ clinics on the platform",
     icon: Globe,
   },
   "2": {

@@ -1,14 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Home, User, Briefcase, Mail, Search, BookOpen, FlaskConical } from "lucide-react";
+import { Home, User, Briefcase, Mail, Search, BookOpen, FlaskConical, Wrench } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 import { useSyncExternalStore } from "react";
 
 // Absolute-hash hrefs so the nav works from sub-pages (e.g. /blog) too.
 const navItems = [
   { name: "Home", href: "/#home", icon: Home },
+  { name: "Work", href: "/#work", icon: Briefcase },
   { name: "Experience", href: "/#experience", icon: User },
-  { name: "Work", href: "/#projects", icon: Briefcase },
+  { name: "Services", href: "/#services", icon: Wrench },
   { name: "Lab", href: "/lab", icon: FlaskConical },
   { name: "Writing", href: "/blog", icon: BookOpen },
   { name: "Contact", href: "/#contact", icon: Mail },
@@ -28,12 +30,12 @@ export default function Navbar() {
   };
 
   return (
-    <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+    <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 print:hidden">
       <motion.div
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="flex items-center gap-1 p-2 rounded-full border border-white/10 bg-slate-950/50 backdrop-blur-md shadow-2xl"
+        className="flex items-center gap-0.5 sm:gap-1 p-1.5 sm:p-2 rounded-full border border-white/10 bg-slate-950/70 backdrop-blur-md shadow-lg shadow-black/10"
       >
         {navItems.map((item) => (
           <motion.a
@@ -43,16 +45,18 @@ export default function Navbar() {
             whileHover={{ scale: 0.95 }}
             whileTap={{ scale: 0.9 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="relative px-3 md:px-4 py-2 text-sm font-mono text-slate-400 hover:text-teal-400 transition-colors rounded-full hover:bg-white/5 flex items-center gap-2 group"
+            className="relative px-2.5 lg:px-3.5 py-2 text-sm font-mono text-slate-400 hover:text-teal-400 transition-colors rounded-full hover:bg-white/5 flex items-center gap-2 group"
           >
             <item.icon size={16} />
-            <span className="hidden sm:block">{item.name}</span>
+            <span className="hidden lg:block">{item.name}</span>
             <span className="absolute inset-0 rounded-full bg-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           </motion.a>
         ))}
 
         {/* Separator */}
         <div className="w-px h-6 bg-white/10 mx-2 hidden sm:block"></div>
+
+        <ThemeToggle />
 
         {/* CMD+K Trigger */}
         <motion.button

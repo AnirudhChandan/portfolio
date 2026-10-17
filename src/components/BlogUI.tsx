@@ -71,7 +71,7 @@ export function ArticleLayout({ slug, children }: { slug: string; children: Reac
 
       <footer className="mt-20 pt-10 border-t border-white/5">
         <p className="text-slate-400 leading-relaxed">
-          I&apos;m Anirudh, a backend engineer in Bengaluru. I write about problems I&apos;ve had to
+          I&apos;m Anirudh, a backend engineer in India. I write about problems I&apos;ve had to
           solve for real.{" "}
           <Link href="/#contact" className="text-teal-300 hover:underline">
             Say hello

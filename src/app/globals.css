@@ -3,21 +3,43 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 248, 250, 252; /* Slate 50 */
-  --background-start-rgb: 2, 6, 23; /* Slate 950 */
-  --background-end-rgb: 2, 6, 23;
+  /* Dark (default). Space-separated RGB so Tailwind's /<alpha> modifiers work. */
+  --slate-50: 248 250 252; --slate-100: 241 245 249; --slate-200: 226 232 240; --slate-300: 203 213 225;
+  --slate-400: 148 163 184; --slate-500: 100 116 139; --slate-600: 71 85 105; --slate-700: 51 65 85;
+  --slate-800: 30 41 59; --slate-900: 15 23 42; --slate-950: 2 6 23;
+  --teal-50: 240 253 250; --teal-100: 204 251 241; --teal-200: 153 246 228; --teal-300: 94 234 212;
+  --teal-400: 45 212 191; --teal-500: 20 184 166; --teal-600: 13 148 136; --teal-700: 15 118 110;
+  --teal-800: 17 94 89; --teal-900: 19 78 74; --teal-950: 4 47 46;
+  --white: 255 255 255; --black: 0 0 0;
+  --page-glow: 15 23 42;
+  color-scheme: dark;
+}
+
+/* Light: the slate scale is mirrored (so bg-slate-950 is the page and text-slate-100 is ink),
+   white/black swap for borders and overlays, and teal shifts darker to stay readable on white. */
+:root[data-theme="light"] {
+  --slate-50: 2 6 23; --slate-100: 15 23 42; --slate-200: 30 41 59; --slate-300: 51 65 85;
+  --slate-400: 71 85 105; --slate-500: 100 116 139; --slate-600: 148 163 184; --slate-700: 203 213 225;
+  --slate-800: 226 232 240; --slate-900: 241 245 249; --slate-950: 250 251 252;
+  --teal-50: 4 47 46; --teal-100: 19 78 74; --teal-200: 17 94 89; --teal-300: 17 94 89;
+  --teal-400: 15 118 110; --teal-500: 15 118 110; --teal-600: 13 148 136; --teal-700: 20 184 166;
+  --teal-800: 153 246 228; --teal-900: 204 251 241; --teal-950: 240 253 250;
+  --white: 15 23 42; --black: 100 116 139;
+  --page-glow: 226 240 238;
+  color-scheme: light;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
+  color: rgb(var(--slate-200));
+  background: rgb(var(--slate-950));
   font-family: sans-serif;
   overflow-x: hidden;
-  /* Subtle radial gradient to give depth behind the Aurora blobs */
-  background-image: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 70%);
+  background-image: radial-gradient(circle at 50% 0%, rgb(var(--page-glow)) 0%, rgb(var(--slate-950)) 60%);
+  background-attachment: fixed;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Tabular figures for stat numbers so they don't jitter as they update */
@@ -58,9 +80,12 @@ body {
 
 /* Custom Text Selection Color */
 ::selection {
-  background: rgba(45, 212, 191, 0.2); /* Teal 400 with opacity */
-  color: #2dd4bf;
+  background: rgb(var(--teal-400) / 0.2);
+  color: rgb(var(--teal-400));
 }
+:root[data-theme="light"] .bg-noise { display: none; }
+/* ghchart draws for a light page: invert it in dark mode so empty days go dark and active days stay teal. */
+:root:not([data-theme="light"]) .gh-graph { filter: invert(1) hue-rotate(180deg) brightness(0.9); }
 
 /* --- SCROLLBAR CUSTOMIZATION --- */
 ::-webkit-scrollbar {
@@ -70,48 +95,28 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155; /* Slate 700 */
+  background: rgb(var(--slate-700));
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569; /* Slate 600 */
+  background: rgb(var(--slate-600));
 }
 
 /* --- REACT FLOW OVERRIDES (Architecture Diagram) --- */
 .react-flow__controls {
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 0 20px rgb(var(--black) / 0.3) !important;
   border-radius: 8px !important;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgb(var(--white) / 0.05) !important;
 }
 .react-flow__controls-button {
-  background-color: #0f172a !important; /* Slate 900 */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  fill: #94a3b8 !important; /* Slate 400 */
+  background-color: rgb(var(--slate-900)) !important;
+  border-bottom: 1px solid rgb(var(--white) / 0.05) !important;
+  fill: rgb(var(--slate-400)) !important;
 }
 .react-flow__controls-button:hover {
-  background-color: #1e293b !important; /* Slate 800 */
-  fill: #2dd4bf !important; /* Teal 400 hover */
-}
-
-/* --- INFINITE MARQUEE ANIMATION --- */
-/* Used in TechMarquee.tsx for the seamless loop */
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-marquee {
-  animation: scroll 40s linear infinite;
-}
-
-/* Pause the animation when the user hovers over the container */
-.group:hover .animate-marquee {
-  animation-play-state: paused;
+  background-color: rgb(var(--slate-800)) !important;
+  fill: rgb(var(--teal-400)) !important;
 }
 
 /* --- ACCESSIBILITY --- */
@@ -123,8 +128,8 @@ body {
   left: 0.75rem;
   z-index: 100;
   transform: translateY(-160%);
-  background: #2dd4bf;
-  color: #020617;
+  background: rgb(var(--teal-400));
+  color: rgb(var(--slate-950));
   font-weight: 700;
   font-size: 0.85rem;
   padding: 0.6rem 1rem;
@@ -141,7 +146,7 @@ a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid #2dd4bf;
+  outline: 2px solid rgb(var(--teal-400));
   outline-offset: 2px;
   border-radius: 4px;
 }

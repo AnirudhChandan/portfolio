@@ -3,15 +3,17 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
-import BackgroundGrid from "@/components/BackgroundGrid";
 import Navbar from "@/components/Navbar";
 import ScrollProgress from "@/components/ScrollProgress";
 import CommandPalette from "@/components/CommandPalette";
 import Toaster from "@/components/Toaster";
-import CursorGlow from "@/components/CursorGlow";
+import { themeScript } from "@/components/ThemeToggle";
 
 export const viewport: Viewport = {
-  themeColor: "#020617",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#020617" },
+    { media: "(prefers-color-scheme: light)", color: "#fafbfc" },
+  ],
 };
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -19,7 +21,7 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space
 
 const SITE_URL = "https://anirudh-chandan.vercel.app";
 const DESCRIPTION =
-  "Backend engineer building APIs, data pipelines and databases — an EHR backend for 4,000+ clinics, a document-workflow platform, and PyDB, a storage engine written from scratch. Live demos and writing inside.";
+  "Backend engineer building APIs, data pipelines and databases — an EHR backend for 2,300+ clinics, a document-workflow platform, and PyDB, a storage engine written from scratch. Live demos and writing inside.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -74,10 +76,11 @@ const personJsonLd = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${spaceGrotesk.variable} font-sans relative bg-slate-950 text-slate-200 antialiased`}
+        className={`${inter.variable} ${spaceGrotesk.variable} font-sans relative text-slate-200 antialiased`}
       >
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
@@ -86,11 +89,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           Skip to content
         </a>
         <ScrollProgress />
-        <CursorGlow />
         <div className="bg-noise" />
 
         <Navbar />
-        <BackgroundGrid />
 
         {children}
         <CommandPalette />

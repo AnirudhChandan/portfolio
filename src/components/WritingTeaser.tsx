@@ -12,7 +12,7 @@ export default function WritingTeaser() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
             <h2 className="text-3xl md:text-5xl font-display font-bold text-slate-100 mb-4 flex items-center gap-4 tracking-tight">
-              <span className="text-teal-400 font-display font-black text-2xl">04.</span> Writing
+              Writing
             </h2>
             <p className="text-slate-400 max-w-2xl text-lg leading-relaxed">
               Write-ups of real problems: what broke, why, and what fixed it.
