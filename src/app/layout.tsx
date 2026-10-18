@@ -19,7 +19,7 @@ export const viewport: Viewport = {
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
 
-const SITE_URL = "https://anirudh-chandan.vercel.app";
+const SITE_URL = "https://anirudhchandan.com";
 const DESCRIPTION =
   "Backend engineer building APIs, data pipelines and databases — an EHR backend for 2,300+ clinics, a document-workflow platform, and PyDB, a storage engine written from scratch. Live demos and writing inside.";
 

@@ -25,7 +25,7 @@ export default function RecruiterCard({ audience }: { audience: Audience }) {
     `Anirudh Chandan: ${a.role}, 2.5+ years (since Feb 2024). ` +
     "Node.js/TypeScript and Python on PostgreSQL; APIs for a healthcare platform used by 2,300+ clinics, " +
     "711 of 1,100 commits modernising a 20-tenant ERP (15.6s → 2.4s), a CCTV dashboard live on site since Sep 2026. " +
-    `Remote from India. Résumé: https://anirudh-chandan.vercel.app${a.resume}`;
+    `Remote from India. Résumé: https://anirudhchandan.com${a.resume}`;
 
   const copy = async () => {
     let ok = false;

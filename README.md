@@ -1,9 +1,9 @@
-# anirudh-chandan.vercel.app
+# anirudhchandan.com
 
 My personal site. It is also where a few of my projects run live in the
 browser instead of sitting in a repo.
 
-**Live:** https://anirudh-chandan.vercel.app
+**Live:** https://anirudhchandan.com
 
 ## What's in it
 

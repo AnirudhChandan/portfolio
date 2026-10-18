@@ -55,7 +55,7 @@ export default function ChecklistPage() {
           ))}
         </ol>
         <p className="mt-14 border-t border-white/10 pt-6 text-sm text-slate-500">
-          From Anirudh Chandan, software developer · anirudh-chandan.vercel.app · WhatsApp +91 97604 55011
+          From Anirudh Chandan, software developer · anirudhchandan.com · WhatsApp +91 97604 55011
         </p>
       </div>
     </main>

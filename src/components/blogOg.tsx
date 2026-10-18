@@ -34,7 +34,7 @@ export function blogOgImage(title: string, tag: string) {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "24px", color: "#94a3b8" }}>
           <span>Anirudh Chandan</span>
-          <span style={{ color: "#5eead4" }}>anirudh-chandan.vercel.app</span>
+          <span style={{ color: "#5eead4" }}>anirudhchandan.com</span>
         </div>
       </div>
     ),
