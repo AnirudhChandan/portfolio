@@ -62,13 +62,13 @@ const initialNodes: Node[] = [
     id: "1",
     position: { x: 250, y: 0 },
     data: { label: "Clinic dashboards" },
-    style: { background: "#0f172a", color: "#fff", border: "1px solid #2dd4bf", width: 170 },
+    style: { background: "rgb(var(--slate-900))", color: "rgb(var(--slate-50))", border: "1px solid rgb(var(--teal-400))", width: 170 },
   },
   {
     id: "2",
     position: { x: 250, y: 150 },
     data: { label: "Node.js API" },
-    style: { background: "#0f172a", color: "#fff", border: "1px solid #94a3b8", width: 170 },
+    style: { background: "rgb(var(--slate-900))", color: "rgb(var(--slate-50))", border: "1px solid rgb(var(--slate-400))", width: 170 },
   },
   {
     id: "3",
@@ -86,17 +86,17 @@ const initialNodes: Node[] = [
     id: "5",
     position: { x: 250, y: 450 },
     data: { label: "SQL database" },
-    style: { background: "#0f172a", color: "#fff", border: "2px solid #2dd4bf", width: 170 },
+    style: { background: "rgb(var(--slate-900))", color: "rgb(var(--slate-50))", border: "2px solid rgb(var(--teal-400))", width: 170 },
   },
 ];
 
 const initialEdges: Edge[] = [
-  { id: "e1-2", source: "1", target: "2", animated: true, label: "REST", style: { stroke: "#2dd4bf" } },
+  { id: "e1-2", source: "1", target: "2", animated: true, label: "REST", style: { stroke: "rgb(var(--teal-400))" } },
   { id: "e2-3", source: "2", target: "3", animated: true, label: "writes" },
   { id: "e3-4", source: "3", target: "4", label: "locks" },
   { id: "e2-4", source: "2", target: "4", animated: true, label: "publish" },
   { id: "e4-1", source: "4", target: "1", animated: true, label: "push (WebSocket)", style: { stroke: "#f87171" } },
-  { id: "e2-5", source: "2", target: "5", style: { stroke: "#fff" } },
+  { id: "e2-5", source: "2", target: "5", style: { stroke: "rgb(var(--slate-50))" } },
   { id: "e3-5", source: "3", target: "5", animated: true, style: { stroke: "#6366f1" }, label: "versioned UPDATE" },
 ];
 

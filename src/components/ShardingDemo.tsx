@@ -55,7 +55,7 @@ export default function ShardingDemo() {
         </p>
       </div>
 
-      <div className="bg-[#0b0f15] border border-slate-800 rounded-xl p-6 md:p-10 shadow-2xl relative overflow-hidden">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 md:p-10 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-teal-500/5 blur-[100px] pointer-events-none" />
 
         {/* CONTROLS */}
@@ -266,7 +266,7 @@ function ServerRack({
       animate={{ opacity: 1, scale: 1 }}
       className="rounded-lg border border-slate-800 bg-slate-900/60 overflow-hidden"
     >
-      <div className="h-9 bg-[#050505] border-b border-white/5 flex items-center justify-between px-3">
+      <div className="h-9 bg-slate-950 border-b border-white/5 flex items-center justify-between px-3">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: stat.color }} />
           <span className="font-mono text-[10px] text-slate-400 tracking-widest">{stat.label}</span>

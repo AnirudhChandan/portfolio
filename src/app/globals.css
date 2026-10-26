@@ -3,29 +3,41 @@
 @tailwind utilities;
 
 :root {
-  /* Dark (default). Space-separated RGB so Tailwind's /<alpha> modifiers work. */
-  --slate-50: 248 250 252; --slate-100: 241 245 249; --slate-200: 226 232 240; --slate-300: 203 213 225;
-  --slate-400: 148 163 184; --slate-500: 100 116 139; --slate-600: 71 85 105; --slate-700: 51 65 85;
-  --slate-800: 30 41 59; --slate-900: 15 23 42; --slate-950: 2 6 23;
-  --teal-50: 240 253 250; --teal-100: 204 251 241; --teal-200: 153 246 228; --teal-300: 94 234 212;
-  --teal-400: 45 212 191; --teal-500: 20 184 166; --teal-600: 13 148 136; --teal-700: 15 118 110;
-  --teal-800: 17 94 89; --teal-900: 19 78 74; --teal-950: 4 47 46;
+  /* Night (default). Space-separated RGB so Tailwind's /<alpha> modifiers work.
+     slate = blue-black ink, teal = peacock teal, gold = the bronze ring of a feather eye. */
+  --slate-50: 244 247 248; --slate-100: 233 238 241; --slate-200: 211 220 226; --slate-300: 181 194 204;
+  --slate-400: 156 171 185; --slate-500: 122 139 156; --slate-600: 76 91 106; --slate-700: 51 65 80;
+  --slate-800: 29 42 56; --slate-900: 17 28 41; --slate-950: 8 16 26;
+  --teal-50: 237 251 248; --teal-100: 205 243 236; --teal-200: 159 230 217; --teal-300: 106 214 199;
+  --teal-400: 52 198 184; --teal-500: 31 169 156; --teal-600: 21 138 128; --teal-700: 18 110 103;
+  --teal-800: 17 88 83; --teal-900: 15 73 69; --teal-950: 5 43 41;
+  --gold-300: 231 193 130; --gold-400: 217 167 82; --gold-500: 184 135 58;
   --white: 255 255 255; --black: 0 0 0;
-  --page-glow: 15 23 42;
+  --page-glow: 14 34 44;
+  /* Peacock artwork (Feather, FeatherEye, FooterPeacock). Shapes only, never small text. */
+  --feather-barb: 169 184 92; --feather-barb-lo: 118 134 78; --feather-shaft: 205 187 114;
+  --feather-r1: 163 166 63; --feather-r2: 180 105 42; --feather-r3: 45 184 166;
+  --feather-core: 28 61 150; --feather-core2: 75 71 201; --feather-fiber: 6 16 26;
+  --peacock: 61 99 201; --leaf: 62 90 69; --bark: 94 82 64;
   color-scheme: dark;
 }
 
-/* Light: the slate scale is mirrored (so bg-slate-950 is the page and text-slate-100 is ink),
-   white/black swap for borders and overlays, and teal shifts darker to stay readable on white. */
+/* Morning: the slate scale is mirrored (so bg-slate-950 is the page and text-slate-100 is ink),
+   white/black swap for borders and overlays, and teal and gold shift darker to stay readable. */
 :root[data-theme="light"] {
-  --slate-50: 2 6 23; --slate-100: 15 23 42; --slate-200: 30 41 59; --slate-300: 51 65 85;
-  --slate-400: 71 85 105; --slate-500: 100 116 139; --slate-600: 148 163 184; --slate-700: 203 213 225;
-  --slate-800: 226 232 240; --slate-900: 241 245 249; --slate-950: 250 251 252;
-  --teal-50: 4 47 46; --teal-100: 19 78 74; --teal-200: 17 94 89; --teal-300: 17 94 89;
-  --teal-400: 15 118 110; --teal-500: 15 118 110; --teal-600: 13 148 136; --teal-700: 20 184 166;
-  --teal-800: 153 246 228; --teal-900: 204 251 241; --teal-950: 240 253 250;
-  --white: 15 23 42; --black: 100 116 139;
-  --page-glow: 226 240 238;
+  --slate-50: 12 20 30; --slate-100: 21 32 44; --slate-200: 34 48 61; --slate-300: 52 67 80;
+  --slate-400: 74 88 102; --slate-500: 95 108 121; --slate-600: 154 165 174; --slate-700: 205 211 211;
+  --slate-800: 225 229 225; --slate-900: 234 237 232; --slate-950: 241 243 238;
+  --teal-50: 5 43 41; --teal-100: 15 73 69; --teal-200: 17 88 83; --teal-300: 14 98 92;
+  --teal-400: 11 107 102; --teal-500: 11 107 102; --teal-600: 19 140 130; --teal-700: 45 184 166;
+  --teal-800: 165 227 218; --teal-900: 211 241 236; --teal-950: 238 248 246;
+  --gold-300: 110 71 13; --gold-400: 133 86 16; --gold-500: 154 106 31;
+  --white: 21 32 44; --black: 95 108 121;
+  --page-glow: 222 236 230;
+  --feather-barb: 94 113 48; --feather-barb-lo: 141 152 104; --feather-shaft: 110 91 38;
+  --feather-r1: 142 138 53; --feather-r2: 160 87 31; --feather-r3: 19 140 130;
+  --feather-core: 29 58 138; --feather-core2: 74 63 176; --feather-fiber: 241 243 238;
+  --peacock: 29 58 138; --leaf: 139 162 135; --bark: 122 104 80;
   color-scheme: light;
 }
 
@@ -42,9 +54,11 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Tabular figures for stat numbers so they don't jitter as they update */
+/* Tabular figures for stat numbers so they don't jitter as they update.
+   Fraunces reads heavy above 600, so this caps the font-bold/font-black used on headings. */
 .font-display {
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 /* --- VIEW TRANSITIONS (cross-document; progressive enhancement) --- */
@@ -163,4 +177,69 @@ input:focus-visible,
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* Hindi view of /for-business: Mukta for text, Tiro Devanagari Hindi (one weight) for headings.
+   Wide letter-spacing breaks Devanagari conjuncts, so the mono kickers drop it. */
+:lang(hi), :lang(hi) .font-mono { font-family: var(--font-mukta), var(--font-inter), sans-serif; }
+:lang(hi) .font-mono { letter-spacing: normal; }
+:lang(hi) .font-display { font-family: var(--font-tiro), var(--font-fraunces), serif; font-weight: 400; }
+
+/* --- PEACOCK ARTWORK (Feather, FeatherEye, FooterPeacock) --- */
+:is(.feather, .feather-eye, .peacock) .r1 { fill: rgb(var(--feather-r1)); }
+:is(.feather, .feather-eye, .peacock) .r2 { fill: rgb(var(--feather-r2)); }
+:is(.feather, .feather-eye, .peacock) .r3 { fill: rgb(var(--feather-r3)); }
+:is(.feather, .feather-eye, .peacock) .core { fill: rgb(var(--feather-core)); }
+
+.feather svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.feather .lo, .feather .hi, .feather .shaft { fill: none; stroke-linecap: round; }
+.feather .lo { stroke: rgb(var(--feather-barb-lo)); stroke-width: 1.3; opacity: 0.8; }
+.feather .hi { stroke: rgb(var(--feather-barb)); stroke-width: 1.4; opacity: 0.95; }
+.feather .shaft { stroke: rgb(var(--feather-shaft)); stroke-width: 2.8; }
+.feather .fib { stroke: rgb(var(--feather-fiber)); stroke-width: 0.55; opacity: 0.22; }
+/* On load the feather grows from its base to the eye; then the eye's blue slowly drifts toward violet. */
+.feather svg:first-child {
+  -webkit-mask-image: linear-gradient(to top, #000 45%, transparent 55%);
+  mask-image: linear-gradient(to top, #000 45%, transparent 55%);
+  -webkit-mask-size: 100% 300%;
+  mask-size: 100% 300%;
+  -webkit-mask-position: 0 100%;
+  mask-position: 0 100%;
+  animation: feather-grow 1.6s cubic-bezier(0.3, 0.7, 0.2, 1) 0.2s both;
+}
+.feather-shimmer { opacity: 0; animation: feather-shimmer 9s ease-in-out 1.8s infinite; }
+.feather-shimmer path { fill: rgb(var(--feather-core2)); }
+@keyframes feather-grow { from { -webkit-mask-position: 0 0; mask-position: 0 0; } }
+@keyframes feather-shimmer { 50% { opacity: 0.7; } }
+
+.peacock .bark { fill: rgb(var(--bark)); }
+.peacock .leaf { fill: rgb(var(--leaf)); }
+.peacock .bird, .peacock .crest circle { fill: rgb(var(--peacock)); }
+.peacock .crest line { stroke: rgb(var(--peacock)); stroke-width: 1.1; }
+.peacock .bird-eye { fill: rgb(var(--gold-300)); }
+.peacock .train { fill: rgb(var(--feather-barb-lo)); }
+.peacock .strands { fill: none; stroke: rgb(var(--feather-barb)); stroke-width: 0.7; opacity: 0.5; }
+
+/* Feather-coloured border on hover: a 1px gradient ring drawn by a masked pseudo-element,
+   so it works on the cards' translucent backgrounds. */
+.rim-feather { position: relative; }
+.rim-feather::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(125deg, rgb(var(--feather-r3)), rgb(var(--gold-400)) 50%, rgb(var(--feather-core)));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.rim-feather:hover::before,
+.rim-feather:focus-within::before { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .feather svg, .feather-shimmer { animation: none; }
 }

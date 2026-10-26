@@ -79,7 +79,7 @@ export default function Receipts({ first }: { first?: string }) {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
         {ordered.map((r, i) => (
           <Reveal key={r.claim} delay={0.04 * i} className="h-full">
-            <div className="h-full rounded-2xl border border-white/[0.07] bg-slate-900/50 p-6 flex flex-col">
+            <div className="rim-feather h-full rounded-2xl border border-white/[0.07] bg-slate-900/50 p-6 flex flex-col">
               <div className="flex items-center justify-between gap-3 mb-4">
                 <span className="text-[11px] font-mono uppercase tracking-wider text-teal-400">{r.kind}</span>
                 {r.badge && (

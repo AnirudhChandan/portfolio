@@ -3,8 +3,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Calendar, FileText, Github, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
+import type { ReactNode } from "react";
 
 import Experience from "@/components/Experience";
+import { FeatherDivider } from "@/components/FeatherEye";
 import RecruiterCard from "@/components/RecruiterCard";
 import { audiences, type Audience } from "@/lib/audience";
 import { track } from "@/lib/track";
@@ -47,7 +49,16 @@ const fade = (delay = 0) => ({
   transition: { duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] as const },
 });
 
-export default function HomePage({ audience = "default" }: { audience?: Audience }) {
+// feather and peacock are server-rendered SVG passed in from the page, so they ship no JavaScript.
+export default function HomePage({
+  audience = "default",
+  feather,
+  peacock,
+}: {
+  audience?: Audience;
+  feather?: ReactNode;
+  peacock?: ReactNode;
+}) {
   const a = audiences[audience];
   return (
     <main className="min-h-screen relative">
@@ -58,7 +69,7 @@ export default function HomePage({ audience = "default" }: { audience?: Audience
               <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
               Open to remote backend &amp; AI roles · taking freelance work
             </motion.div>
-            <motion.h1 {...fade(0.05)} className="font-display font-bold tracking-tighter text-slate-50 text-5xl sm:text-6xl md:text-7xl leading-[0.95] mb-6">
+            <motion.h1 {...fade(0.05)} className="font-display font-bold tracking-tight text-slate-50 text-5xl sm:text-6xl md:text-7xl leading-[0.95] mb-6">
               Anirudh Chandan
             </motion.h1>
             <motion.p {...fade(0.1)} className="font-display text-2xl md:text-3xl text-slate-300 tracking-tight leading-snug mb-6 max-w-2xl">
@@ -87,7 +98,8 @@ export default function HomePage({ audience = "default" }: { audience?: Audience
             </motion.div>
           </div>
 
-          <motion.div {...fade(0.1)} className="lg:col-span-4 max-w-sm w-full mx-auto lg:mx-0">
+          <motion.div {...fade(0.1)} className="relative lg:col-span-4 max-w-sm w-full mx-auto lg:mx-0">
+            {feather}
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border border-white/[0.07] bg-slate-900">
               <Image src="/profile.jpeg" alt="Anirudh Chandan" fill priority className="object-cover" sizes="(min-width: 1024px) 30vw, 80vw" />
             </div>
@@ -96,7 +108,7 @@ export default function HomePage({ audience = "default" }: { audience?: Audience
 
         <motion.div {...fade(0.3)} className="grid md:grid-cols-2 gap-4 mt-16">
           {paths(a.resume).map((p) => (
-            <div key={p.kicker} className="group rounded-2xl border border-white/[0.07] bg-slate-900/50 p-6 md:p-7 flex flex-col sm:flex-row sm:items-end justify-between gap-5 hover:border-teal-500/30 transition-colors">
+            <div key={p.kicker} className="group rounded-2xl border border-white/[0.07] bg-slate-900/50 p-6 md:p-7 flex flex-col sm:flex-row sm:items-end justify-between gap-5 rim-feather">
               <a href={p.href} className="block">
                 <div className="text-xs font-mono uppercase tracking-[0.2em] text-teal-400 mb-2">{p.kicker}</div>
                 <div className="font-display font-bold text-xl text-slate-50 mb-1 inline-flex items-center gap-2">
@@ -132,12 +144,15 @@ export default function HomePage({ audience = "default" }: { audience?: Audience
         <Work />
         <Experience />
         <StatsSection />
+        <FeatherDivider />
         <Services />
         <LabTeaser />
         <WritingTeaser />
+        <FeatherDivider />
         <TerminalContact />
       </div>
 
+      {peacock && <div className="max-w-7xl mx-auto px-5 md:px-12 flex justify-end">{peacock}</div>}
       <footer className="border-t border-white/[0.07] py-10 px-5 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-slate-500 text-sm">
         <span>
           © 2026 Anirudh Chandan ·{" "}

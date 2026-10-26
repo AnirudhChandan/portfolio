@@ -26,14 +26,17 @@ export function setTheme(t: Theme) {
 export default function ThemeToggle() {
   const theme = useSyncExternalStore(subscribe, read, () => "dark" as Theme);
   const next: Theme = theme === "dark" ? "light" : "dark";
+  // Dark is called Night and light is called Morning on the page.
+  const label = next === "light" ? "Morning" : "Night";
   return (
     <button
       onClick={() => setTheme(next)}
-      aria-label={`Switch to ${next} theme`}
-      title={`Switch to ${next} theme`}
-      className="p-2 rounded-full text-slate-400 hover:text-teal-400 hover:bg-white/5 transition-colors"
+      aria-label={`Switch to ${label.toLowerCase()} (${next}) theme`}
+      title={`Switch to ${label.toLowerCase()} (${next}) theme`}
+      className="px-2.5 lg:px-3.5 py-2 rounded-full text-sm font-mono text-slate-400 hover:text-teal-400 hover:bg-white/5 transition-colors flex items-center gap-2"
     >
       {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+      <span className="hidden xl:block">{label}</span>
     </button>
   );
 }

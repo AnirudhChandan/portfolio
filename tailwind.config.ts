@@ -14,12 +14,13 @@ const config: Config = {
       colors: {
         slate: scale("slate", STEPS),
         teal: scale("teal", STEPS),
+        gold: scale("gold", [300, 400, 500]),
         white: v("white"),
         black: v("black"),
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
-        display: ["var(--font-space-grotesk)", "sans-serif"],
+        display: ["var(--font-fraunces)", "Georgia", "serif"],
       },
     },
   },

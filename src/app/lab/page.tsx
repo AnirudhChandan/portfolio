@@ -27,7 +27,7 @@ export default function LabPage() {
           <div className="h-px flex-1 bg-white/5" />
         </div>
 
-        <h1 className="text-4xl md:text-6xl font-display font-black text-slate-100 tracking-tighter leading-tight mb-4">
+        <h1 className="text-4xl md:text-6xl font-display font-black text-slate-100 tracking-tight leading-tight mb-4">
           Interactive systems demos
         </h1>
         <p className="text-slate-400 max-w-2xl text-lg leading-relaxed">

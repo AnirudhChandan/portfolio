@@ -18,7 +18,7 @@ export default function BlogIndex() {
         <ArrowLeft size={16} /> Home
       </Link>
 
-      <h1 className="text-4xl md:text-6xl font-display font-black text-slate-100 tracking-tighter mb-4">
+      <h1 className="text-4xl md:text-6xl font-display font-black text-slate-100 tracking-tight mb-4">
         Writing
       </h1>
       <p className="text-slate-400 text-lg mb-16">

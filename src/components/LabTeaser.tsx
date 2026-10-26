@@ -46,7 +46,7 @@ export default function LabTeaser() {
           </div>
           <Link
             href="/lab"
-            className="shrink-0 group inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-purple-500/30 bg-purple-500/10 text-purple-200 hover:bg-purple-500/20 transition-colors font-mono text-sm"
+            className="shrink-0 group inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-gold-400/30 bg-gold-400/10 text-gold-300 hover:bg-gold-400/20 transition-colors font-mono text-sm"
           >
             Enter the Lab
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -59,9 +59,9 @@ export default function LabTeaser() {
           <Reveal key={d.title} delay={0.06 * i}>
             <Link
               href={d.href}
-              className="group block h-full rounded-xl border border-white/5 bg-[#0b0f15] overflow-hidden hover:border-teal-500/30 transition-colors"
+              className="group block h-full rounded-xl border border-white/5 bg-slate-900 overflow-hidden hover:border-teal-500/30 transition-colors"
             >
-              <div className="h-8 bg-[#050505] border-b border-white/5 flex items-center gap-1.5 px-3">
+              <div className="h-8 bg-slate-950 border-b border-white/5 flex items-center gap-1.5 px-3">
                 <span className="w-2 h-2 rounded-full bg-red-500/40" />
                 <span className="w-2 h-2 rounded-full bg-yellow-500/40" />
                 <span className="w-2 h-2 rounded-full bg-green-500/40" />

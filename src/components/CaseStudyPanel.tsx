@@ -40,10 +40,10 @@ export default function CaseStudyPanel({
             role="dialog"
             aria-modal="true"
             aria-label={`${study.title} case study`}
-            className="fixed top-0 right-0 bottom-0 z-[151] w-full max-w-xl bg-[#0b0f15] border-l border-white/10 overflow-y-auto custom-scrollbar"
+            className="fixed top-0 right-0 bottom-0 z-[151] w-full max-w-xl bg-slate-900 border-l border-white/10 overflow-y-auto custom-scrollbar"
           >
             {/* Header */}
-            <div className="sticky top-0 bg-[#0b0f15]/90 backdrop-blur-md border-b border-white/5 px-6 md:px-8 py-5 flex items-start justify-between gap-4 z-10">
+            <div className="sticky top-0 bg-slate-900/90 backdrop-blur-md border-b border-white/5 px-6 md:px-8 py-5 flex items-start justify-between gap-4 z-10">
               <div>
                 <span className="text-[10px] font-mono text-teal-400 uppercase tracking-widest">
                   Case Study

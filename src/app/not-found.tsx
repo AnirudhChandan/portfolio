@@ -27,7 +27,7 @@ export default function NotFound() {
           <p className="text-slate-500">$ cd {"{requested-route}"}</p>
           <p className="text-red-400 mt-1">bash: cd: no such route</p>
 
-          <div className="text-7xl md:text-8xl font-display font-black text-slate-100 my-8 tracking-tighter">
+          <div className="text-7xl md:text-8xl font-display font-black text-slate-100 my-8 tracking-tight">
             404
           </div>
 

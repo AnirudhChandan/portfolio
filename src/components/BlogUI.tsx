@@ -7,7 +7,7 @@ import { posts } from "@/lib/posts";
 
 export function Code({ children }: { children: string }) {
   return (
-    <pre className="my-6 overflow-x-auto rounded-xl border border-white/5 bg-[#020408] p-4 text-[13px] leading-relaxed font-mono text-slate-300">
+    <pre className="my-6 overflow-x-auto rounded-xl border border-white/5 bg-slate-900 p-4 text-[13px] leading-relaxed font-mono text-slate-300">
       <code>{children}</code>
     </pre>
   );
@@ -63,7 +63,7 @@ export function ArticleLayout({ slug, children }: { slug: string; children: Reac
         </span>
       </div>
 
-      <h1 className="text-4xl md:text-5xl font-display font-black text-slate-100 tracking-tighter leading-tight mb-8">
+      <h1 className="text-4xl md:text-5xl font-display font-black text-slate-100 tracking-tight leading-tight mb-8">
         {post.title}
       </h1>
 
