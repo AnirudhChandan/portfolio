@@ -8,6 +8,7 @@ import ScrollProgress from "@/components/ScrollProgress";
 import CommandPalette from "@/components/CommandPalette";
 import Toaster from "@/components/Toaster";
 import { themeScript } from "@/components/ThemeToggle";
+import { pathScript } from "@/components/PathSwitch";
 
 export const viewport: Viewport = {
   themeColor: [
@@ -81,6 +82,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         className={`${inter.variable} ${fraunces.variable} font-sans relative text-slate-200 antialiased`}
       >
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: pathScript }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}

@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check, MessageCircle } from "lucide-react";
 import type { Industry } from "@/lib/industries";
 import { WHATSAPP_URL } from "@/lib/contact";
@@ -41,8 +40,7 @@ const ui = {
   checklist: { en: "12 questions to ask before you hire any developer →", hi: "किसी भी डेवलपर को रखने से पहले पूछने लायक 12 सवाल (अंग्रेज़ी) →" },
 };
 
-export default function IndustryView({ industry }: { industry: Industry }) {
-  const [lang, setLang] = useState<Lang>("en");
+export default function IndustryView({ industry, lang }: { industry: Industry; lang: Lang }) {
   const t = (b: { en: string; hi: string }) => b[lang];
 
   return (
@@ -52,18 +50,21 @@ export default function IndustryView({ industry }: { industry: Industry }) {
           <Link href="/#services" className="inline-flex items-center gap-2 text-slate-500 hover:text-teal-400 font-mono text-sm">
             <ArrowLeft size={16} /> {t(ui.back)}
           </Link>
-          <div role="group" aria-label="Language" className="inline-flex rounded-full border border-white/10 p-0.5 text-sm">
+          {/* Each language has its own address, so either version can be shared as a link. */}
+          <nav aria-label="Language" className="inline-flex rounded-full border border-white/10 p-0.5 text-sm">
             {(["en", "hi"] as Lang[]).map((l) => (
-              <button
+              <Link
                 key={l}
-                onClick={() => setLang(l)}
-                aria-pressed={lang === l}
+                href={`/for-business/${industry.slug}${l === "hi" ? "/hi" : ""}`}
+                hrefLang={l}
+                lang={l}
+                aria-current={lang === l ? "page" : undefined}
                 className={`px-3 py-1 rounded-full ${lang === l ? "bg-teal-500 text-slate-950 font-semibold" : "text-slate-400 hover:text-slate-100"}`}
               >
                 {l === "en" ? "English" : "हिंदी"}
-              </button>
+              </Link>
             ))}
-          </div>
+          </nav>
         </div>
 
         <div className="text-xs font-mono uppercase tracking-[0.25em] text-teal-400 mb-4">{t(ui.kicker)}</div>

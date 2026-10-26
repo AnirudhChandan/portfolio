@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { posts } from "@/lib/posts";
 import { industries } from "@/lib/industries";
+import { works } from "@/lib/work";
 
 const SITE = "https://anirudhchandan.com";
 
@@ -12,6 +13,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE}/now`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE}/checklist`, changeFrequency: "yearly", priority: 0.6 },
     ...industries.map((i) => ({ url: `${SITE}/for-business/${i.slug}`, changeFrequency: "monthly" as const, priority: 0.8 })),
+    ...industries.map((i) => ({ url: `${SITE}/for-business/${i.slug}/hi`, changeFrequency: "monthly" as const, priority: 0.7 })),
+    ...works.map((w) => ({ url: `${SITE}/work/${w.slug}`, changeFrequency: "monthly" as const, priority: 0.7 })),
     ...posts.map((p) => ({
       url: `${SITE}/blog/${p.slug}`,
       changeFrequency: "yearly" as const,

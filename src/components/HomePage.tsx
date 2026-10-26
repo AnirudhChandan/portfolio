@@ -3,12 +3,15 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Calendar, FileText, Github, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 
 import Experience from "@/components/Experience";
+import PathSwitch, { choosePath, usePath, type Path } from "@/components/PathSwitch";
 import { FeatherDivider } from "@/components/FeatherEye";
 import RecruiterCard from "@/components/RecruiterCard";
+import SourceNote from "@/components/SourceNote";
 import { audiences, type Audience } from "@/lib/audience";
+import type { SourceId } from "@/lib/sources";
 import { track } from "@/lib/track";
 import LabTeaser from "@/components/LabTeaser";
 import Receipts from "@/components/Receipts";
@@ -18,16 +21,17 @@ import TerminalContact from "@/components/TerminalContact";
 import Work from "@/components/Work";
 import WritingTeaser from "@/components/WritingTeaser";
 
-// Every number here is on the résumé or in portfolio-in/FACTS.md.
-const proof = [
-  { n: "2,300+", l: "clinic tenants on a platform I build for" },
-  { n: "711 / 1,100", l: "commits on a 20-tenant ERP" },
-  { n: "15.6s → 2.4s", l: "after auditing 53 screens for N+1s" },
-  { n: "Sep 2026", l: "CCTV dashboard live on site since" },
+// Every number here is on the résumé or in portfolio-in/FACTS.md; src/lib/sources.ts says where.
+const proof: { n: string; l: string; src: SourceId }[] = [
+  { n: "2,300+", l: "clinic tenants on a platform I build for", src: "clinics" },
+  { n: "711 / 1,100", l: "commits on a 20-tenant ERP", src: "erp" },
+  { n: "15.6s → 2.4s", l: "after auditing 53 screens for N+1s", src: "nPlusOne" },
+  { n: "Sep 2026", l: "CCTV dashboard live on site since", src: "cctv" },
 ];
 
-const paths = (resume: string) => [
+const paths = (resume: string): { path: Path; kicker: string; title: string; desc: string; href: string; cta: { label: string; href: string; icon: typeof FileText } }[] => [
   {
+    path: "hiring",
     kicker: "Hiring?",
     title: "Screening answers, résumé and proof",
     desc: "Remote backend, full-stack and applied-AI roles.",
@@ -35,6 +39,7 @@ const paths = (resume: string) => [
     cta: { label: "Download résumé", href: resume, icon: FileText },
   },
   {
+    path: "building",
     kicker: "Need something built?",
     title: "Services, client work, how a project runs",
     desc: "Dashboards, integrations, backends and websites, built to keep working.",
@@ -42,6 +47,14 @@ const paths = (resume: string) => [
     cta: { label: "Book a free call", href: "#book", icon: Calendar },
   },
 ];
+
+// Section order for each visitor path (PathSwitch). The pre-paint CSS `order` rules in globals.css
+// must produce the same order.
+const ORDER: Record<"default" | Path, string[]> = {
+  default: ["hiring", "proof", "work", "experience", "stats", "divider-a", "services", "lab", "writing", "divider-b", "contact"],
+  hiring: ["hiring", "proof", "work", "experience", "stats", "divider-a", "lab", "writing", "divider-b", "services", "contact"],
+  building: ["services", "work", "proof", "experience", "stats", "divider-a", "lab", "writing", "divider-b", "hiring", "contact"],
+};
 
 const fade = (delay = 0) => ({
   initial: { opacity: 0, y: 16 },
@@ -60,6 +73,22 @@ export default function HomePage({
   peacock?: ReactNode;
 }) {
   const a = audiences[audience];
+  const path = usePath();
+  // Role pages (/for/*) are for recruiters and keep the default order.
+  const chosen = audience === "default" ? path : undefined;
+  const sections: Record<string, ReactNode> = {
+    hiring: <RecruiterCard audience={audience} />,
+    proof: <Receipts first={a.receiptsFirst} />,
+    work: <Work />,
+    experience: <Experience />,
+    stats: <StatsSection />,
+    "divider-a": <FeatherDivider />,
+    services: <Services />,
+    lab: <LabTeaser />,
+    writing: <WritingTeaser />,
+    "divider-b": <FeatherDivider />,
+    contact: <TerminalContact />,
+  };
   return (
     <main className="min-h-screen relative">
       <section id="home" className="px-5 md:px-12 max-w-7xl mx-auto pt-32 md:pt-40 pb-20 scroll-mt-28">
@@ -82,10 +111,13 @@ export default function HomePage({
             </motion.p>
 
             <motion.dl {...fade(0.2)} className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5 max-w-3xl mb-10">
-              {proof.map((p) => (
+              {proof.map((p, i) => (
                 <div key={p.l} className="border-l border-white/10 pl-4">
                   <dt className="font-display font-bold text-xl md:text-2xl text-slate-50 tracking-tight">{p.n}</dt>
-                  <dd className="text-xs text-slate-500 leading-snug mt-1">{p.l}</dd>
+                  <dd className="text-xs text-slate-500 leading-snug mt-1">
+                    {p.l}
+                    <SourceNote id={p.src} n={i + 1} />
+                  </dd>
                 </div>
               ))}
             </motion.dl>
@@ -106,50 +138,47 @@ export default function HomePage({
           </motion.div>
         </div>
 
-        <motion.div {...fade(0.3)} className="grid md:grid-cols-2 gap-4 mt-16">
-          {paths(a.resume).map((p) => (
-            <div key={p.kicker} className="group rounded-2xl border border-white/[0.07] bg-slate-900/50 p-6 md:p-7 flex flex-col sm:flex-row sm:items-end justify-between gap-5 rim-feather">
-              <a href={p.href} className="block">
-                <div className="text-xs font-mono uppercase tracking-[0.2em] text-teal-400 mb-2">{p.kicker}</div>
-                <div className="font-display font-bold text-xl text-slate-50 mb-1 inline-flex items-center gap-2">
-                  {p.title} <ArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
-                </div>
-                <p className="text-sm text-slate-400">{p.desc}</p>
-              </a>
-              {p.cta.href === "#book" ? (
-                <button
-                  onClick={() => window.dispatchEvent(new CustomEvent("open-booking"))}
-                  className="shrink-0 inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-white/5"
-                >
-                  <p.cta.icon size={16} /> {p.cta.label}
-                </button>
-              ) : (
-                <a
-                  href={p.cta.href}
-                  target="_blank"
-                  onClick={() => track("resume_download", { audience, from: "hero" })}
-                  className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-teal-500 px-4 py-2.5 text-sm font-semibold text-slate-950 hover:bg-teal-400"
-                >
-                  <p.cta.icon size={16} /> {p.cta.label}
+        <motion.div {...fade(0.3)} className="mt-16">
+          {audience === "default" && <PathSwitch />}
+          <div className="grid md:grid-cols-2 gap-4">
+            {paths(a.resume).map((p) => (
+              <div key={p.kicker} className="group rounded-2xl border border-white/[0.07] bg-slate-900/50 p-6 md:p-7 flex flex-col sm:flex-row sm:items-end justify-between gap-5 rim-feather">
+                <a href={p.href} onClick={() => choosePath(p.path)} className="block">
+                  <div className="text-xs font-mono uppercase tracking-[0.2em] text-teal-400 mb-2">{p.kicker}</div>
+                  <div className="font-display font-bold text-xl text-slate-50 mb-1 inline-flex items-center gap-2">
+                    {p.title} <ArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                  <p className="text-sm text-slate-400">{p.desc}</p>
                 </a>
-              )}
-            </div>
-          ))}
+                {p.cta.href === "#book" ? (
+                  <button
+                    onClick={() => window.dispatchEvent(new CustomEvent("open-booking"))}
+                    className="shrink-0 inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-semibold text-slate-100 hover:bg-white/5"
+                  >
+                    <p.cta.icon size={16} /> {p.cta.label}
+                  </button>
+                ) : (
+                  <a
+                    href={p.cta.href}
+                    target="_blank"
+                    onClick={() => track("resume_download", { audience, from: "hero" })}
+                    className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-teal-500 px-4 py-2.5 text-sm font-semibold text-slate-950 hover:bg-teal-400"
+                  >
+                    <p.cta.icon size={16} /> {p.cta.label}
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
         </motion.div>
       </section>
 
-      <div className="flex flex-col gap-28 md:gap-36 pb-28">
-        <RecruiterCard audience={audience} />
-        <Receipts first={a.receiptsFirst} />
-        <Work />
-        <Experience />
-        <StatsSection />
-        <FeatherDivider />
-        <Services />
-        <LabTeaser />
-        <WritingTeaser />
-        <FeatherDivider />
-        <TerminalContact />
+      <div
+        className={`flex flex-col gap-28 md:gap-36 pb-28 ${audience === "default" ? "home-sections" : ""} ${chosen ? "dom-ordered" : ""}`}
+      >
+        {ORDER[chosen ?? "default"].map((k) => (
+          <Fragment key={k}>{sections[k]}</Fragment>
+        ))}
       </div>
 
       {peacock && <div className="max-w-7xl mx-auto px-5 md:px-12 flex justify-end">{peacock}</div>}

@@ -4,8 +4,8 @@ export const ogSize = { width: 1200, height: 630 };
 export const ogContentType = "image/png";
 export const ogAlt = (title: string) => `${title} — Anirudh Chandan`;
 
-// Shared social-card renderer for blog posts (rendered on the edge).
-export function blogOgImage(title: string, tag: string) {
+// Shared social-card renderer for blog posts and case studies (rendered on the edge).
+export function blogOgImage(title: string, tag: string, section = "Writing") {
   return new ImageResponse(
     (
       <div
@@ -24,7 +24,7 @@ export function blogOgImage(title: string, tag: string) {
         <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
           <div style={{ width: "12px", height: "12px", borderRadius: "9999px", background: "#3cc4b4" }} />
           <div style={{ fontSize: "22px", letterSpacing: "6px", color: "#e2b65c", textTransform: "uppercase" }}>
-            {`Writing · ${tag}`}
+            {`${section} · ${tag}`}
           </div>
         </div>
 

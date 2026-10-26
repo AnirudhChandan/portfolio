@@ -1,18 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Github, Target, Wrench, GitBranch, TrendingUp } from "lucide-react";
-
-export interface CaseStudy {
-  title: string;
-  description: string;
-  tech: string[];
-  github?: string;
-  problem: string;
-  approach: string[];
-  architecture: string;
-  outcome: string[];
-}
+import { X, Github, Link2 } from "lucide-react";
+import CaseStudyBody from "./CaseStudyBody";
+import { toast } from "./Toaster";
+import type { CaseStudy } from "@/lib/work";
 
 export default function CaseStudyPanel({
   study,
@@ -53,6 +45,14 @@ export default function CaseStudyPanel({
                 </h3>
               </div>
               <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => copyLink(study.slug)}
+                  aria-label="Copy a link to this case study"
+                  title="Copy link"
+                  className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-teal-400 transition-colors"
+                >
+                  <Link2 size={18} />
+                </button>
                 {study.github && (
                   <a
                     href={study.github}
@@ -74,51 +74,8 @@ export default function CaseStudyPanel({
               </div>
             </div>
 
-            <div className="px-6 md:px-8 py-8 space-y-10">
-              <p className="text-slate-300 leading-relaxed">{study.description}</p>
-
-              <Block icon={<Target size={16} />} title="The problem">
-                <p className="text-slate-400 leading-relaxed">{study.problem}</p>
-              </Block>
-
-              <Block icon={<Wrench size={16} />} title="The approach">
-                <ul className="space-y-2">
-                  {study.approach.map((a, i) => (
-                    <li key={i} className="flex gap-3 text-slate-400 leading-relaxed">
-                      <span className="text-teal-500 shrink-0 mt-1">▸</span>
-                      <span>{a}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Block>
-
-              <Block icon={<GitBranch size={16} />} title="Architecture">
-                <p className="font-mono text-sm text-teal-300/90 bg-slate-900/60 border border-white/5 rounded-lg p-4 leading-relaxed">
-                  {study.architecture}
-                </p>
-              </Block>
-
-              <Block icon={<TrendingUp size={16} />} title="Outcome">
-                <ul className="space-y-2">
-                  {study.outcome.map((o, i) => (
-                    <li key={i} className="flex gap-3 text-slate-300 leading-relaxed">
-                      <span className="text-emerald-400 shrink-0 mt-1">✓</span>
-                      <span>{o}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Block>
-
-              <div className="flex flex-wrap gap-2 pt-2">
-                {study.tech.map((t) => (
-                  <span
-                    key={t}
-                    className="text-[10px] font-mono text-teal-400/90 bg-teal-400/10 px-2.5 py-1 rounded border border-teal-400/20 uppercase tracking-tighter"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
+            <div className="px-6 md:px-8 py-8">
+              <CaseStudyBody study={study} />
             </div>
           </motion.aside>
         </>
@@ -127,22 +84,11 @@ export default function CaseStudyPanel({
   );
 }
 
-function Block({
-  icon,
-  title,
-  children,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <div className="flex items-center gap-2 mb-3 text-slate-200 font-bold text-sm">
-        <span className="text-teal-400">{icon}</span>
-        {title}
-      </div>
-      {children}
-    </div>
+// Every case study also has its own page, so a link can be sent to someone.
+function copyLink(slug: string) {
+  const url = `${window.location.origin}/work/${slug}`;
+  navigator.clipboard.writeText(url).then(
+    () => toast.success("Link copied"),
+    () => toast.info(url),
   );
 }

@@ -186,6 +186,27 @@ input:focus-visible,
 :lang(hi) .font-mono { letter-spacing: normal; }
 :lang(hi) .font-display { font-family: var(--font-tiro), var(--font-fraunces), serif; font-weight: 400; }
 
+/* Source footnotes (SourceNote.tsx): anchor the native popover under its marker where supported;
+   other browsers keep the default centred popover. */
+.source-pop::backdrop { background: transparent; }
+@supports (position-area: bottom) {
+  .source-pop {
+    inset: auto;
+    margin: 0.5rem 0;
+    position-area: bottom span-right;
+    position-try-fallbacks: flip-block, flip-inline;
+  }
+}
+
+/* Home section order before hydration (PathSwitch.tsx): pathScript sets data-path before paint and
+   these rules show the chosen order. After hydration HomePage renders that order in the DOM and adds
+   .dom-ordered, which turns them off. Must match ORDER in HomePage.tsx. */
+:root[data-path] .home-sections:not(.dom-ordered) > #contact { order: 2; }
+:root[data-path="hiring"] .home-sections:not(.dom-ordered) > #services { order: 1; }
+:root[data-path="building"] .home-sections:not(.dom-ordered) > #services { order: -2; }
+:root[data-path="building"] .home-sections:not(.dom-ordered) > #work { order: -1; }
+:root[data-path="building"] .home-sections:not(.dom-ordered) > #hiring { order: 1; }
+
 /* --- PEACOCK ARTWORK (Feather, FeatherEye, FooterPeacock) --- */
 :is(.feather, .feather-eye, .peacock) .r1 { fill: rgb(var(--feather-r1)); }
 :is(.feather, .feather-eye, .peacock) .r2 { fill: rgb(var(--feather-r2)); }
