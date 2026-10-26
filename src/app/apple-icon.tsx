@@ -14,7 +14,7 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#08101a",
+          background: "#0d0b1e",
         }}
       >
         {/* Same feather eye as icon.svg */}

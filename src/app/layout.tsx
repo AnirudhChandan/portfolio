@@ -11,8 +11,8 @@ import { themeScript } from "@/components/ThemeToggle";
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#08101a" },
-    { media: "(prefers-color-scheme: light)", color: "#f1f3ee" },
+    { media: "(prefers-color-scheme: dark)", color: "#0d0b1e" },
+    { media: "(prefers-color-scheme: light)", color: "#f3f2f7" },
   ],
 };
 

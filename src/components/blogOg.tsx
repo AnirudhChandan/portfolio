@@ -16,14 +16,14 @@ export function blogOgImage(title: string, tag: string) {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px",
-          background: "radial-gradient(circle at 25% 0%, #0e222c 0%, #08101a 70%)",
-          color: "#f4f7f8",
+          background: "radial-gradient(circle at 25% 0%, #1e1a44 0%, #0d0b1e 70%)",
+          color: "#f2f0fa",
           fontFamily: "sans-serif",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-          <div style={{ width: "12px", height: "12px", borderRadius: "9999px", background: "#d9a752" }} />
-          <div style={{ fontSize: "22px", letterSpacing: "6px", color: "#34c6b8", textTransform: "uppercase" }}>
+          <div style={{ width: "12px", height: "12px", borderRadius: "9999px", background: "#3cc4b4" }} />
+          <div style={{ fontSize: "22px", letterSpacing: "6px", color: "#e2b65c", textTransform: "uppercase" }}>
             {`Writing · ${tag}`}
           </div>
         </div>
@@ -32,9 +32,9 @@ export function blogOgImage(title: string, tag: string) {
           {title}
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "24px", color: "#9cabb9" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "24px", color: "#8c8a9a" }}>
           <span>Anirudh Chandan</span>
-          <span style={{ color: "#6ad6c7" }}>anirudhchandan.com</span>
+          <span style={{ color: "#eac989" }}>anirudhchandan.com</span>
         </div>
       </div>
     ),

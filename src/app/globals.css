@@ -3,41 +3,42 @@
 @tailwind utilities;
 
 :root {
-  /* Night (default). Space-separated RGB so Tailwind's /<alpha> modifiers work.
-     slate = blue-black ink, teal = peacock teal, gold = the bronze ring of a feather eye. */
-  --slate-50: 244 247 248; --slate-100: 233 238 241; --slate-200: 211 220 226; --slate-300: 181 194 204;
-  --slate-400: 156 171 185; --slate-500: 122 139 156; --slate-600: 76 91 106; --slate-700: 51 65 80;
-  --slate-800: 29 42 56; --slate-900: 17 28 41; --slate-950: 8 16 26;
-  --teal-50: 237 251 248; --teal-100: 205 243 236; --teal-200: 159 230 217; --teal-300: 106 214 199;
-  --teal-400: 52 198 184; --teal-500: 31 169 156; --teal-600: 21 138 128; --teal-700: 18 110 103;
-  --teal-800: 17 88 83; --teal-900: 15 73 69; --teal-950: 5 43 41;
-  --gold-300: 231 193 130; --gold-400: 217 167 82; --gold-500: 184 135 58;
+  /* Night (default), "Neelam": indigo ink with gold. Space-separated RGB so Tailwind's /<alpha>
+     modifiers work. The scale names are historical: slate = the indigo neutrals, teal = the main
+     accent (gold here), gold = the second accent (peacock teal here). */
+  --slate-50: 242 240 250; --slate-100: 223 222 233; --slate-200: 200 198 211; --slate-300: 169 168 182;
+  --slate-400: 140 138 154; --slate-500: 130 129 146; --slate-600: 65 64 83; --slate-700: 42 41 60;
+  --slate-800: 27 26 45; --slate-900: 19 17 36; --slate-950: 13 11 30;
+  --teal-50: 251 244 232; --teal-100: 247 233 209; --teal-200: 240 215 169; --teal-300: 234 201 137;
+  --teal-400: 226 182 92; --teal-500: 196 159 87; --teal-600: 154 126 79; --teal-700: 120 99 70;
+  --teal-800: 92 77 62; --teal-900: 71 60 55; --teal-950: 44 38 45;
+  --gold-300: 123 211 198; --gold-400: 60 196 180; --gold-500: 56 165 155;
   --white: 255 255 255; --black: 0 0 0;
-  --page-glow: 14 34 44;
+  --page-glow: 30 26 68;
   /* Peacock artwork (Feather, FeatherEye, FooterPeacock). Shapes only, never small text. */
   --feather-barb: 169 184 92; --feather-barb-lo: 118 134 78; --feather-shaft: 205 187 114;
   --feather-r1: 163 166 63; --feather-r2: 180 105 42; --feather-r3: 45 184 166;
-  --feather-core: 28 61 150; --feather-core2: 75 71 201; --feather-fiber: 6 16 26;
-  --peacock: 61 99 201; --leaf: 62 90 69; --bark: 94 82 64;
+  --feather-core: 28 61 150; --feather-core2: 75 71 201; --feather-fiber: 13 11 30;
+  --peacock: 109 125 255; --leaf: 74 90 122; --bark: 106 90 72;
   color-scheme: dark;
 }
 
 /* Morning: the slate scale is mirrored (so bg-slate-950 is the page and text-slate-100 is ink),
-   white/black swap for borders and overlays, and teal and gold shift darker to stay readable. */
+   white/black swap for borders and overlays, and both accents shift darker to stay readable. */
 :root[data-theme="light"] {
-  --slate-50: 12 20 30; --slate-100: 21 32 44; --slate-200: 34 48 61; --slate-300: 52 67 80;
-  --slate-400: 74 88 102; --slate-500: 95 108 121; --slate-600: 154 165 174; --slate-700: 205 211 211;
-  --slate-800: 225 229 225; --slate-900: 234 237 232; --slate-950: 241 243 238;
-  --teal-50: 5 43 41; --teal-100: 15 73 69; --teal-200: 17 88 83; --teal-300: 14 98 92;
-  --teal-400: 11 107 102; --teal-500: 11 107 102; --teal-600: 19 140 130; --teal-700: 45 184 166;
-  --teal-800: 165 227 218; --teal-900: 211 241 236; --teal-950: 238 248 246;
-  --gold-300: 110 71 13; --gold-400: 133 86 16; --gold-500: 154 106 31;
-  --white: 21 32 44; --black: 95 108 121;
-  --page-glow: 222 236 230;
+  --slate-50: 16 13 36; --slate-100: 28 26 49; --slate-200: 39 38 60; --slate-300: 57 56 77;
+  --slate-400: 78 77 97; --slate-500: 100 99 118; --slate-600: 166 165 178; --slate-700: 209 208 217;
+  --slate-800: 225 224 231; --slate-900: 235 234 240; --slate-950: 243 242 247;
+  --teal-50: 36 22 2; --teal-100: 58 38 4; --teal-200: 81 55 8; --teal-300: 102 70 13;
+  --teal-400: 122 85 18; --teal-500: 122 85 18; --teal-600: 148 117 71; --teal-700: 174 150 116;
+  --teal-800: 206 193 179; --teal-900: 224 217 213; --teal-950: 234 230 231;
+  --gold-300: 7 85 81; --gold-400: 11 107 102; --gold-500: 62 128 123;
+  --white: 28 26 49; --black: 100 99 118;
+  --page-glow: 228 224 244;
   --feather-barb: 94 113 48; --feather-barb-lo: 141 152 104; --feather-shaft: 110 91 38;
   --feather-r1: 142 138 53; --feather-r2: 160 87 31; --feather-r3: 19 140 130;
-  --feather-core: 29 58 138; --feather-core2: 74 63 176; --feather-fiber: 241 243 238;
-  --peacock: 29 58 138; --leaf: 139 162 135; --bark: 122 104 80;
+  --feather-core: 29 58 138; --feather-core2: 74 63 176; --feather-fiber: 243 242 247;
+  --peacock: 44 47 143; --leaf: 154 158 196; --bark: 122 104 80;
   color-scheme: light;
 }
 

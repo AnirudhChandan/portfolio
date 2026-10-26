@@ -17,14 +17,14 @@ export default function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px",
-          background: "radial-gradient(circle at 30% 0%, #0e222c 0%, #08101a 70%)",
-          color: "#f4f7f8",
+          background: "radial-gradient(circle at 30% 0%, #1e1a44 0%, #0d0b1e 70%)",
+          color: "#f2f0fa",
           fontFamily: "sans-serif",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-          <div style={{ width: "14px", height: "14px", borderRadius: "9999px", background: "#d9a752" }} />
-          <div style={{ fontSize: "22px", letterSpacing: "6px", color: "#34c6b8", textTransform: "uppercase" }}>
+          <div style={{ width: "14px", height: "14px", borderRadius: "9999px", background: "#3cc4b4" }} />
+          <div style={{ fontSize: "22px", letterSpacing: "6px", color: "#e2b65c", textTransform: "uppercase" }}>
             System Status: Online
           </div>
         </div>
@@ -33,22 +33,22 @@ export default function OpengraphImage() {
           <div style={{ fontSize: "92px", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-3px" }}>
             Anirudh Chandan
           </div>
-          <div style={{ fontSize: "40px", fontWeight: 600, color: "#d3dce2", marginTop: "12px" }}>
+          <div style={{ fontSize: "40px", fontWeight: 600, color: "#c8c6d3", marginTop: "12px" }}>
             I build scalable backend systems.
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "16px", fontSize: "24px", color: "#9cabb9" }}>
+        <div style={{ display: "flex", gap: "16px", fontSize: "24px", color: "#8c8a9a" }}>
           {["PyDB · B-Tree Engine", "Distributed Systems", "API Design"].map((t) => (
             <div
               key={t}
               style={{
                 display: "flex",
                 padding: "10px 20px",
-                border: "1px solid rgba(52,198,184,0.3)",
+                border: "1px solid rgba(226,182,92,0.3)",
                 borderRadius: "10px",
-                color: "#6ad6c7",
-                background: "rgba(52,198,184,0.08)",
+                color: "#eac989",
+                background: "rgba(226,182,92,0.08)",
               }}
             >
               {t}
