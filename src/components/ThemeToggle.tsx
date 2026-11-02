@@ -33,10 +33,9 @@ export default function ThemeToggle() {
       onClick={() => setTheme(next)}
       aria-label={`Switch to ${label.toLowerCase()} (${next}) theme`}
       title={`Switch to ${label.toLowerCase()} (${next}) theme`}
-      className="px-2.5 lg:px-3.5 py-2 rounded-full text-sm font-mono text-slate-400 hover:text-teal-400 hover:bg-white/5 transition-colors flex items-center gap-2"
+      className="p-2 rounded-full text-slate-400 hover:text-teal-400 hover:bg-white/5 transition-colors"
     >
       {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-      <span className="hidden xl:block">{label}</span>
     </button>
   );
 }

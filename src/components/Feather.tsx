@@ -1,10 +1,9 @@
-import { EYE_CORE } from "./FeatherEye";
-
 // Hero peacock feather. A server component: the path data below is computed once when the page
 // is built, so the browser receives finished SVG and no JavaScript.
 // Drawn straight along x=180, then bent so the base sits to the right of the eye.
 
 const AX = 180;
+const EYE_CORE = "M0,22 C-6,31 -23,27 -23,4 C-23,-17 -11,-30 0,-30 C11,-30 23,-17 23,4 C23,27 6,31 0,22Z";
 const rand = (() => {
   let s = 11; // fixed seed: identical output on every build
   return () => (s = (s * 16807) % 2147483647) / 2147483647;
@@ -70,10 +69,6 @@ export default function Feather() {
         <ellipse className="r3" cx="182.5" cy="140" rx="34" ry="45" />
         <path className="core" transform="translate(182.5,146)" d={EYE_CORE} />
         <path className="fib" d={fibres} />
-      </svg>
-      {/* Separate layer so the shimmer is an opacity change the GPU handles, not an SVG repaint. */}
-      <svg viewBox="40 -24 330 750" className="feather-shimmer">
-        <path transform="translate(182.5,146)" d={EYE_CORE} />
       </svg>
     </div>
   );

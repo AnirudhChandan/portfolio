@@ -1,81 +1,30 @@
-"use client";
-
-import { motion } from "framer-motion";
-import { Home, User, Briefcase, Mail, Search, BookOpen, FlaskConical, Wrench } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
-import { useSyncExternalStore } from "react";
 
-// Absolute-hash hrefs so the nav works from sub-pages (e.g. /blog) too.
+// Absolute-hash hrefs so the nav works from sub-pages (e.g. /blog) too. Home and Lab drop on phones to fit.
 const navItems = [
-  { name: "Home", href: "/#home", icon: Home },
-  { name: "Work", href: "/#work", icon: Briefcase },
-  { name: "Experience", href: "/#experience", icon: User },
-  { name: "Services", href: "/#services", icon: Wrench },
-  { name: "Lab", href: "/lab", icon: FlaskConical },
-  { name: "Writing", href: "/blog", icon: BookOpen },
-  { name: "Contact", href: "/#contact", icon: Mail },
+  { name: "Home", href: "/#home", phone: false },
+  { name: "Work", href: "/#work", phone: true },
+  { name: "Services", href: "/#services", phone: true },
+  { name: "Lab", href: "/lab", phone: false },
+  { name: "Writing", href: "/blog", phone: true },
+  { name: "Contact", href: "/#contact", phone: true },
 ];
 
 export default function Navbar() {
-  // Platform detection without an effect (avoids a cascading render).
-  // Server renders ⌘K by default; the client patches it after hydration.
-  const isMac = useSyncExternalStore(
-    () => () => {},
-    () => navigator.userAgent.toUpperCase().includes("MAC"),
-    () => true,
-  );
-
-  const openCommandPalette = () => {
-    window.dispatchEvent(new CustomEvent("open-command-palette"));
-  };
-
   return (
-    <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 print:hidden">
-      <motion.div
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="flex items-center gap-0.5 sm:gap-1 p-1.5 sm:p-2 rounded-full border border-white/10 bg-slate-950/70 backdrop-blur-md shadow-lg shadow-black/10"
-      >
+    <div className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4 print:hidden">
+      <nav className="flex items-center gap-0.5 p-1 rounded-full border border-white/10 bg-slate-950/90 backdrop-blur-md">
         {navItems.map((item) => (
-          <motion.a
+          <a
             key={item.name}
             href={item.href}
-            aria-label={item.name}
-            whileHover={{ scale: 0.95 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="relative px-2.5 lg:px-3.5 py-2 text-sm font-mono text-slate-400 hover:text-teal-400 transition-colors rounded-full hover:bg-white/5 flex items-center gap-2 group"
+            className={`${item.phone ? "" : "hidden sm:block"} px-2.5 sm:px-3.5 py-1.5 text-sm text-slate-300 hover:text-teal-400 transition-colors rounded-full`}
           >
-            <item.icon size={16} />
-            <span className="hidden lg:block">{item.name}</span>
-            <span className="absolute inset-0 rounded-full bg-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </motion.a>
+            {item.name}
+          </a>
         ))}
-
-        {/* Separator */}
-        <div className="w-px h-6 bg-white/10 mx-2 hidden sm:block"></div>
-
         <ThemeToggle />
-
-        {/* CMD+K Trigger */}
-        <motion.button
-          onClick={openCommandPalette}
-          aria-label="Open command palette"
-          whileHover={{ scale: 0.95 }}
-          whileTap={{ scale: 0.9 }}
-          transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className="relative px-3 py-1.5 ml-1 text-sm font-mono text-slate-400 hover:text-teal-400 transition-colors rounded-full bg-slate-900 border border-white/5 flex items-center gap-2 group hover:border-teal-500/30"
-        >
-          <Search
-            size={14}
-            className="text-slate-500 group-hover:text-teal-400 transition-colors"
-          />
-          <span className="hidden sm:block text-xs text-slate-500 group-hover:text-teal-400">
-            {isMac ? "⌘K" : "Ctrl K"}
-          </span>
-        </motion.button>
-      </motion.div>
+      </nav>
     </div>
   );
 }

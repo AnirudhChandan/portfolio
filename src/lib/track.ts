@@ -8,8 +8,7 @@ export type ConversionEvent =
   | "email_click"
   | "summary_copy"
   | "case_study_open"
-  | "checklist_print"
-  | "path_select";
+  | "checklist_print";
 
 export function track(event: ConversionEvent, props?: Record<string, string>) {
   try {

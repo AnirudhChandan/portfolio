@@ -14,11 +14,10 @@
   --teal-800: 92 77 62; --teal-900: 71 60 55; --teal-950: 44 38 45;
   --gold-300: 123 211 198; --gold-400: 60 196 180; --gold-500: 56 165 155;
   --white: 255 255 255; --black: 0 0 0;
-  --page-glow: 30 26 68;
-  /* Peacock artwork (Feather, FeatherEye, FooterPeacock). Shapes only, never small text. */
+  /* Peacock artwork (Feather, FooterPeacock). Shapes only, never small text. */
   --feather-barb: 169 184 92; --feather-barb-lo: 118 134 78; --feather-shaft: 205 187 114;
   --feather-r1: 163 166 63; --feather-r2: 180 105 42; --feather-r3: 45 184 166;
-  --feather-core: 28 61 150; --feather-core2: 75 71 201; --feather-fiber: 13 11 30;
+  --feather-core: 28 61 150; --feather-fiber: 13 11 30;
   --peacock: 109 125 255; --leaf: 74 90 122; --bark: 106 90 72;
   color-scheme: dark;
 }
@@ -34,10 +33,9 @@
   --teal-800: 206 193 179; --teal-900: 224 217 213; --teal-950: 234 230 231;
   --gold-300: 7 85 81; --gold-400: 11 107 102; --gold-500: 62 128 123;
   --white: 28 26 49; --black: 100 99 118;
-  --page-glow: 228 224 244;
   --feather-barb: 94 113 48; --feather-barb-lo: 141 152 104; --feather-shaft: 110 91 38;
   --feather-r1: 142 138 53; --feather-r2: 160 87 31; --feather-r3: 19 140 130;
-  --feather-core: 29 58 138; --feather-core2: 74 63 176; --feather-fiber: 243 242 247;
+  --feather-core: 29 58 138; --feather-fiber: 243 242 247;
   --peacock: 44 47 143; --leaf: 154 158 196; --bark: 122 104 80;
   color-scheme: light;
 }
@@ -47,8 +45,6 @@ body {
   background: rgb(var(--slate-950));
   font-family: sans-serif;
   overflow-x: hidden;
-  background-image: radial-gradient(circle at 50% 0%, rgb(var(--page-glow)) 0%, rgb(var(--slate-950)) 60%);
-  background-attachment: fixed;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
@@ -80,25 +76,11 @@ body {
 
 /* --- UTILITIES --- */
 
-/* Grainy Texture Overlay */
-.bg-noise {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 50;
-  opacity: 0.015;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-}
-
 /* Custom Text Selection Color */
 ::selection {
   background: rgb(var(--teal-400) / 0.2);
   color: rgb(var(--teal-400));
 }
-:root[data-theme="light"] .bg-noise { display: none; }
 /* ghchart draws for a light page: invert it in dark mode so empty days go dark and active days stay teal. */
 :root:not([data-theme="light"]) .gh-graph { filter: invert(1) hue-rotate(180deg) brightness(0.9); }
 
@@ -186,7 +168,7 @@ input:focus-visible,
 :lang(hi) .font-mono { letter-spacing: normal; }
 :lang(hi) .font-display { font-family: var(--font-tiro), var(--font-fraunces), serif; font-weight: 400; }
 
-/* Source footnotes (SourceNote.tsx): anchor the native popover under its marker where supported;
+/* Source notes (SourceNote.tsx): anchor the native popover under its caption where supported;
    other browsers keep the default centred popover. */
 .source-pop::backdrop { background: transparent; }
 @supports (position-area: bottom) {
@@ -198,20 +180,11 @@ input:focus-visible,
   }
 }
 
-/* Home section order before hydration (PathSwitch.tsx): pathScript sets data-path before paint and
-   these rules show the chosen order. After hydration HomePage renders that order in the DOM and adds
-   .dom-ordered, which turns them off. Must match ORDER in HomePage.tsx. */
-:root[data-path] .home-sections:not(.dom-ordered) > #contact { order: 2; }
-:root[data-path="hiring"] .home-sections:not(.dom-ordered) > #services { order: 1; }
-:root[data-path="building"] .home-sections:not(.dom-ordered) > #services { order: -2; }
-:root[data-path="building"] .home-sections:not(.dom-ordered) > #work { order: -1; }
-:root[data-path="building"] .home-sections:not(.dom-ordered) > #hiring { order: 1; }
-
-/* --- PEACOCK ARTWORK (Feather, FeatherEye, FooterPeacock) --- */
-:is(.feather, .feather-eye, .peacock) .r1 { fill: rgb(var(--feather-r1)); }
-:is(.feather, .feather-eye, .peacock) .r2 { fill: rgb(var(--feather-r2)); }
-:is(.feather, .feather-eye, .peacock) .r3 { fill: rgb(var(--feather-r3)); }
-:is(.feather, .feather-eye, .peacock) .core { fill: rgb(var(--feather-core)); }
+/* --- PEACOCK ARTWORK (Feather, FooterPeacock) --- */
+:is(.feather, .peacock) .r1 { fill: rgb(var(--feather-r1)); }
+:is(.feather, .peacock) .r2 { fill: rgb(var(--feather-r2)); }
+:is(.feather, .peacock) .r3 { fill: rgb(var(--feather-r3)); }
+:is(.feather, .peacock) .core { fill: rgb(var(--feather-core)); }
 
 .feather svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .feather .lo, .feather .hi, .feather .shaft { fill: none; stroke-linecap: round; }
@@ -219,7 +192,7 @@ input:focus-visible,
 .feather .hi { stroke: rgb(var(--feather-barb)); stroke-width: 1.4; opacity: 0.95; }
 .feather .shaft { stroke: rgb(var(--feather-shaft)); stroke-width: 2.8; }
 .feather .fib { stroke: rgb(var(--feather-fiber)); stroke-width: 0.55; opacity: 0.22; }
-/* On load the feather grows from its base to the eye; then the eye's blue slowly drifts toward violet. */
+/* On load the feather grows once from its base to the eye. */
 .feather svg:first-child {
   -webkit-mask-image: linear-gradient(to top, #000 45%, transparent 55%);
   mask-image: linear-gradient(to top, #000 45%, transparent 55%);
@@ -229,10 +202,7 @@ input:focus-visible,
   mask-position: 0 100%;
   animation: feather-grow 1.6s cubic-bezier(0.3, 0.7, 0.2, 1) 0.2s both;
 }
-.feather-shimmer { opacity: 0; animation: feather-shimmer 9s ease-in-out 1.8s infinite; }
-.feather-shimmer path { fill: rgb(var(--feather-core2)); }
 @keyframes feather-grow { from { -webkit-mask-position: 0 0; mask-position: 0 0; } }
-@keyframes feather-shimmer { 50% { opacity: 0.7; } }
 
 .peacock .bark { fill: rgb(var(--bark)); }
 .peacock .leaf { fill: rgb(var(--leaf)); }
@@ -242,26 +212,6 @@ input:focus-visible,
 .peacock .train { fill: rgb(var(--feather-barb-lo)); }
 .peacock .strands { fill: none; stroke: rgb(var(--feather-barb)); stroke-width: 0.7; opacity: 0.5; }
 
-/* Feather-coloured border on hover: a 1px gradient ring drawn by a masked pseudo-element,
-   so it works on the cards' translucent backgrounds. */
-.rim-feather { position: relative; }
-.rim-feather::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  padding: 1px;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(125deg, rgb(var(--feather-r3)), rgb(var(--gold-400)) 50%, rgb(var(--feather-core)));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.rim-feather:hover::before,
-.rim-feather:focus-within::before { opacity: 1; }
-
 @media (prefers-reduced-motion: reduce) {
-  .feather svg, .feather-shimmer { animation: none; }
+  .feather svg { animation: none; }
 }

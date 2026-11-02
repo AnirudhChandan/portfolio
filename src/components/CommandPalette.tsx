@@ -135,13 +135,6 @@ export default function CommandPalette() {
         perform: () => goToSection("work"),
       },
       {
-        id: "nav-proof",
-        title: "Go to Proof",
-        category: "Navigation",
-        icon: <LayoutTemplate size={16} />,
-        perform: () => goToSection("proof"),
-      },
-      {
         id: "nav-services",
         title: "Go to Services (freelance)",
         category: "Navigation",

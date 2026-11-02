@@ -11,5 +11,5 @@ export function generateStaticParams() {
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const w = works.find((x) => x.slug === slug)!;
-  return blogOgImage(w.title, w.status, "Case study");
+  return blogOgImage(w.title, w.context, "Case study");
 }
