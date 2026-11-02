@@ -180,6 +180,12 @@ input:focus-visible,
   }
 }
 
+/* Printed pages and PDFs (checklist, sample proposals): plain white, no skip link on every page. */
+@media print {
+  .skip-link { display: none; }
+  :root[data-theme] { --slate-950: 255 255 255; }
+}
+
 /* --- PEACOCK ARTWORK (Feather, FooterPeacock) --- */
 :is(.feather, .peacock) .r1 { fill: rgb(var(--feather-r1)); }
 :is(.feather, .peacock) .r2 { fill: rgb(var(--feather-r2)); }

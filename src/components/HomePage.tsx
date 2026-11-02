@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 import Contact from "@/components/Contact";
@@ -100,6 +101,7 @@ export default function HomePage({
           <a href="https://github.com/AnirudhChandan" target="_blank" rel="noopener noreferrer" className="hover:text-teal-400">GitHub</a>
           <a href="https://www.linkedin.com/in/anirudh-chandan/" target="_blank" rel="noopener noreferrer" className="hover:text-teal-400">LinkedIn</a>
           <a href="https://leetcode.com/u/crytondre/" target="_blank" rel="noopener noreferrer" className="hover:text-teal-400">LeetCode</a>
+          <Link href="/proposals" className="hover:text-teal-400">Sample proposals</Link>
           <a href="/now" className="hover:text-teal-400">Now</a>
           <a href="/checklist" className="hover:text-teal-400">Hiring a developer?</a>
         </nav>

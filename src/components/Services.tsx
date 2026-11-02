@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { industries } from "@/lib/industries";
 import Testimonials from "./Testimonials";
 
@@ -54,6 +55,11 @@ export default function Services() {
             {i < industries.length - 2 ? ", " : i === industries.length - 2 ? " and " : "."}
           </span>
         ))}
+      </p>
+
+      <p className="text-slate-400 leading-relaxed mt-3">
+        Planning something large? See how I&apos;d approach it in{" "}
+        <Link href="/proposals" className="text-teal-400 hover:text-teal-300">four sample proposals</Link>.
       </p>
 
       <Testimonials />

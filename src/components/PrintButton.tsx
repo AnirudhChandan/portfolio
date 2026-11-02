@@ -2,10 +2,10 @@
 
 import { Printer } from "lucide-react";
 import { useEffect } from "react";
-import { track } from "@/lib/track";
+import { track, type ConversionEvent } from "@/lib/track";
 
 // Prints in the light theme whatever the screen theme is (also for Ctrl/Cmd+P on this page).
-export default function PrintButton() {
+export default function PrintButton({ event = "checklist_print" }: { event?: ConversionEvent }) {
   useEffect(() => {
     const root = document.documentElement;
     let prev: string | undefined;
@@ -27,7 +27,7 @@ export default function PrintButton() {
   return (
     <button
       onClick={() => {
-        track("checklist_print");
+        track(event);
         window.print();
       }}
       className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-slate-100 hover:bg-white/5"
